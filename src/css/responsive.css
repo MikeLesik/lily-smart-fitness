@@ -1,0 +1,172 @@
+/* ============================================
+   RESPONSIVE — Mobile-First Breakpoints
+   ============================================ */
+
+/* --- Tablet (768px+) --- */
+@media (min-width: 768px) {
+
+  /* Trust Bar */
+  .trust-bar-divider {
+    display: inline;
+  }
+
+  .trust-bar-inner {
+    flex-wrap: nowrap;
+    gap: 0 1.5rem;
+  }
+
+  .trust-bar-item {
+    letter-spacing: 0.15em;
+  }
+
+  /* Hero — restore wider letter-spacing */
+  .hero-eyebrow {
+    letter-spacing: 0.3em;
+  }
+
+  .section-eyebrow {
+    letter-spacing: 0.35em;
+  }
+
+  /* Grids */
+  .grid-2 {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Pricing stays stacked on tablet — cards too narrow at 768px/3 */
+  .grid-3-pricing {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* Philosophy photo — remove mobile max-height */
+  .philosophy-photo {
+    max-height: none;
+    margin: 0;
+  }
+
+  /* Footer — 2x2 grid on tablet */
+  .grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl) var(--space-lg);
+  }
+
+  /* Timeline */
+  .timeline {
+    padding-left: 5rem;
+  }
+
+  .timeline::before {
+    left: 29px;
+  }
+
+  .timeline-marker {
+    left: -5rem;
+    width: 60px;
+    height: 60px;
+    font-size: var(--text-sm);
+  }
+
+  /* Hero CTAs — horizontal */
+  .hero-ctas {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  /* Sticky CTA — hide on tablet+ */
+  .sticky-cta {
+    display: none !important;
+  }
+
+  /* Footer — remove mobile sticky CTA padding */
+  .footer {
+    padding-bottom: var(--space-lg);
+  }
+}
+
+/* --- Desktop (1024px+) --- */
+@media (min-width: 1024px) {
+
+  /* Navigation */
+  .burger {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+  }
+
+  .nav-cta {
+    display: inline-flex;
+  }
+
+  /* Footer */
+  .grid-4 {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+
+  /* Pricing grid — 3 columns on desktop */
+  .grid-3-pricing {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Pillar cards — more padding */
+  .pillar-card {
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* --- Large Desktop (1200px+) --- */
+@media (min-width: 1200px) {
+
+  .grid-2 {
+    gap: var(--space-2xl);
+  }
+
+  .grid-3 {
+    gap: var(--space-lg);
+  }
+
+  .timeline {
+    padding-left: 6rem;
+  }
+
+  .timeline::before {
+    left: 29px;
+  }
+
+  .timeline-marker {
+    left: -6rem;
+  }
+}
+
+/* --- Small Mobile Fix (< 375px) --- */
+@media (max-width: 374px) {
+
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  .btn-primary,
+  .btn-ghost {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .trust-bar-item {
+    font-size: 0.6875rem;
+  }
+}
