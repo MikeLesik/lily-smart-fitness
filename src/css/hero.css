@@ -95,6 +95,22 @@
   color: var(--gold-light);
 }
 
+/* --- Hero Video --- */
+.hero-video {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto var(--space-lg);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+.hero-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .hero-subtitle {
   font-family: var(--font-body);
   font-size: var(--text-lg);
