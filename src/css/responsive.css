@@ -72,12 +72,6 @@
     font-size: var(--text-sm);
   }
 
-  /* Hero CTAs — horizontal */
-  .hero-ctas {
-    flex-direction: row;
-    justify-content: center;
-  }
-
   /* Sticky CTA — hide on tablet+ */
   .sticky-cta {
     display: none !important;
