@@ -2,73 +2,268 @@
    RESPONSIVE — Mobile-First Breakpoints
    ============================================ */
 
-/* --- Tablet (768px+) --- */
-@media (min-width: 768px) {
+/* ===========================================
+   BASE MOBILE OVERRIDES (< 640px)
+   These supplement the mobile-first defaults
+   already set in hero.css and components.css
+   =========================================== */
 
-  /* Trust Bar */
+/* Trust bar: wrapping on narrow screens */
+.trust-bar-inner {
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  justify-content: center;
+}
+
+/* Pricing on mobile: always single column */
+.grid-3-pricing {
+  grid-template-columns: 1fr;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+/* Timeline: compact left indent on mobile */
+.timeline {
+  padding-left: 3rem;
+}
+
+.timeline::before {
+  left: 11px;
+}
+
+.timeline-marker {
+  left: -3rem;
+  width: 24px;
+  height: 24px;
+  font-size: 0.6rem;
+}
+
+/* Philosophy photo: constrain height on mobile */
+.philosophy-photo {
+  max-height: 360px;
+}
+
+/* Footer columns: side by side even on mobile */
+.footer-cols {
+  gap: 1.5rem 2.5rem;
+}
+
+/* ===========================================
+   SMALL PHONE FIX (< 375px)
+   =========================================== */
+@media (max-width: 374px) {
+
+  .hero-title {
+    font-size: 2.25rem;
+  }
+
+  .hero-ctas {
+    max-width: 100%;
+  }
+
+  .btn-primary,
+  .btn-ghost {
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    text-align: left;
+  }
+
+  .trust-bar-item {
+    font-size: 0.625rem;
+  }
+
+  .timeline {
+    padding-left: 2.5rem;
+  }
+
+  .timeline-marker {
+    left: -2.5rem;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ===========================================
+   MEDIUM MOBILE / LARGE PHONE (480px+)
+   =========================================== */
+@media (min-width: 480px) {
+
+  .hero-ctas {
+    flex-direction: row;
+    align-items: center;
+    max-width: none;
+    width: auto;
+  }
+
+  .hero-ctas .btn-primary,
+  .hero-ctas .btn-ghost {
+    width: auto;
+  }
+
+  /* Pricing: allow slightly wider card */
+  .grid-3-pricing {
+    max-width: 420px;
+  }
+}
+
+/* ===========================================
+   TABLET (640px+)
+   =========================================== */
+@media (min-width: 640px) {
+
+  /* Trust bar: single row with dividers */
   .trust-bar-divider {
     display: inline;
   }
 
   .trust-bar-inner {
     flex-wrap: nowrap;
-    gap: 0 1.5rem;
+    gap: 0 1.25rem;
   }
 
   .trust-bar-item {
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
   }
 
-  /* Hero — restore wider letter-spacing */
+  /* Hero: restore wider letter-spacing */
   .hero-eyebrow {
-    letter-spacing: 0.3em;
+    letter-spacing: 0.25em;
   }
 
   .section-eyebrow {
-    letter-spacing: 0.35em;
+    letter-spacing: 0.3em;
   }
 
-  /* Grids */
-  .grid-2 {
-    grid-template-columns: 5fr 7fr;
-  }
-
-  .grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Pricing stays stacked on tablet — cards too narrow at 768px/3 */
-  .grid-3-pricing {
-    grid-template-columns: 1fr;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  /* Philosophy photo — remove mobile max-height */
+  /* Philosophy photo: remove mobile max-height constraint */
   .philosophy-photo {
     max-height: none;
     margin: 0;
   }
 
-  /* Footer — 2x2 grid on tablet */
-  .grid-4 {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-xl) var(--space-lg);
+  /* Stats row: always 3 columns */
+  .stats-row {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Timeline */
+  /* Footer: brand + link columns side by side */
+  .footer-inner {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--space-xl);
+  }
+
+  .footer-brand {
+    flex-shrink: 0;
+    min-width: 180px;
+  }
+
+  .footer-cols {
+    flex: 1;
+    gap: 2rem 3rem;
+  }
+
+  /* Pricing: allow 2 columns on wider tablets */
+  .grid-3-pricing {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Timeline: expand left indent */
+  .timeline {
+    padding-left: 4.5rem;
+  }
+
+  .timeline::before {
+    left: 20px;
+  }
+
+  .timeline-marker {
+    left: -4.5rem;
+    width: 42px;
+    height: 42px;
+    font-size: var(--text-xs);
+  }
+}
+
+/* ===========================================
+   TABLET / SMALL DESKTOP (768px+)
+   =========================================== */
+@media (min-width: 768px) {
+
+  /* Two-column grid: philosophy layout */
+  .grid-2 {
+    grid-template-columns: 5fr 7fr;
+  }
+
+  /* Three-column grid: pillars, testimonials */
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Pricing: stay 2-col at this breakpoint, 3-col on desktop */
+  .grid-3-pricing {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Hero split: side by side */
+  .hero-split {
+    flex-direction: row;
+    text-align: left;
+    gap: var(--space-xl);
+    align-items: center;
+  }
+
+  .hero-left {
+    order: -1;
+    flex-shrink: 0;
+  }
+
+  .hero-right {
+    align-items: flex-start;
+  }
+
+  .hero-video {
+    max-width: 300px;
+  }
+
+  .hero-subtitle {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .hero-ctas {
+    flex-direction: row;
+    align-items: center;
+    max-width: none;
+    width: auto;
+  }
+
+  .hero-ctas .btn-primary,
+  .hero-ctas .btn-ghost {
+    width: auto;
+  }
+
+  /* Timeline: wider indent */
   .timeline {
     padding-left: 5rem;
   }
 
   .timeline::before {
-    left: 29px;
+    left: 24px;
   }
 
   .timeline-marker {
     left: -5rem;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     font-size: var(--text-sm);
   }
 
@@ -83,10 +278,12 @@
   }
 }
 
-/* --- Desktop (1024px+) --- */
+/* ===========================================
+   DESKTOP (1024px+)
+   =========================================== */
 @media (min-width: 1024px) {
 
-  /* Navigation */
+  /* Navigation: show full links and CTA */
   .burger {
     display: none;
   }
@@ -99,25 +296,42 @@
     display: inline-flex;
   }
 
-  /* Footer */
-  .grid-4 {
-    grid-template-columns: 2fr 1fr 1fr;
-  }
-
-  /* Pricing grid — 3 columns on desktop */
+  /* Pricing: full 3 columns */
   .grid-3-pricing {
     grid-template-columns: repeat(3, 1fr);
     max-width: none;
     margin: 0;
   }
 
-  /* Pillar cards — more padding */
+  /* Pillar cards: slightly more generous padding */
   .pillar-card {
-    padding: 2.5rem 2rem;
+    padding: 2.25rem 2rem;
+  }
+
+  /* Hero video: larger on desktop */
+  .hero-video {
+    max-width: 340px;
+  }
+
+  /* Timeline: large marker circles */
+  .timeline {
+    padding-left: 5.5rem;
+  }
+
+  .timeline::before {
+    left: 27px;
+  }
+
+  .timeline-marker {
+    left: -5.5rem;
+    width: 56px;
+    height: 56px;
   }
 }
 
-/* --- Large Desktop (1200px+) --- */
+/* ===========================================
+   LARGE DESKTOP (1200px+)
+   =========================================== */
 @media (min-width: 1200px) {
 
   .grid-2 {
@@ -126,6 +340,10 @@
 
   .grid-3 {
     gap: var(--space-lg);
+  }
+
+  .hero-video {
+    max-width: 380px;
   }
 
   .timeline {
@@ -138,29 +356,7 @@
 
   .timeline-marker {
     left: -6rem;
-  }
-}
-
-/* --- Small Mobile Fix (< 375px) --- */
-@media (max-width: 374px) {
-
-  .hero-title {
-    font-size: 2.25rem;
-  }
-
-  .btn-primary,
-  .btn-ghost {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.12em;
-  }
-
-  .stats-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-sm);
-  }
-
-  .trust-bar-item {
-    font-size: 0.6875rem;
+    width: 60px;
+    height: 60px;
   }
 }

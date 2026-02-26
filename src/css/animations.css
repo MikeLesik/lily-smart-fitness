@@ -5,7 +5,7 @@
 /* --- Scroll Reveal --- */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
+  transform: translateY(32px);
   transition: opacity var(--transition-slow), transform var(--transition-slow);
 }
 
@@ -22,7 +22,7 @@
 /* --- Hero Stagger --- */
 .hero-fade {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(24px);
   animation: heroFadeUp 0.8s var(--ease-out) forwards;
 }
 
@@ -41,33 +41,12 @@
 
 /* --- Scroll Indicator Pulse --- */
 @keyframes scrollPulse {
-  0%, 100% { opacity: 0.4; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(6px); }
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50% { opacity: 0.7; transform: translateY(5px); }
 }
 
 .scroll-indicator {
   animation: scrollPulse 2.5s ease-in-out infinite;
-}
-
-/* --- Button Hover Slide --- */
-.btn-primary {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.btn-primary::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gold-light);
-  transform: translateX(-101%);
-  transition: transform 0.4s var(--ease-out);
-  z-index: -1;
-}
-
-.btn-primary:hover::before {
-  transform: translateX(0);
 }
 
 /* --- FAQ Toggle --- */
@@ -118,7 +97,7 @@
 
 .mobile-overlay .mobile-nav-link {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(16px);
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -127,12 +106,12 @@
   transform: translateY(0);
 }
 
-.mobile-overlay.open .mobile-nav-link:nth-child(1) { transition-delay: 0.1s; }
-.mobile-overlay.open .mobile-nav-link:nth-child(2) { transition-delay: 0.15s; }
-.mobile-overlay.open .mobile-nav-link:nth-child(3) { transition-delay: 0.2s; }
-.mobile-overlay.open .mobile-nav-link:nth-child(4) { transition-delay: 0.25s; }
-.mobile-overlay.open .mobile-nav-link:nth-child(5) { transition-delay: 0.3s; }
-.mobile-overlay.open .mobile-nav-link:nth-child(6) { transition-delay: 0.35s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(1) { transition-delay: 0.08s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(2) { transition-delay: 0.13s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(3) { transition-delay: 0.18s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(4) { transition-delay: 0.23s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(5) { transition-delay: 0.28s; }
+.mobile-overlay.open .mobile-nav-link:nth-child(6) { transition-delay: 0.33s; }
 
 /* --- Mobile Sticky CTA --- */
 .sticky-cta {
