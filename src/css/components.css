@@ -78,14 +78,6 @@
   color: var(--gold);
 }
 
-/* --- Nav Actions (right group: lang + CTA + burger) --- */
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  z-index: 101;
-}
-
 /* --- Language Switch --- */
 .lang-switch {
   font-family: var(--font-body);
@@ -97,6 +89,7 @@
   border-radius: 2px;
   padding: 0.2rem 0.45rem;
   transition: all var(--transition-fast);
+  z-index: 101;
 }
 
 .lang-switch:hover {
@@ -116,6 +109,8 @@
 
 /* --- Burger Button --- */
 .burger {
+  position: relative;
+  z-index: 101;
   width: 26px;
   height: 18px;
   display: flex;
