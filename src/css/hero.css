@@ -150,18 +150,10 @@
 /* --- Hero CTAs --- */
 .hero-ctas {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.625rem;
   margin-bottom: var(--space-sm);
-  width: 100%;
-  max-width: 340px;
-}
-
-.hero-ctas .btn-primary,
-.hero-ctas .btn-ghost {
-  width: 100%;
-  justify-content: center;
 }
 
 .hero-micro {
@@ -226,15 +218,7 @@
   }
 
   .hero-ctas {
-    flex-direction: row;
-    align-items: center;
-    max-width: none;
-    width: auto;
-  }
-
-  .hero-ctas .btn-primary,
-  .hero-ctas .btn-ghost {
-    width: auto;
+    justify-content: flex-start;
   }
 }
 

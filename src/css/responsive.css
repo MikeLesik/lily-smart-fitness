@@ -43,10 +43,6 @@
   max-height: 360px;
 }
 
-/* Footer columns: side by side even on mobile */
-.footer-cols {
-  gap: 1.5rem 2.5rem;
-}
 
 /* ===========================================
    SMALL PHONE FIX (< 375px)
@@ -93,18 +89,6 @@
    =========================================== */
 @media (min-width: 480px) {
 
-  .hero-ctas {
-    flex-direction: row;
-    align-items: center;
-    max-width: none;
-    width: auto;
-  }
-
-  .hero-ctas .btn-primary,
-  .hero-ctas .btn-ghost {
-    width: auto;
-  }
-
   /* Pricing: allow slightly wider card */
   .grid-3-pricing {
     max-width: 420px;
@@ -148,23 +132,6 @@
   /* Stats row: always 3 columns */
   .stats-row {
     grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Footer: brand + link columns side by side */
-  .footer-inner {
-    flex-direction: row;
-    align-items: flex-start;
-    gap: var(--space-xl);
-  }
-
-  .footer-brand {
-    flex-shrink: 0;
-    min-width: 180px;
-  }
-
-  .footer-cols {
-    flex: 1;
-    gap: 2rem 3rem;
   }
 
   /* Pricing: allow 2 columns on wider tablets */
@@ -213,44 +180,6 @@
     margin: 0;
   }
 
-  /* Hero split: side by side */
-  .hero-split {
-    flex-direction: row;
-    text-align: left;
-    gap: var(--space-xl);
-    align-items: center;
-  }
-
-  .hero-left {
-    order: -1;
-    flex-shrink: 0;
-  }
-
-  .hero-right {
-    align-items: flex-start;
-  }
-
-  .hero-video {
-    max-width: 300px;
-  }
-
-  .hero-subtitle {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .hero-ctas {
-    flex-direction: row;
-    align-items: center;
-    max-width: none;
-    width: auto;
-  }
-
-  .hero-ctas .btn-primary,
-  .hero-ctas .btn-ghost {
-    width: auto;
-  }
-
   /* Timeline: wider indent */
   .timeline {
     padding-left: 5rem;
@@ -272,9 +201,9 @@
     display: none !important;
   }
 
-  /* Footer — remove mobile sticky CTA padding */
+  /* Footer — remove mobile sticky CTA extra padding */
   .footer {
-    padding-bottom: var(--space-lg);
+    padding-bottom: 1.5rem;
   }
 }
 
