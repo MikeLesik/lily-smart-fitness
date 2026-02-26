@@ -1,8 +1,8 @@
 /* ============================================
    MAIN JS — Lily Personal Brand Website
    Nav scroll, mobile menu, FAQ, scroll reveal,
-   mobile sticky CTA, timeline progress line,
-   pricing card entrance
+   mobile sticky CTA, price count-up,
+   timeline progress line, pricing card entrance
    ============================================ */
 
 (function () {
@@ -195,7 +195,34 @@
   }
 
   /* -----------------------------------------
-     8. Timeline Progress Line
+     8. Price Count-Up for Pricing Cards
+     ----------------------------------------- */
+  var priceCountEls = document.querySelectorAll('.price-count-up');
+
+  if ('IntersectionObserver' in window && priceCountEls.length > 0) {
+    var priceObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            animateCount(entry.target);
+            priceObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    priceCountEls.forEach(function (el) {
+      priceObserver.observe(el);
+    });
+  } else {
+    priceCountEls.forEach(function (el) {
+      el.textContent = el.getAttribute('data-target');
+    });
+  }
+
+  /* -----------------------------------------
+     9. Timeline Progress Line
      ----------------------------------------- */
   /*
      Injects a .timeline-progress element as the first child of
