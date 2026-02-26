@@ -571,7 +571,7 @@
    TESTIMONIALS
    =========================================== */
 
-.testimonials-scroll {
+.horizontal-scroll {
   display: flex;
   gap: var(--space-md);
   overflow-x: auto;
@@ -581,14 +581,18 @@
   padding-bottom: 0.5rem;
 }
 
-.testimonials-scroll::-webkit-scrollbar {
+.horizontal-scroll::-webkit-scrollbar {
   display: none;
 }
 
-.testimonials-scroll .testimonial-card {
-  min-width: 85%;
+.horizontal-scroll > * {
   scroll-snap-align: center;
   flex-shrink: 0;
+}
+
+.testimonials-scroll > .testimonial-card,
+.pillars-scroll > .pillar-card {
+  min-width: min(85%, 360px);
 }
 
 .testimonial-card {

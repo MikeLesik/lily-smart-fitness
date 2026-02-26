@@ -173,16 +173,6 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* Testimonials: switch from horizontal scroll to 3-col grid */
-  .testimonials-scroll {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    overflow-x: visible;
-  }
-
-  .testimonials-scroll .testimonial-card {
-    min-width: 0;
-  }
 
   /* Pricing: stay 2-col at this breakpoint, 3-col on desktop */
   .grid-3-pricing {
