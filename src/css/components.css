@@ -573,6 +573,8 @@
 
 .horizontal-scroll {
   display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: var(--space-md);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
@@ -587,12 +589,7 @@
 
 .horizontal-scroll > * {
   scroll-snap-align: center;
-  flex-shrink: 0;
-}
-
-.testimonials-scroll > .testimonial-card,
-.pillars-scroll > .pillar-card {
-  min-width: min(85%, 360px);
+  flex: 0 0 min(85vw, 360px);
 }
 
 .testimonial-card {
