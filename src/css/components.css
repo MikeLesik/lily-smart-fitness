@@ -387,17 +387,23 @@
 
 .philosophy-photo {
   position: relative;
+  aspect-ratio: 3 / 4;
+  max-height: 420px;
+  background-color: var(--warm-black);
+  border-radius: var(--radius-md);
+  overflow: hidden;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   margin: 0 auto;
 }
 
-.philosophy-photo-img {
-  width: 100%;
-  max-width: 420px;
-  height: auto;
-  object-fit: contain;
+.philosophy-photo-placeholder {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 10vw, 12rem);
+  font-weight: 300;
+  color: rgba(196, 162, 101, 0.15);
+  user-select: none;
 }
 
 .philosophy-text p {
