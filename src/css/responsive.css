@@ -101,7 +101,7 @@
 
   /* Footer */
   .grid-4 {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
   }
 
   /* Pricing grid — 3 columns on desktop */
@@ -150,7 +150,7 @@
 
   .btn-primary,
   .btn-ghost {
-    padding: 0.875rem 1.25rem;
+    padding: 0.625rem 1.25rem;
     font-size: 0.75rem;
     letter-spacing: 0.12em;
   }

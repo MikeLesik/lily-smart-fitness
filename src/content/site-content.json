@@ -239,11 +239,6 @@
       { "label": "Как мы работаем", "href": "#process" },
       { "label": "FAQ", "href": "#faq" }
     ],
-    "programs": [
-      "Нутрициологический план — €200",
-      "Полная интеграция — €400",
-      "VIP-сопровождение — €550"
-    ],
     "contacts": {
       "telegram": { "label": "@LilyLesik", "url": "https://t.me/LilyLesik" },
       "channel": { "label": "@Lily_Smart_Fitness", "url": "https://t.me/Lily_Smart_Fitness" },
