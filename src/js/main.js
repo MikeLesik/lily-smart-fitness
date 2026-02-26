@@ -1,7 +1,8 @@
 /* ============================================
    MAIN JS — Lily Personal Brand Website
    Nav scroll, mobile menu, FAQ, scroll reveal,
-   mobile sticky CTA
+   mobile sticky CTA, timeline progress line,
+   pricing card entrance
    ============================================ */
 
 (function () {
@@ -191,6 +192,71 @@
     countEls.forEach(function (el) {
       el.textContent = el.getAttribute('data-target');
     });
+  }
+
+  /* -----------------------------------------
+     8. Timeline Progress Line
+     ----------------------------------------- */
+  /*
+     Injects a .timeline-progress element as the first child of
+     .timeline, then grows it downward (via height) as the user
+     scrolls through each step. Each marker gets the .reached
+     class when the progress line passes it.
+  */
+  var timelineEl = document.querySelector('.timeline');
+
+  if (timelineEl) {
+    // Inject the animated gold line element
+    var progressLine = document.createElement('div');
+    progressLine.className = 'timeline-progress';
+    timelineEl.insertBefore(progressLine, timelineEl.firstChild);
+
+    var timelineSteps = timelineEl.querySelectorAll('.timeline-step');
+    var timelineMarkers = timelineEl.querySelectorAll('.timeline-marker');
+
+    function updateTimelineProgress() {
+      if (!timelineEl || timelineSteps.length === 0) return;
+
+      var timelineRect = timelineEl.getBoundingClientRect();
+      var viewportH = window.innerHeight;
+
+      // If timeline is not yet in view, do nothing
+      if (timelineRect.bottom < 0 || timelineRect.top > viewportH) return;
+
+      // Total scrollable height of the timeline track
+      var timelineH = timelineEl.offsetHeight;
+
+      // Progress: how far the center of the viewport has moved
+      // through the timeline, clamped 0–1.
+      // We start counting when the top of the timeline enters the
+      // bottom 70% of the viewport, finish when the bottom leaves.
+      var triggerStart = viewportH * 0.7;
+      var progressPx = triggerStart - timelineRect.top;
+      var ratio = Math.max(0, Math.min(1, progressPx / timelineH));
+      var lineHeight = Math.round(ratio * timelineH);
+
+      progressLine.style.height = lineHeight + 'px';
+
+      // Mark each step whose marker center is within the drawn line
+      timelineMarkers.forEach(function (marker, i) {
+        var markerRect = marker.getBoundingClientRect();
+        var markerCenter = markerRect.top + markerRect.height / 2;
+        // If the drawn line reaches the marker's vertical midpoint
+        var markerOffsetFromTop = markerRect.top - timelineRect.top + markerRect.height / 2;
+
+        if (lineHeight >= markerOffsetFromTop) {
+          marker.classList.add('reached');
+          if (timelineSteps[i]) timelineSteps[i].classList.add('reached');
+        } else {
+          marker.classList.remove('reached');
+          if (timelineSteps[i]) timelineSteps[i].classList.remove('reached');
+        }
+      });
+    }
+
+    // Run on scroll and on load
+    window.addEventListener('scroll', updateTimelineProgress, { passive: true });
+    updateTimelineProgress();
   }
 
   /* -----------------------------------------

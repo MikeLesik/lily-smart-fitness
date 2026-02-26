@@ -28,6 +28,14 @@
   color: var(--white);
 }
 
+/* Very light cream-tinted section for subtle visual breaks
+   between content sections without heavy background shifts */
+.section--cream-subtle {
+  background-color: rgba(245, 240, 235, 0.55);
+  padding-top: 0;
+  padding-bottom: var(--space-section);
+}
+
 /* --- Section Headers --- */
 .section-eyebrow {
   font-family: var(--font-body);

@@ -19,6 +19,155 @@
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
 
+/* --- Pricing Card Enhanced Entrance --- */
+/*
+   Pricing cards use a more dramatic entrance than the default reveal:
+   they slide up further and fade in with a slight scale, creating
+   a sense of depth. The featured card gets extra scale emphasis.
+*/
+.pricing-card.reveal {
+  transform: translateY(48px) scale(0.97);
+  transition:
+    opacity 0.75s var(--ease-out),
+    transform 0.75s var(--ease-out);
+}
+
+.pricing-card.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.pricing-card--featured.reveal {
+  transform: translateY(56px) scale(0.96);
+  transition:
+    opacity 0.8s var(--ease-out),
+    transform 0.8s var(--ease-out);
+}
+
+.pricing-card--featured.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Stagger delays for pricing cards */
+.grid-3-pricing .reveal-delay-1 { transition-delay: 0.08s; }
+.grid-3-pricing .reveal-delay-2 { transition-delay: 0.22s; }
+.grid-3-pricing .reveal-delay-3 { transition-delay: 0.36s; }
+
+/* --- Pricing Card Hover States --- */
+/*
+   On hover, non-featured cards lift and gain a warm gold-tinted
+   glow around the border, signalling interactivity without clutter.
+   The featured card gets a stronger glow to reinforce its status.
+*/
+.pricing-card {
+  transition:
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out),
+    background-color 0.35s var(--ease-out);
+}
+
+.pricing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(196, 162, 101, 0.14);
+  border-color: rgba(196, 162, 101, 0.28);
+}
+
+.pricing-card--featured:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(196, 162, 101, 0.22);
+  border-color: rgba(196, 162, 101, 0.55);
+}
+
+/* Price amount pulses subtly on card hover */
+.pricing-card:hover .pricing-amount {
+  color: var(--gold-light);
+  transition: color 0.3s var(--ease-out);
+}
+
+/* Feature dots brighten on hover */
+.pricing-card:hover .pricing-features li::before {
+  opacity: 1;
+  transition: opacity 0.3s var(--ease-out);
+}
+
+/* --- Pricing Amount Shimmer Keyframe --- */
+@keyframes priceShimmer {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Badge pulses once when card becomes visible */
+.pricing-card--featured.visible .pricing-badge {
+  animation: priceShimmer 2s var(--ease-out) 0.6s 1;
+}
+
+/* --- Timeline Progress Line --- */
+/*
+   The .timeline::before pseudo-element is the static decorative line.
+   .timeline-progress is a real element injected by JS that grows
+   downward as the user scrolls through the section.
+*/
+.timeline-progress {
+  position: absolute;
+  left: 15px;
+  top: 0;
+  width: 1.5px;
+  height: 0;
+  background: var(--gold);
+  transition: height 0.4s var(--ease-out);
+  z-index: 1;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(196, 162, 101, 0.4);
+}
+
+/* Adjust left offset to match responsive overrides */
+@media (min-width: 640px) {
+  .timeline-progress { left: 20px; }
+}
+@media (min-width: 768px) {
+  .timeline-progress { left: 24px; }
+}
+@media (min-width: 1024px) {
+  .timeline-progress { left: 27px; }
+}
+@media (min-width: 1200px) {
+  .timeline-progress { left: 29px; }
+}
+
+/* Active marker: glows gold when the progress line reaches it */
+.timeline-marker {
+  transition:
+    background-color 0.4s var(--ease-out),
+    border-color 0.4s var(--ease-out),
+    color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
+}
+
+.timeline-marker.reached {
+  background-color: var(--gold);
+  border-color: var(--gold);
+  color: var(--warm-black);
+  box-shadow: 0 0 0 4px rgba(196, 162, 101, 0.18);
+}
+
+/* Step title highlights when its marker is reached */
+.timeline-step.reached .timeline-title {
+  color: var(--warm-black);
+}
+
+/* --- Telegram Channel Banner Animation --- */
+@keyframes tgPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196, 162, 101, 0); }
+  50%       { box-shadow: 0 0 0 6px rgba(196, 162, 101, 0.12); }
+}
+
+.tg-channel-banner.visible .tg-channel-icon {
+  animation: tgPulse 3s ease-in-out infinite;
+}
+
 /* --- Hero Stagger --- */
 .hero-fade {
   opacity: 0;
