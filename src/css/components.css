@@ -78,6 +78,13 @@
   color: var(--gold);
 }
 
+/* --- Nav Actions (lang switch + CTA grouped) --- */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 /* --- Language Switch --- */
 .lang-switch {
   font-family: var(--font-body);
