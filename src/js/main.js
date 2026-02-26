@@ -145,6 +145,55 @@
   });
 
   /* -----------------------------------------
+     7. Count-Up Animation (Trust Bar)
+     ----------------------------------------- */
+  var countEls = document.querySelectorAll('.count-up');
+
+  function animateCount(el) {
+    var target = parseInt(el.getAttribute('data-target'), 10);
+    var duration = 1600; // ms
+    var start = null;
+
+    function step(timestamp) {
+      if (!start) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      // ease-out cubic
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(eased * target);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target;
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  if ('IntersectionObserver' in window && countEls.length > 0) {
+    var countObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            animateCount(entry.target);
+            countObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    countEls.forEach(function (el) {
+      countObserver.observe(el);
+    });
+  } else {
+    // Fallback: show final numbers
+    countEls.forEach(function (el) {
+      el.textContent = el.getAttribute('data-target');
+    });
+  }
+
+  /* -----------------------------------------
      Event Listeners
      ----------------------------------------- */
   window.addEventListener('scroll', function () {

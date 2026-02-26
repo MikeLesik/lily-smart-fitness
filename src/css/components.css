@@ -27,6 +27,9 @@
 }
 
 .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-family: var(--font-display);
   font-size: 1.375rem;
   font-weight: 600;
@@ -35,8 +38,20 @@
   z-index: 101;
 }
 
+.nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease;
+}
+
 .nav.scrolled .nav-logo {
   color: var(--warm-black);
+}
+
+.nav.scrolled .nav-logo-icon {
+  filter: brightness(0);
 }
 
 .nav-links {
@@ -917,11 +932,21 @@
 }
 
 .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: 0.18em;
   color: var(--white);
+}
+
+.footer-logo-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .footer-nav {
