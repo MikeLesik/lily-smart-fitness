@@ -37,7 +37,7 @@
   --space-lg: 2.5rem;
   --space-xl: 4rem;
   --space-2xl: 6rem;
-  --space-section: clamp(5rem, 3.5rem + 5vw, 8rem);
+  --space-section: clamp(3rem, 2.5rem + 2.5vw, 4.5rem);
 
   /* Layout */
   --container-max: 1200px;

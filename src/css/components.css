@@ -421,10 +421,10 @@
   font-style: italic;
   color: var(--gold);
   line-height: 1.4;
-  padding: var(--space-lg) 0;
+  padding: var(--space-md) 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  margin: var(--space-lg) 0;
+  margin: var(--space-md) 0;
 }
 
 .philosophy-credentials {
@@ -470,9 +470,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-sm);
-  padding-top: var(--space-lg);
+  padding-top: var(--space-md);
   border-top: 1px solid var(--border);
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
 }
 
 .stat-item {
@@ -642,7 +642,7 @@
 /* --- Channel Block --- */
 .channel-block {
   text-align: center;
-  padding-top: var(--space-xl);
+  padding-top: var(--space-lg);
 }
 
 .channel-block p {
@@ -742,7 +742,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .pricing-features li {
@@ -766,7 +766,7 @@
 }
 
 .pricing-footnote {
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
   font-size: var(--text-sm);
   color: rgba(253, 252, 250, 0.4);
 }
@@ -793,7 +793,7 @@
 
 .timeline-step {
   position: relative;
-  padding-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
 }
 
 .timeline-step:last-child {
@@ -841,7 +841,7 @@
 }
 
 .timeline-bridge {
-  margin-top: var(--space-xl);
+  margin-top: var(--space-lg);
   text-align: center;
 }
 
