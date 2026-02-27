@@ -588,8 +588,35 @@
 }
 
 .horizontal-scroll > * {
-  scroll-snap-align: center;
-  flex: 0 0 min(85vw, 360px);
+  scroll-snap-align: start;
+  flex: 0 0 min(75vw, 340px);
+}
+
+/* --- Scroll Peek Wrapper --- */
+.scroll-peek {
+  position: relative;
+}
+
+.scroll-peek::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 3rem;
+  background: linear-gradient(to right, transparent, var(--cream));
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-peek.has-overflow::after {
+  opacity: 1;
+}
+
+.scroll-peek.scrolled-end::after {
+  opacity: 0;
 }
 
 .testimonial-card {

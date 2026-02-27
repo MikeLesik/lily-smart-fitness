@@ -260,6 +260,28 @@
   }
 
   /* -----------------------------------------
+     9. Scroll Peek — fade gradient on overflow
+     ----------------------------------------- */
+  var scrollPeekWrappers = document.querySelectorAll('.scroll-peek');
+
+  scrollPeekWrappers.forEach(function (wrapper) {
+    var scroller = wrapper.querySelector('.horizontal-scroll');
+    if (!scroller) return;
+
+    function updatePeek() {
+      var hasOverflow = scroller.scrollWidth > scroller.clientWidth + 1;
+      var atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 5;
+
+      wrapper.classList.toggle('has-overflow', hasOverflow && !atEnd);
+      wrapper.classList.toggle('scrolled-end', atEnd);
+    }
+
+    scroller.addEventListener('scroll', updatePeek, { passive: true });
+    window.addEventListener('resize', updatePeek, { passive: true });
+    updatePeek();
+  });
+
+  /* -----------------------------------------
      Event Listeners
      ----------------------------------------- */
   window.addEventListener('scroll', function () {
