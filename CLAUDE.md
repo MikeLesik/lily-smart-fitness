@@ -12,8 +12,8 @@
 - Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
 - wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
-- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview заданы все, в Production пока только `RESEND_API_KEY`.
-- Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`. Боевую базу мигрировать только на этапе 7.
+- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). Заданы все в обеих средах; в Production Stripe пока тестовый (ключ песочницы, вебхук на https://lily.coach/api/stripe/webhook), до запуска заменить на боевые.
+- Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`; боевая база: `npx wrangler d1 migrations apply lily-coach --env production --remote` (0001–0003 применены 24.11).
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
 ## Стек
