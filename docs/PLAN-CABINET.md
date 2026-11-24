@@ -267,7 +267,7 @@ wrangler.toml, package.json
 
 ### Этап 4. Stripe
 
-Статус: КОД ГОТОВ 24.11.2026, ждёт покупки Михаила с телефона из Instagram и возврата в Stripe.
+Статус: ЗАВЕРШЁН 24.11.2026.
 - Ключ: ограниченный `lily-coach-preview` в песочнице restoreLab (запись: Checkout Sessions, Products, Prices, Customers, Promotion Codes; чтение: Charges, Payment Intents), секрет `STRIPE_SECRET_KEY` в Preview и в `.dev.vars`. Webhook Endpoints в ключе не нужны: эндпоинт создан через Stripe CLI.
 - Вебхук предпросмотра `we_1UfJWxRK02VsNQXDWDJ9jMRF` → `https://cabinet.lily-smart-fitness.pages.dev/api/stripe/webhook` (completed, async_payment_succeeded, charge.refunded), секрет `STRIPE_WEBHOOK_SECRET` в Preview. В той же песочнице есть эндпоинт Restore Lab, оба получают все события.
 - Цены: отступление от схемы 5.1. Поля `stripePriceId` в каталоге нет. Цена берётся из `catalog.json`, сервер при первой оплате создаёт товар `lily_<scope>` (metadata brand=lily) и цену с `lookup_key = lily_<scope>_<amount>_<currency>`. Новая цена в каталоге = новая цена в Stripe, в боевом режиме тоже ничего не заводится руками.
@@ -278,7 +278,7 @@ wrangler.toml, package.json
 - Фронт: `js/buy.js` (любой `[data-buy]`, первое касание UTM в localStorage), витрина на главной RU/EN из `/api/catalog` с обложками, кабинет покупает через Stripe. Удалены окно выбора платёжки, success-страницы, лендинги `/workouts/` и `courses.js`; вёрстка лендинга и старый CSS в `docs/legacy-workouts/` для этапа 5.
 - Миграция `0003_orders` (локально и на preview). Тесты: 71 (подпись, повтор, чужое событие, отложенная оплата, набор all, полный и частичный возврат, ручное право при возврате, параметры Checkout, создание цены, complete: cookie один раз, после вебхука без дубля, неоплаченная и чужая сессия).
 - Проверено локально (песочница, карта 4242): гость купил «Утреннюю зарядку» с главной, вернулся в кабинет на открытую программу с подтверждением, вебхук пришёл (200), в профиле чек; возврат через Stripe CLI закрыл программу (API 403, «Возврат» в профиле); вошедшая уходит в Stripe сразу; отмена ведёт на `/checkout/cancel/`. На предпросмотре: `/api/checkout` создаёт сессию, неподписанный вебхук 400, событие Stripe без brand доставлено (pending_webhooks 0) и ничего не создало.
-- Осталось Михаилу: с телефона из Instagram открыть https://cabinet.lily-smart-fitness.pages.dev/#workouts, купить программу картой 4242 4242 4242 4242 (любой срок в будущем, любой CVC), убедиться, что открылся кабинет с программой и пришло письмо; затем в Stripe (песочница restoreLab → Payments) сделать полный возврат и проверить, что программа закрылась.
+- Михаил 24.11 проверил с телефона из Instagram на https://cabinet.lily-smart-fitness.pages.dev/#workouts: тестовая покупка открыла программу в кабинете без ручных действий, письмо пришло, полный возврат в Stripe программу закрыл.
 
 - Товары и цены в тестовом режиме с метаданными `brand=lily`.
 - `/api/checkout`, `/api/checkout/complete`, `/api/stripe/webhook`, страницы возврата, письмо о покупке.
