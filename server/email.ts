@@ -59,10 +59,10 @@ export async function sendLoginCode(env: Env, email: string, code: string): Prom
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FDFCFA;border:1px solid rgba(26,23,20,0.08);padding:32px 28px;">
 <tr><td style="font-family:Georgia,'Times New Roman',serif;font-size:22px;letter-spacing:0.15em;">LILY</td></tr>
-<tr><td style="padding-top:24px;font-size:15px;line-height:1.6;color:#7A7067;">${t.intro}</td></tr>
+<tr><td style="padding-top:24px;font-size:15px;line-height:1.6;color:#746A61;">${t.intro}</td></tr>
 <tr><td style="padding:16px 0 20px;font-family:Arial,Helvetica,sans-serif;font-size:36px;font-weight:bold;letter-spacing:0.25em;color:#1A1714;">${code}</td></tr>
-<tr><td style="font-size:14px;line-height:1.6;color:#7A7067;">${t.ttl}</td></tr>
-<tr><td style="padding-top:20px;font-size:14px;line-height:1.6;color:#7A7067;">${t.help} <a href="${TELEGRAM_URL}" style="color:#6B7B5E;">@LilyLesik</a></td></tr>
+<tr><td style="font-size:14px;line-height:1.6;color:#746A61;">${t.ttl}</td></tr>
+<tr><td style="padding-top:20px;font-size:14px;line-height:1.6;color:#746A61;">${t.help} <a href="${TELEGRAM_URL}" style="color:#6B7B5E;">@LilyLesik</a></td></tr>
 </table>
 </td></tr>
 </table>
