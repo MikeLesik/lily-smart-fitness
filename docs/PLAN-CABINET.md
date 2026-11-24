@@ -267,6 +267,19 @@ wrangler.toml, package.json
 
 ### Этап 4. Stripe
 
+Статус: КОД ГОТОВ 24.11.2026, ждёт покупки Михаила с телефона из Instagram и возврата в Stripe.
+- Ключ: ограниченный `lily-coach-preview` в песочнице restoreLab (запись: Checkout Sessions, Products, Prices, Customers, Promotion Codes; чтение: Charges, Payment Intents), секрет `STRIPE_SECRET_KEY` в Preview и в `.dev.vars`. Webhook Endpoints в ключе не нужны: эндпоинт создан через Stripe CLI.
+- Вебхук предпросмотра `we_1UfJWxRK02VsNQXDWDJ9jMRF` → `https://cabinet.lily-smart-fitness.pages.dev/api/stripe/webhook` (completed, async_payment_succeeded, charge.refunded), секрет `STRIPE_WEBHOOK_SECRET` в Preview. В той же песочнице есть эндпоинт Restore Lab, оба получают все события.
+- Цены: отступление от схемы 5.1. Поля `stripePriceId` в каталоге нет. Цена берётся из `catalog.json`, сервер при первой оплате создаёт товар `lily_<scope>` (metadata brand=lily) и цену с `lookup_key = lily_<scope>_<amount>_<currency>`. Новая цена в каталоге = новая цена в Stripe, в боевом режиме тоже ничего не заводится руками.
+- Checkout: `metadata {brand: lily, scope, utm_*}`, `payment_intent_data.metadata`, `statement_descriptor_suffix: LILY COACH`, `allow_promotion_codes`, `locale ru/en`, `branding_settings` (Lily, cream, gold, иконка lily.coach). Покупатель видит «Заплатить Lily»; вкладка браузера называется по аккаунту (restoreLab).
+- `/api/checkout`: гостю нужен только email, вошедшая платит своим email без окна, купленное повторно не продаётся (409). `/api/checkout/complete`: проверяет сессию в Stripe, выдаёт право, если вебхук не успел, ставит cookie один раз и только в первый час, ведёт на купленную программу с подтверждением; потом вход по коду. Отложенная оплата ведёт на `/checkout/success/?pending=1`, отмена на `/checkout/cancel/` с кнопкой повтора.
+- Вебхук: подпись (допуск 5 минут), идемпотентность (`stripe_events` + уникальный `stripe_session_id` + уникальная пара заказ/область), чужие события без `brand=lily` пропускаются с 200 и не пишутся, полный возврат (`refunded: true`) отзывает права заказа, частичный нет, ручные права не трогает.
+- Письмо «Доступ открыт» со ссылкой на вход и объяснением входа с другого устройства. `/api/me` отдаёт `orders` со ссылкой на чек; в профиле «Покупки» с «Чек» или «Возврат».
+- Фронт: `js/buy.js` (любой `[data-buy]`, первое касание UTM в localStorage), витрина на главной RU/EN из `/api/catalog` с обложками, кабинет покупает через Stripe. Удалены окно выбора платёжки, success-страницы, лендинги `/workouts/` и `courses.js`; вёрстка лендинга и старый CSS в `docs/legacy-workouts/` для этапа 5.
+- Миграция `0003_orders` (локально и на preview). Тесты: 71 (подпись, повтор, чужое событие, отложенная оплата, набор all, полный и частичный возврат, ручное право при возврате, параметры Checkout, создание цены, complete: cookie один раз, после вебхука без дубля, неоплаченная и чужая сессия).
+- Проверено локально (песочница, карта 4242): гость купил «Утреннюю зарядку» с главной, вернулся в кабинет на открытую программу с подтверждением, вебхук пришёл (200), в профиле чек; возврат через Stripe CLI закрыл программу (API 403, «Возврат» в профиле); вошедшая уходит в Stripe сразу; отмена ведёт на `/checkout/cancel/`. На предпросмотре: `/api/checkout` создаёт сессию, неподписанный вебхук 400, событие Stripe без brand доставлено (pending_webhooks 0) и ничего не создало.
+- Осталось Михаилу: с телефона из Instagram открыть https://cabinet.lily-smart-fitness.pages.dev/#workouts, купить программу картой 4242 4242 4242 4242 (любой срок в будущем, любой CVC), убедиться, что открылся кабинет с программой и пришло письмо; затем в Stripe (песочница restoreLab → Payments) сделать полный возврат и проверить, что программа закрылась.
+
 - Товары и цены в тестовом режиме с метаданными `brand=lily`.
 - `/api/checkout`, `/api/checkout/complete`, `/api/stripe/webhook`, страницы возврата, письмо о покупке.
 - Удалить из июньской работы окно выбора платёжки, success-страницы курсов и `courses.js`; каталог на главной читает `/api/catalog`.
@@ -289,7 +302,7 @@ wrangler.toml, package.json
 
 ### Этап 7. Запуск
 
-Чек-лист: миграции на боевую D1 `lily-coach` и секреты `AUTH_SECRET`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK` в Production; удалить тестовые видео из Stream; реальные категории, цены и видео в каталоге; тексты согласованы с Лилей; юридические страницы от юриста; боевые ключи Stripe и боевой вебхук; описание в выписке; одна реальная покупка и возврат; проверка на iPhone и Android из Instagram; письма не попадают в спам; слияние в `main` после OK Михаила.
+Чек-лист: миграции на боевую D1 `lily-coach` и секреты `AUTH_SECRET`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK` в Production; боевой ограниченный ключ Stripe (`STRIPE_SECRET_KEY`) и боевой вебхук на lily.coach (`STRIPE_WEBHOOK_SECRET`); включить чеки Stripe по email, если Restore Lab их не шлёт; удалить тестовые видео из Stream; реальные категории, цены и видео в каталоге; тексты согласованы с Лилей; юридические страницы от юриста; боевые ключи Stripe и боевой вебхук; описание в выписке; одна реальная покупка и возврат; проверка на iPhone и Android из Instagram; письма не попадают в спам; слияние в `main` после OK Михаила.
 
 ## 7. Что нужно от Михаила и Лили
 
