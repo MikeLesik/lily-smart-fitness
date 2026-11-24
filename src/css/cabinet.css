@@ -581,13 +581,6 @@ html {
   color: var(--warm-black);
 }
 
-.cab-video-num {
-  flex: 0 0 1.5rem;
-  font-size: var(--text-sm);
-  font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
-}
-
 .cab-video-body {
   flex: 1;
   min-width: 0;

@@ -488,7 +488,7 @@
 
   /* ---------- программа ---------- */
 
-  function videoItem(v, i, open) {
+  function videoItem(v, open) {
     var p = state.progress[v.id];
     var res = open && resumable(v);
     var meta = res
@@ -503,8 +503,7 @@
     var bar = res
       ? '<span class="cab-video-bar" style="width:' + Math.round(Math.min(p.seconds / v.durationSec, 1) * 100) + '%" aria-hidden="true"></span>'
       : '';
-    var inner = '<span class="cab-video-num" aria-hidden="true">' + (i + 1) + '</span>' +
-      '<span class="cab-video-body"><span class="cab-video-title">' + esc(L(v.title)) + '</span>' +
+    var inner = '<span class="cab-video-body"><span class="cab-video-title">' + esc(L(v.title)) + '</span>' +
       '<span class="cab-video-meta">' + esc(meta) + '</span></span>' +
       stateHtml + bar;
     return open
@@ -538,7 +537,7 @@
     }
 
     // В списке только основные видео: в купленной превью не нужно, в закрытой оно на кнопке.
-    html += '<ol class="cab-videos">' + mains.map(function (v, i) { return videoItem(v, i, open); }).join('') + '</ol>';
+    html += '<ol class="cab-videos">' + mains.map(function (v) { return videoItem(v, open); }).join('') + '</ol>';
     app.innerHTML = html;
   }
 

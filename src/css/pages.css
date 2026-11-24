@@ -285,13 +285,9 @@
   transform: translateX(3px);
 }
 
-/* Номер видео на уровне названия, а не по центру строки с описанием */
+/* Строка урока с описанием: выравнивание по верху */
 .lead-inside .cab-video {
   align-items: flex-start;
-}
-
-.lead-inside .cab-video-num {
-  line-height: 1.6;
 }
 
 @media (min-width: 768px) {

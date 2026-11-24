@@ -6,7 +6,7 @@ export const ASSET_VERSIONS = {
   variables: 3,
   reset: 2,
   components: 4,
-  cabinet: 6,
+  cabinet: 7,
   buyCss: 2,
   programsCss: 2,
   buyJs: 4,
