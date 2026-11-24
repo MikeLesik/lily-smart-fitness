@@ -64,7 +64,6 @@ function footer(lang: Lang, path: string, telegramText: string): string {
     `<a href="${p}/free/">${esc(t.navFree)}</a>` +
     `<a href="${p}/legal/terms/">${esc(t.terms)}</a>` +
     `<a href="${p}/legal/privacy/">${esc(t.privacy)}</a>` +
-    `<a href="${p}/legal/refunds/">${esc(t.refunds)}</a>` +
     `<a href="${esc(telegramLink(telegramText))}" target="_blank" rel="noopener">${esc(t.telegram)}</a>` +
     `<a href="${STRINGS[other].prefix}${path}" hreflang="${other}" lang="${other}">${esc(t.switchLang)}</a>` +
     `</nav>` +

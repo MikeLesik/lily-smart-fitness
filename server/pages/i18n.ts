@@ -93,16 +93,10 @@ const ru = {
       link: 'telegram-russia',
     },
     {
-      q: 'Можно вернуть деньги?',
-      a: 'Условия возврата описаны на отдельной странице. Если что-то пошло не так, напиши Лиле в Telegram.',
-      link: 'refunds',
-    },
-    {
       q: 'Где ввести промокод?',
       a: 'На странице оплаты Stripe: нажми «Добавить промокод» и введи код. Скидка применится до оплаты.',
     },
   ] as FaqText[],
-  faqRefundsLink: 'Условия возврата',
   faqTelegramLink: 'Написать Лиле в Telegram',
 
   telegramQuestion: 'Привет, Лиля! У меня вопрос про программу «{title}».',
@@ -131,13 +125,12 @@ const ru = {
   footerLegal: 'Документы',
   terms: 'Оферта',
   privacy: 'Конфиденциальность',
-  refunds: 'Возврат',
   telegram: 'Telegram',
   switchLang: 'English',
   switchLangCode: 'en',
 };
 
-type FaqText = { q: string; a: string; link?: 'refunds' | 'telegram-russia' };
+type FaqText = { q: string; a: string; link?: 'telegram-russia' };
 export type Strings = typeof ru;
 
 const en: Strings = {
@@ -218,16 +211,10 @@ const en: Strings = {
       link: 'telegram-russia',
     },
     {
-      q: 'Can I get a refund?',
-      a: 'The refund terms are on a separate page. If something went wrong, message Lily on Telegram.',
-      link: 'refunds',
-    },
-    {
       q: 'Where do I enter a promo code?',
       a: 'On the Stripe payment page: tap “Add promotion code” and enter it. The discount applies before you pay.',
     },
   ],
-  faqRefundsLink: 'Refund terms',
   faqTelegramLink: 'Message Lily on Telegram',
 
   telegramQuestion: 'Hi Lily! I have a question about the “{title}” program.',
@@ -254,7 +241,6 @@ const en: Strings = {
   footerLegal: 'Legal',
   terms: 'Terms',
   privacy: 'Privacy',
-  refunds: 'Refunds',
   telegram: 'Telegram',
   switchLang: 'Русский',
   switchLangCode: 'ru',

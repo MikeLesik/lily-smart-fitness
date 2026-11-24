@@ -242,7 +242,6 @@ function faqSection(cat: CatalogCategory, lang: Lang): string {
   const own = (cat.faq ?? []).map((f) => ({ q: loc(f.q, lang), a: esc(loc(f.a, lang)) }));
   const general = t.faq.map((f) => {
     let a = esc(f.a);
-    if (f.link === 'refunds') a += ` <a href="${t.prefix}/legal/refunds/">${esc(t.faqRefundsLink)}</a>`;
     if (f.link === 'telegram-russia') {
       a += ` <a href="${esc(telegramLink(fmt(t.telegramRussia, { title })))}" target="_blank" rel="noopener">${esc(t.faqTelegramLink)}</a>`;
     }

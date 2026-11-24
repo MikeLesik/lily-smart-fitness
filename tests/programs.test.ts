@@ -77,7 +77,7 @@ describe('GET /programs/<slug>/', () => {
     expect(html).toContain('/js/buy.js');
     expect(html).toContain('/css/buy.css');
     expect(html).toContain('id="preview"');
-    expect(html).toContain('/legal/refunds/');
+    expect(html).not.toContain('refunds');
   });
 
   it('SEO: canonical, hreflang, og и JSON-LD Product с Offer', async () => {
@@ -112,7 +112,7 @@ describe('GET /programs/<slug>/', () => {
     expect(html).toContain('Who it is for');
     expect(html).toContain('href="/en/free/"');
     expect(html).toContain('href="/en/login/"');
-    expect(html).toContain('href="/en/legal/refunds/"');
+    expect(html).not.toContain('refunds');
     expect(html).toContain(`<link rel="canonical" href="https://lily.coach/en/programs/${first.slug}/">`);
     expect(html).not.toMatch(/Купить|Для кого|Частые вопросы/);
   });
