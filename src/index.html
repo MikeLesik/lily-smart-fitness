@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Lily · Видеотренировки и персональное сопровождение</title>
-  <meta name="description" content="Видеотренировки Лили, нутрициолога и персонального тренера: программы от €25 с разовой оплатой и доступом навсегда. Бесплатный урок и персональное сопровождение.">
+  <title>Lily · 20 минут в день дома: сильное тело без зала и диет</title>
+  <meta name="description" content="20 минут в день дома: сильное тело без зала и диет. Видеопрограммы Лили Лесик, тренера Gray Institute и нутрициолога, от €25 с доступом навсегда. Бесплатный урок.">
   <link rel="canonical" href="https://lily.coach/">
   <link rel="alternate" hreflang="ru" href="https://lily.coach/">
   <link rel="alternate" hreflang="en" href="https://lily.coach/en/">
@@ -14,8 +14,8 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Lily Smart Fitness">
   <meta property="og:url" content="https://lily.coach/">
-  <meta property="og:title" content="Lily · Видеотренировки и персональное сопровождение">
-  <meta property="og:description" content="Тренируйся дома вместе с Лилей: видеопрограммы от €25, оплата один раз, доступ навсегда.">
+  <meta property="og:title" content="20 минут в день дома: сильное тело без зала и диет">
+  <meta property="og:description" content="Видеопрограммы Лили Лесик, тренера Gray Institute и нутрициолога. От €25, оплата один раз, доступ навсегда.">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:image" content="https://lily.coach/assets/images/og-image.jpg">
@@ -39,12 +39,12 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/variables.css?v=3">
   <link rel="stylesheet" href="css/reset.css?v=2">
-  <link rel="stylesheet" href="css/layout.css?v=3">
+  <link rel="stylesheet" href="css/layout.css?v=4">
   <link rel="stylesheet" href="css/hero.css?v=3">
-  <link rel="stylesheet" href="css/components.css?v=4">
+  <link rel="stylesheet" href="css/components.css?v=5">
   <link rel="stylesheet" href="css/animations.css?v=3">
-  <link rel="stylesheet" href="css/responsive.css?v=4">
-  <link rel="stylesheet" href="css/workouts.css?v=4">
+  <link rel="stylesheet" href="css/responsive.css?v=5">
+  <link rel="stylesheet" href="css/workouts.css?v=5">
   <link rel="stylesheet" href="css/buy.css?v=2">
   <script src="/js/analytics.js?v=1" defer></script>
 </head>
@@ -62,7 +62,6 @@
     <div class="nav-links">
       <a href="/programs/" class="nav-link">Программы</a>
       <a href="#about" class="nav-link">Обо мне</a>
-      <a href="#results" class="nav-link">Результаты</a>
       <a href="#services" class="nav-link">Сопровождение</a>
       <a href="#faq" class="nav-link">FAQ</a>
     </div>
@@ -84,7 +83,6 @@
     <a href="/programs/" class="mobile-nav-link">Программы</a>
     <a href="/free/" class="mobile-nav-link">Бесплатный урок</a>
     <a href="#about" class="mobile-nav-link">Обо мне</a>
-    <a href="#results" class="mobile-nav-link">Результаты</a>
     <a href="#services" class="mobile-nav-link">Сопровождение</a>
     <a href="#faq" class="mobile-nav-link">FAQ</a>
     <a href="/login/" class="mobile-nav-link mobile-nav-link--small">Войти в кабинет</a>
@@ -106,8 +104,8 @@
 
       <div class="hero-copy">
         <p class="hero-eyebrow hero-fade">Нутрициолог · персональный тренер</p>
-        <h1 class="hero-title hero-fade" id="hero-title">Тренируйся дома вместе с&nbsp;Лилей</h1>
-        <p class="hero-subtitle hero-fade">Видеопрограммы с&nbsp;разовой оплатой. Занимайся в&nbsp;своём ритме, доступ остаётся навсегда.</p>
+        <h1 class="hero-title hero-fade" id="hero-title">20&nbsp;минут в&nbsp;день дома: сильное тело без&nbsp;зала и&nbsp;диет</h1>
+        <p class="hero-subtitle hero-fade">Видеопрограммы Лили Лесик, тренера Gray Institute и&nbsp;нутрициолога. За&nbsp;5&nbsp;лет 360+ клиенток.</p>
       </div>
 
       <div class="hero-offer hero-fade">
@@ -122,7 +120,85 @@
 
 
   <!-- ========================================
-       2. ДОВЕРИЕ: обо мне, сертификаты, цифры
+       2. ТЕБЕ СЮДА, ЕСЛИ: узнаваемые ситуации
+       ======================================== -->
+  <section id="for-you" class="section for-you" aria-labelledby="for-you-title">
+    <div class="container container--narrow">
+      <div class="section-header reveal">
+        <h2 class="section-title" id="for-you-title">Тебе сюда, если</h2>
+      </div>
+
+      <ul class="line-list reveal">
+        <li>в&nbsp;зал не&nbsp;вырваться, а&nbsp;заниматься хочется регулярно</li>
+        <li>после родов живот и&nbsp;осанка так и&nbsp;не&nbsp;вернулись</li>
+        <li>начинала много раз и&nbsp;бросала через пару недель</li>
+        <li>от&nbsp;сидячей работы устают спина и&nbsp;шея</li>
+      </ul>
+
+      <a href="#programs" class="text-link line-list-link">Выбрать программу <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       3. ПРОГРАММЫ: карточки рендерит main.js из /api/catalog,
+       «Купить» открывает покупку (js/buy.js)
+       ======================================== -->
+  <section id="programs" class="section programs" aria-labelledby="programs-title">
+    <span id="workouts" class="anchor-alias" aria-hidden="true"></span>
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Видеопрограммы</p>
+        <h2 class="section-title" id="programs-title">Программы для дома</h2>
+      </div>
+    </div>
+
+    <div class="scroll-peek programs-peek reveal">
+      <div class="programs-list horizontal-scroll" data-programs data-locale="ru" aria-live="polite"></div>
+    </div>
+
+    <div class="container">
+      <div class="programs-links">
+        <a href="/programs/" class="text-link programs-all">Все программы <span aria-hidden="true">→</span></a>
+        <a href="/login/" class="text-link programs-login">Уже покупала? Войти в&nbsp;кабинет</a>
+      </div>
+      <p class="programs-note">Оплата картой, Apple Pay или Google Pay. Вход по&nbsp;коду из&nbsp;письма, без&nbsp;пароля. Доступ навсегда.</p>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       4. КАК ПРОХОДИТ ТРЕНИРОВКА: формат
+       ======================================== -->
+  <section id="how" class="section how" aria-labelledby="how-title">
+    <div class="container container--narrow">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Формат</p>
+        <h2 class="section-title" id="how-title">Как проходит тренировка</h2>
+      </div>
+
+      <ul class="how-steps">
+        <li class="how-step reveal">
+          <h3 class="how-title">20–25 минут</h3>
+          <p class="how-text">Одно видео от&nbsp;разминки до&nbsp;заминки. Включила и&nbsp;повторяешь за&nbsp;Лилей.</p>
+        </li>
+        <li class="how-step reveal reveal-delay-1">
+          <h3 class="how-title">Дома, с&nbsp;тем, что есть</h3>
+          <p class="how-text">Коврик и&nbsp;пара гантелей. Что нужно для программы, написано на&nbsp;её&nbsp;странице.</p>
+        </li>
+        <li class="how-step reveal reveal-delay-2">
+          <h3 class="how-title">В&nbsp;своём темпе</h3>
+          <p class="how-text">Ставь на&nbsp;паузу, возвращайся к&nbsp;сложным местам. Кабинет запомнит, где ты&nbsp;остановилась.</p>
+        </li>
+      </ul>
+
+      <a href="/programs/" class="text-link how-more">Посмотреть начало тренировки бесплатно <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       5. ДОВЕРИЕ: обо мне, сертификаты, цифры
        ======================================== -->
   <section id="about" class="section about">
     <span id="philosophy" class="anchor-alias" aria-hidden="true"></span>
@@ -161,68 +237,10 @@
 
 
   <!-- ========================================
-       3. ПРОГРАММЫ: карточки рендерит main.js из /api/catalog,
-       «Купить» открывает покупку (js/buy.js)
+       6. РЕЗУЛЬТАТЫ
        ======================================== -->
-  <section id="programs" class="section programs" aria-labelledby="programs-title">
-    <span id="workouts" class="anchor-alias" aria-hidden="true"></span>
-    <div class="container">
-      <div class="section-header reveal">
-        <p class="section-eyebrow">Видеопрограммы</p>
-        <h2 class="section-title" id="programs-title">Выбери программу</h2>
-      </div>
-    </div>
-
-    <div class="scroll-peek programs-peek reveal">
-      <div class="programs-list horizontal-scroll" data-programs data-locale="ru" aria-live="polite"></div>
-    </div>
-
-    <div class="container">
-      <a href="/programs/" class="text-link programs-all">Все программы <span aria-hidden="true">→</span></a>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       4. КАК УСТРОЕН КАБИНЕТ: 3 шага
-       ======================================== -->
-  <section id="how" class="section how" aria-labelledby="how-title">
-    <div class="container container--narrow">
-      <div class="section-header reveal">
-        <p class="section-eyebrow">Личный кабинет</p>
-        <h2 class="section-title" id="how-title">Как это работает</h2>
-      </div>
-
-      <ol class="how-steps">
-        <li class="how-step reveal">
-          <div>
-            <h3 class="how-title">Оплата</h3>
-            <p class="how-text">Картой, Apple Pay или Google Pay. Регистрация не&nbsp;нужна, только email.</p>
-          </div>
-        </li>
-        <li class="how-step reveal reveal-delay-1">
-          <div>
-            <h3 class="how-title">Вход без пароля</h3>
-            <p class="how-text">На&nbsp;почту придёт код из&nbsp;6&nbsp;цифр. Вводишь его и&nbsp;сразу попадаешь в&nbsp;кабинет.</p>
-          </div>
-        </li>
-        <li class="how-step reveal reveal-delay-2">
-          <div>
-            <h3 class="how-title">Видео навсегда</h3>
-            <p class="how-text">Программа остаётся в&nbsp;кабинете навсегда. Смотри с&nbsp;телефона, планшета или компьютера.</p>
-          </div>
-        </li>
-      </ol>
-
-      <a href="/login/" class="text-link how-login">Уже покупала? Войти в&nbsp;кабинет</a>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       5. РЕЗУЛЬТАТЫ
-       ======================================== -->
-  <section id="results" class="section results" aria-labelledby="results-title">
+  <!-- скрыто до настоящих отзывов, см. docs/PLAN-MARKETING.md, раздел 4 -->
+  <section id="results" hidden class="section results" aria-labelledby="results-title">
     <div class="container">
       <div class="section-header reveal">
         <p class="section-eyebrow">Результаты</p>
@@ -275,7 +293,7 @@
 
 
   <!-- ========================================
-       6. БЕСПЛАТНЫЙ УРОК
+       7. БЕСПЛАТНЫЙ УРОК
        ======================================== -->
   <section id="free" class="section free-lesson" aria-labelledby="free-title">
     <div class="container">
@@ -302,13 +320,13 @@
 
 
   <!-- ========================================
-       7. ПЕРСОНАЛЬНОЕ СОПРОВОЖДЕНИЕ (тарифы)
+       8. ПЕРСОНАЛЬНОЕ СОПРОВОЖДЕНИЕ (тарифы)
        ======================================== -->
   <section id="services" class="section section--dark services" aria-labelledby="services-title">
     <div class="container">
       <div class="section-header reveal">
         <p class="section-eyebrow">Персональное сопровождение</p>
-        <h2 class="section-title" id="services-title">Выбери свой формат</h2>
+        <h2 class="section-title" id="services-title">Работа с&nbsp;Лилей лично</h2>
         <p class="services-intro">Питание, тренировки и&nbsp;режим под твою жизнь: план за&nbsp;72&nbsp;часа, еженедельные корректировки, поддержка в&nbsp;Telegram.</p>
       </div>
     </div>
@@ -380,7 +398,7 @@
 
 
   <!-- ========================================
-       8. FAQ
+       9. FAQ
        ======================================== -->
   <section id="faq" class="section faq" aria-labelledby="faq-title">
     <div class="container container--narrow">
@@ -423,6 +441,46 @@
 
         <div class="faq-item">
           <button class="faq-question" type="button" aria-expanded="false">
+            <span>Подойдёт ли новичку?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Да. Лиля показывает технику и&nbsp;варианты полегче. Начни с&nbsp;лёгких гантелей или без них и&nbsp;ставь видео на&nbsp;паузу, когда нужно отдохнуть.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Можно ли заниматься после родов, кесарева или при диастазе?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Сначала получи разрешение врача. При диастазе начни с&nbsp;<a href="/free/">бесплатного урока</a> и&nbsp;<a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F%21%20%D0%9F%D0%BE%D0%B4%D1%81%D0%BA%D0%B0%D0%B6%D0%B8%2C%20%D1%81%20%D0%BA%D0%B0%D0%BA%D0%BE%D0%B9%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B%20%D0%BD%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D0%BF%D1%80%D0%B8%20%D0%B4%D0%B8%D0%B0%D1%81%D1%82%D0%B0%D0%B7%D0%B5%3F" target="_blank" rel="noopener">напиши Лиле</a>, она подскажет, с&nbsp;какой программы начать. Тренировки не&nbsp;заменяют лечение.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Сколько времени нужно?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>20–25 минут на&nbsp;тренировку. Достаточно трёх раз в&nbsp;неделю.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Нужен ли инвентарь?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Коврик и&nbsp;пара гантелей. Точный список есть на&nbsp;странице каждой программы.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>Как проходит сопровождение: онлайн или офлайн?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
@@ -438,36 +496,6 @@
           </button>
           <div class="faq-answer">
             <p>Минимум месяц. Чаще всего работаем 3–6 месяцев, чтобы результат закрепился. Самочувствие обычно меняется через 2–3 недели, тело через 4–8 недель. У&nbsp;всех по-разному.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>Есть ли противопоказания?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>Я работаю со&nbsp;взрослыми без острых медицинских состояний. Если есть хронические заболевания, обсудим их до&nbsp;начала работы. Мои консультации не&nbsp;заменяют лечение. При серьёзных диагнозах работаю вместе с&nbsp;твоим врачом.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>Как оплатить сопровождение?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>Онлайн-переводом в&nbsp;EUR, USD или RUB. Реквизиты пришлю в&nbsp;Telegram.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>Чем ты отличаешься от других тренеров и нутрициологов?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>Я смотрю на&nbsp;питание, тренировки, сон, стресс и&nbsp;режим дня вместе. План подстраиваю под твоё расписание и&nbsp;меняю его, когда меняется жизнь.</p>
           </div>
         </div>
 

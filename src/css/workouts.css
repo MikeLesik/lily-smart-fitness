@@ -39,7 +39,7 @@
 }
 
 .program-card-cover {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   background: var(--blush);
   overflow: hidden;
 }
@@ -130,8 +130,19 @@
   min-width: 7.5rem;
 }
 
-.programs-all {
-  margin-top: 0.5rem;
+/* Под карточками: «Все программы» и вход в одну строку, ниже строка про оплату */
+.programs-links {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.programs-note {
+  max-width: 34rem;
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 
 @media (min-width: 1024px) {
@@ -146,10 +157,6 @@
 
   .programs-peek::after {
     display: none;
-  }
-
-  .program-card-cover {
-    aspect-ratio: 4 / 3;
   }
 
   .program-card-body {

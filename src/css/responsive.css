@@ -101,7 +101,8 @@
     min-width: 15rem;
   }
 
-  .how-step {
+  .how-step,
+  .line-list li {
     padding: var(--space-md) 0;
   }
 

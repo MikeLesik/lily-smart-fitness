@@ -86,13 +86,14 @@
 }
 
 /* Чередование фона: white / cream, сопровождение тёмное */
-.home .about,
+.home .for-you,
 .home .how,
 .home .free-lesson {
   background-color: var(--white);
 }
 
 .home .programs,
+.home .about,
 .home .results,
 .home .faq {
   background-color: var(--cream);

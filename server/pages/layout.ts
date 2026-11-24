@@ -5,12 +5,12 @@ import { SITE, STRINGS, telegramLink, type Lang } from './i18n';
 export const ASSET_VERSIONS = {
   variables: 3,
   reset: 2,
-  components: 4,
+  components: 5,
   cabinet: 7,
   buyCss: 2,
-  programsCss: 2,
+  programsCss: 3,
   buyJs: 4,
-  programJs: 2,
+  programJs: 3,
   analyticsJs: 1,
 };
 
@@ -28,7 +28,7 @@ export interface DocumentOptions {
   structuredData: unknown;
   current: 'programs' | 'program';
   body: string;
-  /** Подключать program.js (превью-плеер). */
+  /** Подключать program.js (превью-плеер и липкая полоса покупки). */
   withPlayer?: boolean;
   /** Текст для ссылки Telegram в подвале. */
   telegramText: string;

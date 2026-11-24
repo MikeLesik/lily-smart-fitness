@@ -393,7 +393,7 @@ a.prg-item:hover .prg-item-title {
    ============================================ */
 
 .prg-buy-box {
-  padding: 1.75rem 1.25rem 1.5rem;
+  padding: 1.5rem 1.25rem 1.25rem;
   background: var(--white);
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -403,7 +403,7 @@ a.prg-item:hover .prg-item-title {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.125rem;
-  margin: 0.75rem 0 1.25rem;
+  margin: 0.375rem 0 0.875rem;
 }
 
 .prg-price--big .prg-price-value {
@@ -412,8 +412,8 @@ a.prg-item:hover .prg-item-title {
 }
 
 .prg-list--compact {
-  gap: 0.5rem;
-  margin: 0 0 1.5rem;
+  gap: 0.375rem;
+  margin: 0 0 1.25rem;
 }
 
 .prg-list--compact li {
@@ -422,6 +422,128 @@ a.prg-item:hover .prg-item-title {
 
 .prg-bundle-offer {
   margin-top: 0.25rem;
+}
+
+/* Оплата из России: вторая кнопка под «Купить», подпись под ней */
+.prg-pay-note {
+  margin-top: 0.5rem;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.prg-buy-box .cab-secondary {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  letter-spacing: 0.14em;
+}
+
+.prg-buy-box .prg-pay-note + .prg-note {
+  margin-top: 0.5rem;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+/* ============================================
+   О Лиле: фото слева, текст справа (как «Обо мне» на главной)
+   ============================================ */
+
+.prg-about-box {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.prg-about-photo {
+  display: block;
+  aspect-ratio: 4 / 5;
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--blush);
+}
+
+.prg-about-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.prg-about .prg-h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: 0.375rem;
+}
+
+.prg-about-text {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.prg-about .cab-link {
+  margin-top: 0.125rem;
+}
+
+/* ============================================
+   Липкая полоса покупки (только телефон)
+   ============================================ */
+
+.prg-sticky {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.625rem var(--container-padding) calc(0.625rem + env(safe-area-inset-bottom));
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform var(--transition-fast), visibility 0s linear 0.3s;
+}
+
+.prg-sticky.is-shown {
+  transform: none;
+  visibility: visible;
+  transition: transform var(--transition-fast), visibility 0s;
+}
+
+.prg-sticky-price {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.prg-sticky-title {
+  overflow: hidden;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.prg-sticky .prg-price-value {
+  font-size: 1.25rem;
+}
+
+.prg-body .prg-sticky .btn-primary {
+  flex: 0 0 auto;
+  min-width: 9.5rem;
+  min-height: 3rem;
+}
+
+/* Место под полосой, чтобы она не закрывала подвал */
+.prg-body:has(.prg-sticky) {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
 }
 
 /* ============================================
@@ -667,6 +789,20 @@ a.prg-item:hover .prg-item-title {
    ============================================ */
 
 @media (min-width: 768px) {
+  .prg-sticky {
+    display: none;
+  }
+
+  .prg-body:has(.prg-sticky) {
+    padding-bottom: 0;
+  }
+
+  .prg-about-box {
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--space-lg);
+    max-width: 44rem;
+  }
+
   .prg-actions {
     flex-direction: row;
     flex-wrap: wrap;
@@ -785,7 +921,9 @@ a.prg-item:hover .prg-item-title {
   }
 
   .prg-faq-item summary::after,
-  .prg-play-chip {
+  .prg-play-chip,
+  .prg-sticky,
+  .prg-sticky.is-shown {
     transition: none;
   }
 }

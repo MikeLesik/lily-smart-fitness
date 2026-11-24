@@ -89,7 +89,7 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
     `<div class="prg-hero-offer">` +
     `<p class="prg-meta">${esc(countMeta(cat, lang) + SEP + t.forever)}</p>` +
     `<p class="prg-price"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(t.oneTime)}</span></p>` +
-    `<div class="prg-actions">` +
+    `<div class="prg-actions" data-buy-main>` +
     buyButton(cat.slug, title, price, fmt(t.buy, { price })) +
     (preview ? `<a class="cab-secondary" href="#preview" data-preview-play>${esc(t.watchPreview)}</a>` : '') +
     `</div>` +
@@ -174,12 +174,37 @@ function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo |
   );
 }
 
+function aboutSection(lang: Lang): string {
+  const t = STRINGS[lang];
+  return (
+    `<section class="prg-section prg-about" aria-labelledby="prg-about-title">` +
+    `<div class="prg-about-box">` +
+    picture({
+      src: '/assets/images/lily-about-480.jpg',
+      alt: t.aboutAlt,
+      width: 480,
+      height: 600,
+      className: 'prg-about-img',
+      pictureClass: 'prg-about-photo',
+    }) +
+    `<div class="prg-about-body">` +
+    `<h2 class="prg-h2" id="prg-about-title">${esc(t.aboutTitle)}</h2>` +
+    `<p class="prg-about-text">${esc(t.aboutText)}</p>` +
+    `<a class="cab-link" href="${t.prefix}/#about">${esc(t.aboutLink)}</a>` +
+    `</div>` +
+    `</div>` +
+    `</section>`
+  );
+}
+
 function buySection(cat: CatalogCategory, lang: Lang): string {
   const t = STRINGS[lang];
   const title = loc(cat.title, lang);
   const price = formatPrice(cat.price, lang);
   const deal = bundleDeal(lang);
-  const russia = `<a href="${esc(telegramLink(fmt(t.telegramRussia, { title })))}" target="_blank" rel="noopener">${esc(t.russiaLink)}</a>`;
+  const russia =
+    `<a class="cab-secondary" href="${esc(telegramLink(fmt(t.telegramRussia, { title })))}" target="_blank" rel="noopener" data-russia-pay>` +
+    `${esc(t.russiaPay)}</a>`;
   const bundleTitle = deal ? loc(deal.bundle.title, lang) || t.bundleTitle : '';
   return (
     `<section class="prg-section prg-buy" id="buy" aria-labelledby="prg-buy-title">` +
@@ -187,13 +212,27 @@ function buySection(cat: CatalogCategory, lang: Lang): string {
     `<h2 class="prg-h2" id="prg-buy-title">${esc(t.buyTitle)}</h2>` +
     `<p class="prg-price prg-price--big"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(fmt(t.buyFor, { title }))}</span></p>` +
     `<ul class="prg-list prg-list--compact">${t.buyPoints.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` +
-    `<div class="prg-actions">${buyButton(cat.slug, title, price, fmt(t.buy, { price }))}</div>` +
-    `<p class="prg-note">${esc(t.promoNote)} ${fmt(esc(t.russiaNote), { link: russia })}</p>` +
+    `<div class="prg-actions" data-buy-main>${buyButton(cat.slug, title, price, fmt(t.buy, { price }))}${russia}</div>` +
+    `<p class="prg-pay-note">${esc(t.russiaPayNote)}</p>` +
+    `<p class="prg-note">${esc(t.promoNote)}</p>` +
     (deal && deal.sum
       ? `<p class="prg-bundle-offer">${buyButton(deal.bundle.slug, bundleTitle, deal.price, fmt(t.bundleOffer, { price: deal.price, sum: deal.sum }), 'cab-link')}</p>`
       : '') +
     `</div>` +
     `</section>`
+  );
+}
+
+/** Липкая полоса покупки на телефоне: program.js показывает её, когда обе главные кнопки «Купить» вне экрана. */
+function stickyBuy(cat: CatalogCategory, lang: Lang): string {
+  const t = STRINGS[lang];
+  const title = loc(cat.title, lang);
+  const price = formatPrice(cat.price, lang);
+  return (
+    `<div class="prg-sticky" data-sticky-buy role="region" aria-label="${esc(t.stickyLabel)}">` +
+    `<p class="prg-sticky-price"><span class="prg-sticky-title">${esc(title)}</span><span class="prg-price-value">${esc(price)}</span></p>` +
+    buyButton(cat.slug, title, price, t.buyShort) +
+    `</div>`
   );
 }
 
@@ -241,8 +280,10 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
     forWhomSection(cat, lang) +
     insideSection(cat, lang, preview) +
     `</div>` +
+    aboutSection(lang) +
     buySection(cat, lang) +
-    faqSection(cat, lang);
+    faqSection(cat, lang) +
+    (cat.free || !cat.price ? '' : stickyBuy(cat, lang));
 
   return renderDocument({
     lang,
@@ -273,7 +314,7 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
     },
     current: 'program',
     body,
-    withPlayer: Boolean(preview),
+    withPlayer: true,
     telegramText: fmt(t.telegramQuestion, { title }),
   });
 }

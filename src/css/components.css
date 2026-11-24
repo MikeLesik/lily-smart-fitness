@@ -550,16 +550,24 @@
 }
 
 /* ===========================================
-   4. КАК ЭТО РАБОТАЕТ (3 шага)
+   2. ТЕБЕ СЮДА, ЕСЛИ и 4. КАК ПРОХОДИТ ТРЕНИРОВКА:
+   списки с тонкими линиями, без номеров
    =========================================== */
 
-.how-step {
+.how-step,
+.line-list li {
   padding: 1rem 0;
   border-top: 1px solid var(--border);
 }
 
-.how-step:last-child {
+.how-step:last-child,
+.line-list li:last-child {
   border-bottom: 1px solid var(--border);
+}
+
+.line-list li {
+  font-size: var(--text-base);
+  line-height: 1.5;
 }
 
 .how-title {
@@ -576,7 +584,8 @@
   color: var(--text-muted);
 }
 
-.how-login {
+.how-more,
+.line-list-link {
   margin-top: 0.75rem;
 }
 
@@ -849,6 +858,11 @@
   line-height: 1.25;
   color: var(--warm-black);
   cursor: pointer;
+}
+
+/* Главная: 9 вопросов в свёрнутом виде помещаются в экран на 360 */
+.home .faq-question {
+  padding: 0.5rem 0;
 }
 
 .faq-toggle {

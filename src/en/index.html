@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Lily · Home workout programs and personal coaching</title>
-  <meta name="description" content="Video workouts by Lily, a nutritionist and personal trainer: programs from €25 with a one-time payment and lifetime access. A free lesson and personal coaching.">
+  <title>Lily · 20 minutes a day at home: a strong body without a gym or diets</title>
+  <meta name="description" content="20 minutes a day at home: a strong body without a gym or diets. Video programs by Lily Lesik, Gray Institute trainer and nutritionist, from €25 with lifetime access. A free lesson.">
   <link rel="canonical" href="https://lily.coach/en/">
   <link rel="alternate" hreflang="ru" href="https://lily.coach/">
   <link rel="alternate" hreflang="en" href="https://lily.coach/en/">
@@ -14,8 +14,8 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Lily Smart Fitness">
   <meta property="og:url" content="https://lily.coach/en/">
-  <meta property="og:title" content="Lily · Home workout programs and personal coaching">
-  <meta property="og:description" content="Train at home with Lily: video programs from €25, pay once, keep access forever.">
+  <meta property="og:title" content="20 minutes a day at home: a strong body without a gym or diets">
+  <meta property="og:description" content="Video programs by Lily Lesik, Gray Institute trainer and nutritionist. From €25, pay once, keep access forever.">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="ru_RU">
   <meta property="og:image" content="https://lily.coach/assets/images/og-image.jpg">
@@ -39,12 +39,12 @@
   <!-- Styles -->
   <link rel="stylesheet" href="../css/variables.css?v=3">
   <link rel="stylesheet" href="../css/reset.css?v=2">
-  <link rel="stylesheet" href="../css/layout.css?v=3">
+  <link rel="stylesheet" href="../css/layout.css?v=4">
   <link rel="stylesheet" href="../css/hero.css?v=3">
-  <link rel="stylesheet" href="../css/components.css?v=4">
+  <link rel="stylesheet" href="../css/components.css?v=5">
   <link rel="stylesheet" href="../css/animations.css?v=3">
-  <link rel="stylesheet" href="../css/responsive.css?v=4">
-  <link rel="stylesheet" href="../css/workouts.css?v=4">
+  <link rel="stylesheet" href="../css/responsive.css?v=5">
+  <link rel="stylesheet" href="../css/workouts.css?v=5">
   <link rel="stylesheet" href="../css/buy.css?v=2">
   <script src="/js/analytics.js?v=1" defer></script>
 </head>
@@ -62,7 +62,6 @@
     <div class="nav-links">
       <a href="/en/programs/" class="nav-link">Programs</a>
       <a href="#about" class="nav-link">About</a>
-      <a href="#results" class="nav-link">Results</a>
       <a href="#services" class="nav-link">Coaching</a>
       <a href="#faq" class="nav-link">FAQ</a>
     </div>
@@ -84,7 +83,6 @@
     <a href="/en/programs/" class="mobile-nav-link">Programs</a>
     <a href="/en/free/" class="mobile-nav-link">Free lesson</a>
     <a href="#about" class="mobile-nav-link">About</a>
-    <a href="#results" class="mobile-nav-link">Results</a>
     <a href="#services" class="mobile-nav-link">Coaching</a>
     <a href="#faq" class="mobile-nav-link">FAQ</a>
     <a href="/en/login/" class="mobile-nav-link mobile-nav-link--small">Sign in to your account</a>
@@ -106,8 +104,8 @@
 
       <div class="hero-copy">
         <p class="hero-eyebrow hero-fade">Nutritionist · personal trainer</p>
-        <h1 class="hero-title hero-fade" id="hero-title">Train at home with&nbsp;Lily</h1>
-        <p class="hero-subtitle hero-fade">Video programs with a&nbsp;one-time payment. Train at your own pace and keep access forever.</p>
+        <h1 class="hero-title hero-fade" id="hero-title">20&nbsp;minutes a&nbsp;day at&nbsp;home: a&nbsp;strong body without a&nbsp;gym or&nbsp;diets</h1>
+        <p class="hero-subtitle hero-fade">Video programs by Lily Lesik, Gray Institute trainer and nutritionist. 360+ clients in&nbsp;5&nbsp;years.</p>
       </div>
 
       <div class="hero-offer hero-fade">
@@ -122,7 +120,85 @@
 
 
   <!-- ========================================
-       2. TRUST: about, credentials, numbers
+       2. THIS IS FOR YOU IF: familiar situations
+       ======================================== -->
+  <section id="for-you" class="section for-you" aria-labelledby="for-you-title">
+    <div class="container container--narrow">
+      <div class="section-header reveal">
+        <h2 class="section-title" id="for-you-title">This is for you if</h2>
+      </div>
+
+      <ul class="line-list reveal">
+        <li>you can't get to the gym but want to train regularly</li>
+        <li>your belly and posture haven't come back since giving birth</li>
+        <li>you've started many times and quit after a&nbsp;couple of weeks</li>
+        <li>your back and neck are tired from sitting at a&nbsp;desk</li>
+      </ul>
+
+      <a href="#programs" class="text-link line-list-link">Choose a program <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       3. PROGRAMS: cards rendered by main.js from /api/catalog,
+       Buy opens the purchase dialog (js/buy.js)
+       ======================================== -->
+  <section id="programs" class="section programs" aria-labelledby="programs-title">
+    <span id="workouts" class="anchor-alias" aria-hidden="true"></span>
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Video programs</p>
+        <h2 class="section-title" id="programs-title">Home workout programs</h2>
+      </div>
+    </div>
+
+    <div class="scroll-peek programs-peek reveal">
+      <div class="programs-list horizontal-scroll" data-programs data-locale="en" aria-live="polite"></div>
+    </div>
+
+    <div class="container">
+      <div class="programs-links">
+        <a href="/en/programs/" class="text-link programs-all">All programs <span aria-hidden="true">→</span></a>
+        <a href="/en/login/" class="text-link programs-login">Already bought? Sign in</a>
+      </div>
+      <p class="programs-note">Pay by card, Apple Pay or Google Pay. Sign in with a&nbsp;code from your email, no password. Access forever.</p>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       4. WHAT A WORKOUT LOOKS LIKE: format
+       ======================================== -->
+  <section id="how" class="section how" aria-labelledby="how-title">
+    <div class="container container--narrow">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Format</p>
+        <h2 class="section-title" id="how-title">What a workout looks like</h2>
+      </div>
+
+      <ul class="how-steps">
+        <li class="how-step reveal">
+          <h3 class="how-title">20–25 minutes</h3>
+          <p class="how-text">One video from warm-up to cool-down. Press play and follow along with Lily.</p>
+        </li>
+        <li class="how-step reveal reveal-delay-1">
+          <h3 class="how-title">At home, with what you have</h3>
+          <p class="how-text">A mat and a&nbsp;pair of dumbbells. Each program's page lists what you need.</p>
+        </li>
+        <li class="how-step reveal reveal-delay-2">
+          <h3 class="how-title">At your own pace</h3>
+          <p class="how-text">Pause, go back to the hard parts. Your account remembers where you stopped.</p>
+        </li>
+      </ul>
+
+      <a href="/en/programs/" class="text-link how-more">Watch the start of a&nbsp;workout for free <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       5. TRUST: about, credentials, numbers
        ======================================== -->
   <section id="about" class="section about">
     <span id="philosophy" class="anchor-alias" aria-hidden="true"></span>
@@ -161,68 +237,10 @@
 
 
   <!-- ========================================
-       3. PROGRAMS: cards rendered by main.js from /api/catalog,
-       Buy opens the purchase dialog (js/buy.js)
+       6. RESULTS
        ======================================== -->
-  <section id="programs" class="section programs" aria-labelledby="programs-title">
-    <span id="workouts" class="anchor-alias" aria-hidden="true"></span>
-    <div class="container">
-      <div class="section-header reveal">
-        <p class="section-eyebrow">Video programs</p>
-        <h2 class="section-title" id="programs-title">Choose a program</h2>
-      </div>
-    </div>
-
-    <div class="scroll-peek programs-peek reveal">
-      <div class="programs-list horizontal-scroll" data-programs data-locale="en" aria-live="polite"></div>
-    </div>
-
-    <div class="container">
-      <a href="/en/programs/" class="text-link programs-all">All programs <span aria-hidden="true">→</span></a>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       4. HOW THE ACCOUNT WORKS: 3 steps
-       ======================================== -->
-  <section id="how" class="section how" aria-labelledby="how-title">
-    <div class="container container--narrow">
-      <div class="section-header reveal">
-        <p class="section-eyebrow">Your account</p>
-        <h2 class="section-title" id="how-title">How it works</h2>
-      </div>
-
-      <ol class="how-steps">
-        <li class="how-step reveal">
-          <div>
-            <h3 class="how-title">Payment</h3>
-            <p class="how-text">Card, Apple Pay or Google Pay. No sign-up needed, just your email.</p>
-          </div>
-        </li>
-        <li class="how-step reveal reveal-delay-1">
-          <div>
-            <h3 class="how-title">Sign in without a password</h3>
-            <p class="how-text">You get a 6-digit code by email. Enter it and you are in your account.</p>
-          </div>
-        </li>
-        <li class="how-step reveal reveal-delay-2">
-          <div>
-            <h3 class="how-title">Videos forever</h3>
-            <p class="how-text">The program stays in your account forever. Watch on your phone, tablet or computer.</p>
-          </div>
-        </li>
-      </ol>
-
-      <a href="/en/login/" class="text-link how-login">Already bought? Sign in</a>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       5. RESULTS
-       ======================================== -->
-  <section id="results" class="section results" aria-labelledby="results-title">
+  <!-- hidden until real testimonials arrive, see docs/PLAN-MARKETING.md, section 4 -->
+  <section id="results" hidden class="section results" aria-labelledby="results-title">
     <div class="container">
       <div class="section-header reveal">
         <p class="section-eyebrow">Results</p>
@@ -275,7 +293,7 @@
 
 
   <!-- ========================================
-       6. FREE LESSON
+       7. FREE LESSON
        ======================================== -->
   <section id="free" class="section free-lesson" aria-labelledby="free-title">
     <div class="container">
@@ -302,13 +320,13 @@
 
 
   <!-- ========================================
-       7. PERSONAL COACHING (plans)
+       8. PERSONAL COACHING (plans)
        ======================================== -->
   <section id="services" class="section section--dark services" aria-labelledby="services-title">
     <div class="container">
       <div class="section-header reveal">
         <p class="section-eyebrow">Personal coaching</p>
-        <h2 class="section-title" id="services-title">Choose your format</h2>
+        <h2 class="section-title" id="services-title">Work with Lily one-on-one</h2>
         <p class="services-intro">Nutrition, training and routine built around your life: a&nbsp;plan within 72&nbsp;hours, weekly adjustments, Telegram support.</p>
       </div>
     </div>
@@ -380,13 +398,13 @@
 
 
   <!-- ========================================
-       8. FAQ
+       9. FAQ
        ======================================== -->
   <section id="faq" class="section faq" aria-labelledby="faq-title">
     <div class="container container--narrow">
       <div class="section-header reveal">
         <p class="section-eyebrow">Questions</p>
-        <h2 class="section-title" id="faq-title">Frequently Asked Questions</h2>
+        <h2 class="section-title" id="faq-title">Common questions</h2>
       </div>
 
       <div class="faq-list reveal">
@@ -423,6 +441,46 @@
 
         <div class="faq-item">
           <button class="faq-question" type="button" aria-expanded="false">
+            <span>Is it suitable for beginners?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes. Lily shows the technique and easier options. Start with light dumbbells or none at all, and pause the video whenever you need a rest.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Can I train after giving birth, a C-section or with diastasis?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Get your doctor's approval first. With diastasis, start with the <a href="/en/free/">free lesson</a> and <a href="https://t.me/LilyLesik?text=Hi%20Lily%21%20Which%20program%20should%20I%20start%20with%20if%20I%20have%20diastasis%3F" target="_blank" rel="noopener">message Lily</a>: she will suggest which program to begin with. Workouts do not replace medical treatment.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How much time do I need?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>20–25 minutes per workout. Three times a week is enough.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Do I need equipment?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>A mat and a pair of dumbbells. The exact list is on each program's page.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>How does coaching work: online or in person?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
@@ -438,36 +496,6 @@
           </button>
           <div class="faq-answer">
             <p>At least a month. Most clients stay for 3–6 months so the result lasts. You usually feel different in 2–3 weeks and see changes in 4–8 weeks. Everyone is different.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>Are there any contraindications?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>I work with adults without acute medical conditions. If you have a chronic condition, we discuss it before we start. My consultations do not replace medical treatment. With serious conditions, I work together with your doctor.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>How do I pay for coaching?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>By online transfer in EUR, USD or RUB. I will send the details on Telegram.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
-            <span>What makes you different from other trainers and nutritionists?</span>
-            <span class="faq-toggle" aria-hidden="true">+</span>
-          </button>
-          <div class="faq-answer">
-            <p>I look at food, training, sleep, stress and daily routine together. The plan fits your schedule, and I adjust it when your life changes.</p>
           </div>
         </div>
 

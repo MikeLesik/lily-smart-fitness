@@ -117,6 +117,53 @@ describe('GET /programs/<slug>/', () => {
     expect(html).not.toMatch(/Купить|Для кого|Частые вопросы/);
   });
 
+  it('оплата из России: отдельная кнопка в Telegram Лили на RU и EN, старой строки нет', async () => {
+    for (const [handler, path, label, note] of [
+      [programRu, `/programs/${first.slug}/`, 'Оплатить из России переводом', 'Перевод в рублях. Доступ Лиля откроет вручную.'],
+      [programEn, `/en/programs/${first.slug}/`, 'Pay by transfer from Russia', 'Bank transfer in rubles. Lily will open your access manually.'],
+    ] as const) {
+      const html = await text(page(handler, first.slug, path));
+      const button = html.match(/<a class="cab-secondary" href="([^"]+)" target="_blank" rel="noopener" data-russia-pay>([^<]+)<\/a>/);
+      expect(button, path).not.toBeNull();
+      expect(button![1], path).toMatch(/^https:\/\/t\.me\/LilyLesik\?text=/);
+      expect(button![2], path).toBe(label);
+      expect(html, path).toContain(note);
+      // Кнопка стоит в блоке покупки сразу после «Купить»
+      expect(html, path).toMatch(/<div class="prg-actions" data-buy-main><a class="btn-primary"[^>]*>[^<]+<\/a><a class="cab-secondary"[^>]*data-russia-pay>/);
+      expect(html, path).not.toMatch(/Карта из России|Paying with a Russian card/);
+    }
+  });
+
+  it('блок «О Лиле» с фото и ссылкой на главную, между «Что внутри» и покупкой', async () => {
+    const ru = await text(page(programRu, first.slug, `/programs/${first.slug}/`));
+    expect(ru).toContain('>О Лиле</h2>');
+    expect(ru).toContain('/assets/images/lily-about-480.jpg');
+    expect(ru).toContain('/assets/images/lily-about-480.webp');
+    expect(ru).toContain('href="/#about"');
+    expect(ru.indexOf('prg-inside')).toBeLessThan(ru.indexOf('prg-about'));
+    expect(ru.indexOf('prg-about')).toBeLessThan(ru.indexOf('id="buy"'));
+    const en = await text(page(programEn, first.slug, `/en/programs/${first.slug}/`));
+    expect(en).toContain('>About Lily</h2>');
+    expect(en).toContain('href="/en/#about"');
+  });
+
+  it('липкая полоса покупки с той же кнопкой и program.js', async () => {
+    const html = await text(page(programRu, first.slug, `/programs/${first.slug}/`));
+    const bar = html.match(/<div class="prg-sticky" data-sticky-buy[^>]*>(.*?)<\/div>/s);
+    expect(bar).not.toBeNull();
+    expect(bar![1]).toContain(`data-buy="${first.slug}"`);
+    expect(bar![1]).toContain(euros(first));
+    expect(html).toContain('/js/program.js');
+  });
+
+  it('бесплатная программа: нет кнопки оплаты из России и полосы покупки', async () => {
+    const res = await page(programRu, freeCat.slug, `/programs/${freeCat.slug}/`);
+    const body = await res.text();
+    expect(body).not.toContain('data-russia-pay');
+    expect(body).not.toContain('data-sticky-buy');
+    expect(body).not.toContain('t.me/LilyLesik');
+  });
+
   it('в HTML нет идентификаторов видео в хостинге', async () => {
     for (const c of paid) {
       for (const [handler, path] of [

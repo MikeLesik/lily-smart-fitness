@@ -1,5 +1,6 @@
 /* ============================================
-   PROGRAM — превью-плеер на странице /programs/<slug>/.
+   PROGRAM — страница /programs/<slug>/: превью-плеер и липкая полоса покупки.
+   Превью-плеер.
    Нажатие на обложку (или «Смотреть превью») берёт подписанную ссылку
    GET /api/videos/<id>/playback и ставит iframe Cloudflare Stream.
    Тексты сообщений приходят в data-атрибутах (язык страницы).
@@ -75,5 +76,32 @@
   document.addEventListener('click', function (e) {
     var link = e.target.closest && e.target.closest('[data-preview-play]');
     if (link) play();
+  });
+})();
+
+/* Липкая полоса «Купить» на телефоне: видна, только когда на экране нет
+   ни главной кнопки вверху, ни блока покупки внизу. Ширину ≥ 768 px прячет CSS. */
+(function () {
+  'use strict';
+
+  var bar = document.querySelector('[data-sticky-buy]');
+  if (!bar) return;
+  var targets = document.querySelectorAll('[data-buy-main]');
+  if (!targets.length || !('IntersectionObserver' in window)) return;
+
+  var visible = new Map();
+  function update() {
+    var any = false;
+    visible.forEach(function (v) { if (v) any = true; });
+    bar.classList.toggle('is-shown', !any);
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { visible.set(e.target, e.isIntersecting); });
+    update();
+  });
+  Array.prototype.forEach.call(targets, function (el) {
+    visible.set(el, true);
+    io.observe(el);
   });
 })();

@@ -65,9 +65,16 @@ const ru = {
     'Программа откроется сразу после оплаты',
   ],
   promoNote: 'Промокод можно ввести на странице оплаты Stripe.',
-  russiaNote: 'Карта из России? {link}, она откроет доступ вручную.',
-  russiaLink: 'Напиши Лиле',
+  russiaPay: 'Оплатить из России переводом',
+  russiaPayNote: 'Перевод в рублях. Доступ Лиля откроет вручную.',
+  stickyLabel: 'Покупка программы',
   bundleOffer: 'Или все программы за {price} вместо {sum}',
+
+  // О Лиле
+  aboutTitle: 'О Лиле',
+  aboutText: 'Лиля Лесик, персональный тренер (Gray Institute USA, FPA) и сертифицированный нутрициолог. 5+ лет практики, 360+ клиенток.',
+  aboutLink: 'Подробнее о Лиле',
+  aboutAlt: 'Лиля Лесик',
 
   // FAQ
   faqTitle: 'Частые вопросы',
@@ -185,9 +192,15 @@ const en: Strings = {
     'The program opens right after payment',
   ],
   promoNote: 'You can enter a promo code on the Stripe payment page.',
-  russiaNote: 'Paying with a Russian card? {link}, she will open access for you manually.',
-  russiaLink: 'Message Lily',
+  russiaPay: 'Pay by transfer from Russia',
+  russiaPayNote: 'Bank transfer in rubles. Lily will open your access manually.',
+  stickyLabel: 'Buy the program',
   bundleOffer: 'Or get all programs for {price} instead of {sum}',
+
+  aboutTitle: 'About Lily',
+  aboutText: 'Lily Lesik is a personal trainer (Gray Institute USA, FPA) and a certified nutritionist. 5+ years of practice, 360+ clients.',
+  aboutLink: 'More about Lily',
+  aboutAlt: 'Lily Lesik',
 
   faqTitle: 'Questions',
   faq: [
