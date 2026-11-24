@@ -310,14 +310,15 @@ wrangler.toml, package.json
 
 ### Этап 6. Аналитика и админка
 
-Статус: КОД ГОТОВ 24.11.2026, ждёт ключа PostHog (Михаил заводит отдельный личный аккаунт PostHog EU, организация «Lily Coach», проект lily.coach) и проверки админки Михаилом.
+Статус: КОД ГОТОВ 24.11.2026, ждёт проверки админки Михаилом. PostHog: отдельный личный аккаунт Михаила (EU), организация «SportHome», проект lily.coach (id 366465), сохранение IP выключено; ключ в `wrangler.toml`.
 - Админка `/admin/` и `/api/admin/{users,grant,revoke,export}`: только для `ADMIN_EMAILS` (секрет; в Preview: Михаил и Лиля). Выдача доступа по email создаёт пользователя и ручное право (повтор не дублирует), отзыв любого права по id, CSV с BOM для Excel: покупатели (заказы с UTM из метаданных Stripe, сумма, статус, чек) и лиды бесплатного урока (согласие, UTM, язык); защита от формул в CSV.
 - Аналитика без скрипта PostHog и без cookie: `js/analytics.js` на всех страницах шлёт события на `/api/events`, сервер проксирует в PostHog. Гость = анонимный id из хеша IP + браузера с солью дня (меняется ежедневно, на устройстве не хранится, баннер не нужен, персоны не создаются); вошедшая = id пользователя. Отступление от 5.5: `page_view` уходит как стандартный `$pageview`, чтобы работала веб-аналитика PostHog.
 - События: page_view (все страницы), lead_submit и login_code_sent (/free/), login_code_sent и login_success (вход), preview_play (страница программы и кабинет), checkout_start (buy.js перед переходом в Stripe), video_start и video_complete (плеер кабинета: первый play, 90% или конец), purchase с сервера (вебхук или complete, первый раз по сессии: slug, сумма, валюта, язык, id заказа, UTM). Email в PostHog не отправляется.
 - UTM: первое касание в `localStorage.lily_utm` (analytics.js на всех страницах), уходит в лид, заказ и метаданные Stripe; покупателю без UTM записываются UTM покупки.
 - Тесты: 122 (админка: 401/403, регистр email, выдача и отзыв с проверкой видео, повтор, CSV покупателей и лидов, формулы; события: $pageview, анонимный id, id вошедшей, белый список событий и свойств, без ключа ничего не уходит; purchase в PostHog без email; UTM покупателю).
 - Проверено локально: админка (выдача «Утренней зарядки» по email, отзыв, обе выгрузки), `page_view` с UTM уходит на `/api/events`.
-- Осталось: ключ PostHog → `POSTHOG_KEY` в `wrangler.toml` (обе среды), в проекте PostHog включить «Discard client IP data» по желанию; тестовая покупка с UTM на предпросмотре → событие purchase в PostHog и строка в CSV с теми же метками; Михаил проверяет выдачу и отзыв доступа в `/admin/`.
+- Проверено локально с настоящим PostHog: заход на `/programs/zaryadka/?utm_source=instagram&utm_medium=stories&utm_campaign=stage6-test` → `$pageview` и `checkout_start` с этими UTM → тестовая оплата Stripe (песочница, 4242) → `purchase` в PostHog (zaryadka, 25 EUR, те же UTM, тот же distinct_id, что у событий покупательницы) → строка в CSV покупателей с теми же метками и чеком.
+- Осталось Михаилу: войти в https://cabinet.lily-smart-fitness.pages.dev/admin/ своим email, выдать и отозвать доступ тестовому адресу.
 
 - UTM, PostHog, события из 5.5, `purchase` с сервера.
 - `/admin/` и `/api/admin/*`.

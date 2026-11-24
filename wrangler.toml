@@ -18,6 +18,8 @@ migrations_dir = "migrations"
 [vars]
 APP_ENV = "preview"
 POSTHOG_HOST = "https://eu.i.posthog.com"
+# Публичный ключ проекта PostHog lily.coach (EU). События помечаются environment = APP_ENV.
+POSTHOG_KEY = "phc_ud66dPVpqeFtz4M3mo8PSEm7qA8kBgDfQS9bdxwMenqu"
 EMAIL_FROM = "Lily <hello@lily.coach>"
 TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"
 STREAM_CUSTOMER_CODE = "7q5xll4rf7nzc3q6"
@@ -35,6 +37,8 @@ migrations_dir = "migrations"
 [env.production.vars]
 APP_ENV = "production"
 POSTHOG_HOST = "https://eu.i.posthog.com"
+# Публичный ключ проекта PostHog lily.coach (EU). События помечаются environment = APP_ENV.
+POSTHOG_KEY = "phc_ud66dPVpqeFtz4M3mo8PSEm7qA8kBgDfQS9bdxwMenqu"
 EMAIL_FROM = "Lily <hello@lily.coach>"
 TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"
 STREAM_CUSTOMER_CODE = "7q5xll4rf7nzc3q6"
