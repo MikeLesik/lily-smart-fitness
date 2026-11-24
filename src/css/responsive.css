@@ -102,7 +102,6 @@
   }
 
   .how-step {
-    grid-template-columns: 4rem minmax(0, 1fr);
     padding: var(--space-md) 0;
   }
 

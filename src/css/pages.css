@@ -248,28 +248,8 @@
   text-wrap: pretty;
 }
 
-.lead-steps {
-  display: grid;
-  gap: 0.625rem;
+.lead-how {
   margin: 0.75rem 0 1.5rem;
-  counter-reset: lead-step;
-}
-
-.lead-steps li {
-  display: grid;
-  grid-template-columns: 1.5rem 1fr;
-  gap: 0.875rem;
-  font-size: var(--text-sm);
-  line-height: 1.55;
-  color: var(--warm-black);
-}
-
-.lead-steps li::before {
-  counter-increment: lead-step;
-  content: counter(lead-step);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
 }
 
 /* --- Мягкая ссылка на программы --- */

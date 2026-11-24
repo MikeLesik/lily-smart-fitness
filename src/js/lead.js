@@ -253,12 +253,9 @@
     var list = document.querySelector('[data-free="videos"]');
     if (!list) return;
     list.textContent = '';
-    videos.forEach(function (v, i) {
+    videos.forEach(function (v) {
       var li = document.createElement('li');
       li.className = 'cab-video';
-      var num = document.createElement('span');
-      num.className = 'cab-video-num';
-      num.textContent = String(i + 1);
       var body = document.createElement('span');
       body.className = 'cab-video-body';
       var title = document.createElement('span');
@@ -276,7 +273,6 @@
         d.textContent = desc;
         body.appendChild(d);
       }
-      li.appendChild(num);
       li.appendChild(body);
       list.appendChild(li);
     });

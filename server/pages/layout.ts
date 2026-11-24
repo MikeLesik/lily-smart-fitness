@@ -5,7 +5,7 @@ import { SITE, STRINGS, telegramLink, type Lang } from './i18n';
 export const ASSET_VERSIONS = {
   variables: 3,
   reset: 2,
-  components: 3,
+  components: 4,
   cabinet: 6,
   buyCss: 2,
   programsCss: 2,
