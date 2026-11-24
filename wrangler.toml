@@ -25,7 +25,8 @@ TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"
 STREAM_CUSTOMER_CODE = "7q5xll4rf7nzc3q6"
 STREAM_SIGNING_KEY_ID = "5ea2aea08a2bbcf92c632d8f13322492"
 
-# Боевой сайт lily.coach (ветка main). Миграции и секреты для него ставятся на этапе 7.
+# Боевой сайт lily.coach (ветка main). С 24.11.2026 там версия для правок Лили: Stripe в ТЕСТОВОМ режиме
+# (тестовый ключ и тестовый вебхук на lily.coach) до запуска, см. docs/PLAN-CABINET.md, этап 7.
 [env.production]
 
 [[env.production.d1_databases]]
@@ -40,6 +41,7 @@ POSTHOG_HOST = "https://eu.i.posthog.com"
 # Публичный ключ проекта PostHog lily.coach (EU). События помечаются environment = APP_ENV.
 POSTHOG_KEY = "phc_ud66dPVpqeFtz4M3mo8PSEm7qA8kBgDfQS9bdxwMenqu"
 EMAIL_FROM = "Lily <hello@lily.coach>"
-TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"
+# Отдельный виджет Turnstile «lily.coach production» (домен lily.coach)
+TURNSTILE_SITE_KEY = "0x4AAAAAAGQ2k1QePZ1lhrdz"
 STREAM_CUSTOMER_CODE = "7q5xll4rf7nzc3q6"
 STREAM_SIGNING_KEY_ID = "5ea2aea08a2bbcf92c632d8f13322492"
