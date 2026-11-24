@@ -14,7 +14,7 @@
      1. Navigation — scroll behavior
      ----------------------------------------- */
   const nav = document.querySelector('.nav');
-  const hero = document.querySelector('.hero');
+  const hero = document.querySelector('.hero, .course-hero');
 
   function handleNavScroll() {
     if (!nav || !hero) return;
@@ -32,18 +32,23 @@
   const burger = document.querySelector('.burger');
   const overlay = document.querySelector('.mobile-overlay');
 
-  function toggleMobileMenu() {
+  function setMobileMenu(isOpen) {
     if (!burger || !overlay) return;
-    const isOpen = burger.classList.toggle('open');
+    burger.classList.toggle('open', isOpen);
     overlay.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    overlay.setAttribute('aria-hidden', String(!isOpen));
     document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (typeof handleStickyCta === 'function') handleStickyCta();
+  }
+
+  function toggleMobileMenu() {
+    if (!burger) return;
+    setMobileMenu(!burger.classList.contains('open'));
   }
 
   function closeMobileMenu() {
-    if (!burger || !overlay) return;
-    burger.classList.remove('open');
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
+    setMobileMenu(false);
   }
 
   if (burger) {
@@ -55,6 +60,13 @@
       link.addEventListener('click', closeMobileMenu);
     });
   }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && burger && burger.classList.contains('open')) {
+      closeMobileMenu();
+      burger.focus();
+    }
+  });
 
   /* -----------------------------------------
      3. FAQ Accordion
@@ -121,11 +133,10 @@
     var heroBottom = hero.offsetTop + hero.offsetHeight;
     var isMenuOpen = burger && burger.classList.contains('open');
 
-    if (window.scrollY > heroBottom && !isMenuOpen) {
-      stickyCta.classList.add('visible');
-    } else {
-      stickyCta.classList.remove('visible');
-    }
+    var isVisible = window.scrollY > heroBottom && !isMenuOpen;
+    stickyCta.classList.toggle('visible', isVisible);
+    stickyCta.setAttribute('aria-hidden', String(!isVisible));
+    stickyCta.inert = !isVisible;
   }
 
   /* -----------------------------------------
@@ -279,6 +290,335 @@
     scroller.addEventListener('scroll', updatePeek, { passive: true });
     window.addEventListener('resize', updatePeek, { passive: true });
     updatePeek();
+  });
+
+  /* -----------------------------------------
+     10. Analytics — wrapper
+     -----------------------------------------
+     Если на сайт добавят Метрику/GA — переопределить window.track
+     или хук внутри. Пока пишем в dataLayer (если есть) и console.
+  */
+  if (typeof window.track !== 'function') {
+    window.track = function (event, payload) {
+      try {
+        if (Array.isArray(window.dataLayer)) {
+          window.dataLayer.push(Object.assign({ event: event }, payload || {}));
+        }
+        // TODO: подключить ym(ID, 'reachGoal', event, payload) или gtag('event', ...)
+        if (window.console && console.debug) {
+          console.debug('[track]', event, payload || {});
+        }
+      } catch (e) {
+        /* no-op */
+      }
+    };
+  }
+
+  // Делегированный клик по элементам с data-analytics
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-analytics]');
+    if (!el) return;
+    var event = el.getAttribute('data-analytics');
+    var payload = {};
+    Array.prototype.forEach.call(el.attributes, function (attr) {
+      if (attr.name.indexOf('data-analytics-') === 0 && attr.name !== 'data-analytics') {
+        payload[attr.name.replace('data-analytics-', '')] = attr.value;
+      }
+    });
+    window.track(event, payload);
+  });
+
+  /* -----------------------------------------
+     11. Workouts catalog — рендер из window.LILY_COURSES
+     -----------------------------------------
+     Контейнер: <div class="workouts-grid" data-courses-grid data-locale="ru|en"></div>
+     Источник: js/courses.js (window.LILY_COURSES).
+  */
+  function formatPrice(value, currency) {
+    if (value == null) return '';
+    var formatted = String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    if (currency === 'RUB') return formatted + ' ₽';
+    if (currency === 'EUR') return '€' + formatted;
+    return formatted;
+  }
+
+  function paymentUrl(value) {
+    return typeof value === 'string' && /^https:\/\//i.test(value.trim()) ? value.trim() : '';
+  }
+
+  function findCourse(slug) {
+    if (!slug || !Array.isArray(window.LILY_COURSES)) return null;
+    return window.LILY_COURSES.find(function (c) { return c.slug === slug; }) || null;
+  }
+
+  function isPurchasable(course) {
+    return !!(course && course.published &&
+      (paymentUrl(course.paymentUrlRub) || paymentUrl(course.paymentUrlIntl)));
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function detectLocale() {
+    var lang = (document.documentElement.lang || '').toLowerCase();
+    if (lang.indexOf('en') === 0) return 'en';
+    if (lang.indexOf('ru') === 0) return 'ru';
+    if (window.location.pathname.indexOf('/en/') === 0) return 'en';
+    return 'ru';
+  }
+
+  function renderCoursesCatalog() {
+    var grids = document.querySelectorAll('[data-courses-grid]');
+    if (!grids.length) return;
+    if (!Array.isArray(window.LILY_COURSES)) return;
+
+    grids.forEach(function (grid) {
+      var locale = (grid.getAttribute('data-locale') || detectLocale()).toLowerCase();
+      var labels = locale === 'en'
+        ? { more: 'Learn more', soon: 'Coming soon', from: 'from' }
+        : { more: 'Подробнее',    soon: 'Скоро',         from: 'от' };
+      var basePath = locale === 'en' ? '../' : '';
+      // For EN: course landing lives at en/workouts/<slug>/, so href is `workouts/<slug>/`.
+      // Cover path is assets/images/courses/... → prefix with `../` for EN since current dir is /en.
+
+      var html = window.LILY_COURSES.map(function (course, idx) {
+        var title = (course.title || {})[locale] || course.title.ru;
+        var subtitle = (course.subtitle || {})[locale] || course.subtitle.ru;
+        var duration = (course.duration || {})[locale] || course.duration.ru;
+        var level = (course.level || {})[locale] || course.level.ru;
+        var includes = ((course.includes || {})[locale] || course.includes.ru) || [];
+        var hasPrice = course.priceRub || course.priceEur;
+        var priceMain = course.priceEur ? formatPrice(course.priceEur, 'EUR') : formatPrice(course.priceRub, 'RUB');
+        var priceAlt  = course.priceEur && course.priceRub ? formatPrice(course.priceRub, 'RUB') : '';
+        var coverHref = course.cover ? (basePath + course.cover) : '';
+        var landingHref = (locale === 'en' ? 'workouts/' : 'workouts/') + course.slug + '/';
+        var isPublished = isPurchasable(course);
+        var delayClass = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'][idx % 3];
+
+        var badge = !isPublished
+          ? '<span class="course-card-badge">' + labels.soon + '</span>'
+          : '';
+
+        var coverInner = coverHref
+          ? '<img src="' + escapeHtml(coverHref) + '" alt="' + escapeHtml(title) + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+            '<span class="course-card-cover-placeholder" aria-hidden="true">L</span>'
+          : '<span class="course-card-cover-placeholder" aria-hidden="true">L</span>';
+
+        var includesHtml = includes.slice(0, 3).map(function (i) {
+          return '<li>' + escapeHtml(i) + '</li>';
+        }).join('');
+
+        var ctaHtml = isPublished
+          ? '<a href="' + escapeHtml(landingHref) + '" class="btn-primary course-card-cta" data-analytics="course_card_click" data-analytics-slug="' + escapeHtml(course.slug) + '">' + labels.more + '</a>'
+          : '<span class="btn-ghost course-card-cta" style="opacity:.5;pointer-events:none">' + labels.soon + '</span>';
+
+        return '' +
+          '<article class="course-card reveal ' + delayClass + (isPublished ? '' : ' course-card--soon') + '">' +
+            '<div class="course-card-cover">' + badge + coverInner + '</div>' +
+            '<div class="course-card-body">' +
+              '<div class="course-card-meta"><span>' + escapeHtml(duration) + '</span><span>' + escapeHtml(level) + '</span></div>' +
+              '<h3 class="course-card-title">' + escapeHtml(title) + '</h3>' +
+              '<p class="course-card-subtitle">' + escapeHtml(subtitle) + '</p>' +
+              (includesHtml ? '<ul class="course-card-includes">' + includesHtml + '</ul>' : '') +
+              '<div class="course-card-footer">' +
+                '<div class="course-card-price">' +
+                  (hasPrice ? '<span class="course-card-price-main">' + escapeHtml(priceMain) + '</span>' : '') +
+                  (priceAlt ? '<span class="course-card-price-alt">' + escapeHtml(priceAlt) + '</span>' : '') +
+                '</div>' +
+                ctaHtml +
+              '</div>' +
+            '</div>' +
+          '</article>';
+      }).join('');
+
+      grid.innerHTML = html;
+
+      // Подключить новые .reveal к observer (если он есть)
+      if (typeof revealObserver !== 'undefined' && revealObserver) {
+        grid.querySelectorAll('.reveal').forEach(function (el) {
+          revealObserver.observe(el);
+        });
+      } else {
+        // на лендингах без observer — просто покажем
+        grid.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
+      }
+    });
+  }
+
+  renderCoursesCatalog();
+
+  /* -----------------------------------------
+     11b. Success-page — название курса в заголовке
+     -----------------------------------------
+     Контейнер: [data-success-slug="<slug>"][data-locale="ru|en"]
+     Ссылку доступа страница не показывает: success-адрес открыт всем.
+     Доступ выдаёт платёжка письмом после оплаты.
+  */
+  (function renderSuccess() {
+    var card = document.querySelector('[data-success-slug]');
+    if (!card) return;
+
+    var course = findCourse(card.getAttribute('data-success-slug'));
+    if (!course) return;
+
+    var locale = (card.getAttribute('data-locale') || document.documentElement.lang || 'ru').toLowerCase();
+    var titleEl = card.querySelector('[data-success-title]');
+    if (!titleEl) return;
+
+    titleEl.textContent = locale === 'en'
+      ? 'Thank you! “' + (course.title.en || course.title.ru) + '” is yours.'
+      : 'Спасибо! Курс «' + (course.title.ru || course.title.en) + '» теперь твой.';
+  })();
+
+  /* -----------------------------------------
+     12. Pay modal — выбор контура оплаты (РФ / зарубеж)
+     -----------------------------------------
+     Триггер: любая кнопка/ссылка с
+       data-pay-trigger
+       data-pay-slug="<slug>"
+     Ссылки оплаты берутся только из courses.js (paymentUrlRub /
+     paymentUrlIntl), принимаются только https://.
+     Сам HTML модалки берётся из элемента #pay-modal
+     (см. workouts/<slug>/index.html — там лежит разметка).
+  */
+  var payModal = document.getElementById('pay-modal');
+  var payModalReturnFocus = null;
+  var payModalFoot = payModal ? payModal.querySelector('.pay-modal-foot') : null;
+  var payModalFootDefault = payModalFoot ? payModalFoot.innerHTML : '';
+
+  function openPayModal(opts) {
+    if (!payModal) return;
+    var isEn = (document.documentElement.lang || 'ru').toLowerCase() === 'en';
+    var labels = isEn
+      ? {
+          rubLabel: 'Russian card / SBP',
+          rubMeta:  'RUB · ZSP · installments',
+          intlLabel: 'International card',
+          intlMeta:  'EUR / USD',
+          soon: 'Payment opens soon. Message Lily in the meantime: '
+        }
+      : {
+          rubLabel: 'Карта РФ / СБП',
+          rubMeta:  'RUB · рассрочка',
+          intlLabel: 'Зарубежная карта',
+          intlMeta:  'EUR / USD',
+          soon: 'Оплата скоро откроется. Пока можно написать Лиле: '
+        };
+
+      var rubBtn  = payModal.querySelector('[data-pay-option="rub"]');
+      var intlBtn = payModal.querySelector('[data-pay-option="intl"]');
+
+      if (payModalFoot) {
+        if (opts.rub || opts.intl) {
+          payModalFoot.innerHTML = payModalFootDefault;
+        } else {
+          payModalFoot.textContent = labels.soon;
+          var tg = document.createElement('a');
+          tg.href = 'https://t.me/LilyLesik';
+          tg.target = '_blank';
+          tg.rel = 'noopener';
+          tg.textContent = '@LilyLesik';
+          tg.style.textDecoration = 'underline';
+          payModalFoot.appendChild(tg);
+        }
+      }
+
+      if (rubBtn) {
+        rubBtn.setAttribute('href', opts.rub || '#');
+        rubBtn.setAttribute('aria-disabled', opts.rub ? 'false' : 'true');
+        rubBtn.tabIndex = opts.rub ? 0 : -1;
+        rubBtn.setAttribute('data-analytics', 'pay_option_select');
+        rubBtn.setAttribute('data-analytics-option', 'rub');
+        rubBtn.setAttribute('data-analytics-slug', opts.slug || '');
+        var rubLabelEl = rubBtn.querySelector('.pay-modal-option-label');
+        var rubMetaEl  = rubBtn.querySelector('.pay-modal-option-meta');
+        if (rubLabelEl) rubLabelEl.textContent = labels.rubLabel;
+        if (rubMetaEl)  rubMetaEl.textContent  = labels.rubMeta;
+      }
+
+      if (intlBtn) {
+        intlBtn.setAttribute('href', opts.intl || '#');
+        intlBtn.setAttribute('aria-disabled', opts.intl ? 'false' : 'true');
+        intlBtn.tabIndex = opts.intl ? 0 : -1;
+        intlBtn.setAttribute('data-analytics', 'pay_option_select');
+        intlBtn.setAttribute('data-analytics-option', 'intl');
+        intlBtn.setAttribute('data-analytics-slug', opts.slug || '');
+        var intlLabelEl = intlBtn.querySelector('.pay-modal-option-label');
+        var intlMetaEl  = intlBtn.querySelector('.pay-modal-option-meta');
+        if (intlLabelEl) intlLabelEl.textContent = labels.intlLabel;
+        if (intlMetaEl)  intlMetaEl.textContent  = labels.intlMeta;
+      }
+
+      payModalReturnFocus = document.activeElement;
+      payModal.classList.add('open');
+      document.body.classList.add('pay-modal-open');
+      var firstFocus = payModal.querySelector('[data-pay-option][aria-disabled="false"]') ||
+        payModal.querySelector('[data-pay-close]');
+      if (firstFocus) firstFocus.focus();
+      window.track('pay_modal_open', { slug: opts.slug || '' });
+  }
+
+  function closePayModal() {
+    if (!payModal) return;
+    payModal.classList.remove('open');
+    document.body.classList.remove('pay-modal-open');
+    if (payModalReturnFocus && typeof payModalReturnFocus.focus === 'function') {
+      payModalReturnFocus.focus();
+    }
+    payModalReturnFocus = null;
+  }
+
+  if (payModal) {
+    // Закрытие по фону / по кнопке × / по Esc
+    payModal.addEventListener('click', function (e) {
+      if (e.target === payModal || e.target.closest('[data-pay-close]')) {
+        closePayModal();
+        return;
+      }
+      var option = e.target.closest('[data-pay-option]');
+      if (option && option.getAttribute('aria-disabled') === 'true') {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!payModal.classList.contains('open')) return;
+      if (e.key === 'Escape') {
+        closePayModal();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      var focusable = Array.prototype.filter.call(
+        payModal.querySelectorAll('a[href], button'),
+        function (el) { return el.tabIndex !== -1 && el.offsetParent !== null; }
+      );
+      if (!focusable.length) return;
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest('[data-pay-trigger]');
+    if (!trigger) return;
+    e.preventDefault();
+    var slug = trigger.getAttribute('data-pay-slug') || '';
+    var course = findCourse(slug);
+    var ready = !course || course.published;
+    openPayModal({
+      rub:  ready ? paymentUrl(course ? course.paymentUrlRub : trigger.getAttribute('data-pay-rub')) : '',
+      intl: ready ? paymentUrl(course ? course.paymentUrlIntl : trigger.getAttribute('data-pay-intl')) : '',
+      slug: slug
+    });
   });
 
   /* -----------------------------------------
