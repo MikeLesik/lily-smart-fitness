@@ -69,9 +69,16 @@ export async function stripeRequest<T = any>(
 
 const priceCache = new Map<string, string>();
 
-/** lily_<scope>_<amount>_<currency>: новая цена в каталоге = новый ключ = новая Price в Stripe. */
-export function lookupKey(item: Sellable): string {
-  return `${BRAND}_${item.scope}_${item.price.amount}_${item.price.currency.toLowerCase()}`;
+export type Locale = 'ru' | 'en';
+
+/** Товар на языке покупательницы: lily_<scope> (RU), lily_<scope>_en (EN), чтобы Stripe показал название на её языке. */
+function productKey(item: Sellable, locale: Locale): string {
+  return locale === 'en' ? `${BRAND}_${item.scope}_en` : `${BRAND}_${item.scope}`;
+}
+
+/** <товар>_<amount>_<currency>: новая цена в каталоге = новый ключ = новая Price в Stripe. */
+export function lookupKey(item: Sellable, locale: Locale = 'ru'): string {
+  return `${productKey(item, locale)}_${item.price.amount}_${item.price.currency.toLowerCase()}`;
 }
 
 async function findPrice(env: Env, key: string): Promise<string | null> {
@@ -87,22 +94,22 @@ async function findPrice(env: Env, key: string): Promise<string | null> {
  * Находит или создаёт в Stripe товар lily_<scope> и цену с lookup_key из каталога.
  * Так источником цены остаётся content/catalog.json, а в Stripe ничего не заводится руками.
  */
-export async function ensurePrice(env: Env, item: Sellable): Promise<string> {
-  const key = lookupKey(item);
+export async function ensurePrice(env: Env, item: Sellable, locale: Locale = 'ru'): Promise<string> {
+  const key = lookupKey(item, locale);
   const cacheKey = `${env.STRIPE_SECRET_KEY}|${key}`;
   const cached = priceCache.get(cacheKey);
   if (cached) return cached;
 
   let priceId = await findPrice(env, key);
   if (!priceId) {
-    const productId = `${BRAND}_${item.scope}`;
+    const productId = productKey(item, locale);
     try {
       await stripeRequest(env, 'GET', `/v1/products/${productId}`);
     } catch (err) {
       if (!(err instanceof StripeError) || err.status !== 404) throw err;
       await stripeRequest(env, 'POST', '/v1/products', {
         id: productId,
-        name: item.title.ru,
+        name: (locale === 'en' && item.title.en) || item.title.ru,
         metadata: { brand: BRAND, scope: item.scope },
       });
     }
@@ -151,8 +158,9 @@ export interface CheckoutInput {
 }
 
 export async function createCheckoutSession(env: Env, input: CheckoutInput): Promise<CheckoutSession> {
-  const price = await ensurePrice(env, input.item);
-  const metadata = { brand: BRAND, scope: input.item.scope, ...input.utm };
+  const price = await ensurePrice(env, input.item, input.locale);
+  const metadata = { brand: BRAND, scope: input.item.scope, locale: input.locale, ...input.utm };
+  const prefix = input.locale === 'en' ? '/en' : '';
   return stripeRequest<CheckoutSession>(env, 'POST', '/v1/checkout/sessions', {
     mode: 'payment',
     line_items: [{ price, quantity: 1 }],
@@ -166,7 +174,7 @@ export async function createCheckoutSession(env: Env, input: CheckoutInput): Pro
     allow_promotion_codes: true,
     locale: input.locale,
     success_url: `${input.origin}/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${input.origin}/checkout/cancel/?scope=${encodeURIComponent(input.item.scope)}`,
+    cancel_url: `${input.origin}${prefix}/checkout/cancel/?scope=${encodeURIComponent(input.item.scope)}`,
     // Оформление страницы оплаты под lily.coach (аккаунт общий с Restore Lab).
     branding_settings: {
       display_name: 'Lily',

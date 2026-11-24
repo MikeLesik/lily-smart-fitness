@@ -44,7 +44,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
           console.warn('[stripe] receipt lookup failed', String(err));
         }
         try {
-          await sendPurchaseEmail(env, r.user.email, findSellable(r.scope)!.title.ru, origin);
+          const locale = session.metadata?.locale === 'en' ? 'en' : 'ru';
+          const title = findSellable(r.scope)!.title;
+          await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, origin, locale);
         } catch (err) {
           console.error('[stripe] purchase email failed', String(err));
         }

@@ -1,5 +1,7 @@
 /* ============================================
-   LAYOUT — Grid, Sections, Containers
+   LAYOUT: контейнеры, секции, заголовки секций
+   Базовые классы общие с 404 и кабинетом,
+   всё, что касается только главной, под .home.
    ============================================ */
 
 .container {
@@ -20,11 +22,6 @@
 
 .section--dark {
   background-color: var(--warm-black);
-  color: var(--white);
-}
-
-.section--olive {
-  background: linear-gradient(135deg, var(--olive) 0%, #4f5f44 100%);
   color: var(--white);
 }
 
@@ -51,58 +48,68 @@
   margin-bottom: var(--space-md);
 }
 
-.section-subtitle {
-  font-size: var(--text-lg);
-  color: var(--text-muted);
-  font-weight: 300;
-  max-width: 600px;
-}
-
-.section--dark .section-subtitle {
-  color: rgba(253, 252, 250, 0.65);
-}
-
 .section-header {
   margin-bottom: var(--space-lg);
 }
 
-.section-header--center {
-  text-align: center;
+/* ============================================
+   ГЛАВНАЯ: один смысловой блок = один экран
+   (бюджет 660 px при 390 и 640 px при 360)
+   ============================================ */
+
+.home .section {
+  position: relative;
+  padding: 2.5rem 0;
 }
 
-.section-header--center .section-subtitle {
-  margin: 0 auto;
+/* Старые якоря (#philosophy, #workouts) ведут в новые блоки */
+.home .anchor-alias {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
-/* --- Two-Column Grid --- */
-/* Default: stacked (mobile-first) */
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-xl);
-  align-items: center;
+.home .section-header {
+  margin-bottom: 1rem;
 }
 
-/* --- Three-Column Grid --- */
-/* Default: stacked */
-.grid-3 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-md);
+.home .section-eyebrow {
+  margin-bottom: 0.5rem;
 }
 
-/* Pricing-specific variant (controlled in responsive.css) */
-.grid-3-pricing {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-md);
+.home .section-title {
+  font-size: clamp(1.875rem, 1.4rem + 2vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 0;
+  text-wrap: balance;
 }
 
-/* --- Text Utilities --- */
-.text-center {
-  text-align: center;
+/* Чередование фона: white / cream, сопровождение тёмное */
+.home .about,
+.home .how,
+.home .free-lesson {
+  background-color: var(--white);
 }
 
-.text-muted {
-  color: var(--text-muted);
+.home .programs,
+.home .results,
+.home .faq {
+  background-color: var(--cream);
+}
+
+@media (min-width: 768px) {
+  .home .section {
+    padding: var(--space-xl) 0;
+  }
+
+  .home .section-header {
+    margin-bottom: var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .home .section {
+    padding: 5rem 0;
+  }
 }

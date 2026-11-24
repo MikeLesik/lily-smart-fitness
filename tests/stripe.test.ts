@@ -208,6 +208,34 @@ describe('POST /api/checkout', () => {
     expect(s.get('success_url')).toBe('https://cabinet.lily-smart-fitness.pages.dev/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}');
     expect(s.get('cancel_url')).toContain('/checkout/cancel/');
     expect(s.get('branding_settings[display_name]')).toBe('Lily');
+    expect(s.get('metadata[locale]')).toBe('ru');
+    expect(s.get('locale')).toBe('ru');
+  });
+
+  it('EN: язык Checkout, metadata.locale и страница отмены на английском', async () => {
+    const m = stripeWithPrice();
+    await call(checkout, { body: { scope: 'yagodicy', email: freshEmail(), locale: 'en' }, env: { STRIPE_SECRET_KEY: `rk_test_${Math.random()}` } });
+    const s = m.calls.find((c) => c.path === '/v1/checkout/sessions')!.body;
+    expect(s.get('locale')).toBe('en');
+    expect(s.get('metadata[locale]')).toBe('en');
+    expect(s.get('cancel_url')).toBe('https://cabinet.lily-smart-fitness.pages.dev/en/checkout/cancel/?scope=yagodicy');
+    expect(m.calls.find((c) => c.path === '/v1/prices')!.query.get('lookup_keys[0]')).toBe('lily_yagodicy_en_3900_eur');
+  });
+
+  it('EN: отдельный товар с английским названием', async () => {
+    const m = mockStripe([
+      (c) => (c.method === 'GET' && c.path === '/v1/prices' ? { body: { data: [] } } : undefined),
+      (c) => (c.method === 'POST' && c.path === '/v1/products' ? { body: { id: 'lily_zaryadka_en' } } : undefined),
+      (c) => (c.method === 'POST' && c.path === '/v1/prices' ? { body: { id: 'price_en' } } : undefined),
+      (c) => (c.method === 'POST' && c.path === '/v1/checkout/sessions' ? { body: { id: 'cs_en', url: 'https://checkout.stripe.com/en' } } : undefined),
+    ]);
+    restore = m.restore;
+    await call(checkout, { body: { scope: 'zaryadka', email: freshEmail(), locale: 'en' }, env: { STRIPE_SECRET_KEY: `rk_test_${Math.random()}` } });
+    const product = m.calls.find((c) => c.method === 'POST' && c.path === '/v1/products')!.body;
+    expect(product.get('id')).toBe('lily_zaryadka_en');
+    expect(product.get('name')).toBe('Morning routine');
+    expect(product.get('metadata[scope]')).toBe('zaryadka');
+    expect(m.calls.find((c) => c.method === 'POST' && c.path === '/v1/prices')!.body.get('lookup_key')).toBe('lily_zaryadka_en_2500_eur');
   });
 
   it('вошедшая пользовательница платит со своим email, client_reference_id = её id', async () => {
@@ -326,6 +354,19 @@ describe('GET /api/checkout/complete', () => {
     expect(res.headers.get('location')).toBe('/checkout/success/?pending=1');
     expect(res.headers.get('set-cookie')).toBeNull();
     expect(await entitlementsFor(s.customer_email)).toEqual([]);
+  });
+
+  it('EN-покупка: кабинет и страницы оплаты на английском', async () => {
+    const s = checkoutSession({ metadata: { brand: 'lily', scope: 'yagodicy', locale: 'en' } });
+    stripeSession(s);
+    const res = await call(complete, { path: `/api/checkout/complete?session_id=${s.id}` });
+    expect(res.headers.get('location')).toBe('/en/account/?paid=yagodicy#/c/yagodicy');
+    const again = await call(complete, { path: `/api/checkout/complete?session_id=${s.id}` });
+    expect(again.headers.get('location')).toMatch(/^\/en\/login\/\?next=%2Fen%2Faccount%2F/);
+    restore?.();
+    const pending = checkoutSession({ payment_status: 'unpaid', metadata: { brand: 'lily', scope: 'yagodicy', locale: 'en' } });
+    stripeSession(pending);
+    expect((await call(complete, { path: `/api/checkout/complete?session_id=${pending.id}` })).headers.get('location')).toBe('/en/checkout/success/?pending=1');
   });
 
   it('чужая или неизвестная сессия: на страницу отмены', async () => {

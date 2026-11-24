@@ -860,6 +860,14 @@ a.cab-video:hover .cab-video-title {
   text-underline-offset: 3px;
 }
 
+/* «Чек» в строке покупки и ссылка в подписи: зона нажатия 44 px за счёт полей, высота строки не меняется */
+.cab-list-note .cab-inline-link,
+.cab-note a {
+  display: inline-block;
+  padding: 0.85rem 0.5rem;
+  margin: -0.85rem -0.5rem;
+}
+
 /* --- Подпись под кнопками (страницы оплаты) --- */
 .cab-note {
   margin-top: var(--space-md);

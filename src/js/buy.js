@@ -33,9 +33,9 @@
       }
     },
     en: {
-      title: 'Payment: “{title}”',
-      titleShort: 'Program payment',
-      text: 'Enter your email: access opens for it, and you get an email with a sign-in link.',
+      title: 'Buy “{title}”',
+      titleShort: 'Buy a program',
+      text: 'Enter your email. Your access is linked to it, and we will email you a sign-in link.',
       email: 'Email',
       pay: 'Continue to payment · {price}',
       payShort: 'Continue to payment',
@@ -80,7 +80,7 @@
   function formatPrice(p) {
     if (!p) return '';
     var v = p.amount / 100;
-    var num = v % 1 === 0 ? String(v) : v.toFixed(2);
+    var num = v % 1 === 0 ? String(v) : v.toFixed(2).replace('.', lang === 'en' ? '.' : ',');
     var sym = { eur: '€', usd: '$' }[(p.currency || '').toLowerCase()];
     return sym ? sym + num : num + ' ' + (p.currency || '').toUpperCase();
   }
@@ -162,7 +162,7 @@
     if (code === 'already_owned') {
       el.appendChild(document.createTextNode(' '));
       var a = document.createElement('a');
-      a.href = '/account/';
+      a.href = (lang === 'en' ? '/en' : '') + '/account/';
       a.textContent = T.account;
       el.appendChild(a);
     }
@@ -250,6 +250,19 @@
       price: el.getAttribute('data-buy-price') || ''
     });
   });
+
+  /* «Войти» в шапке светлых страниц ведёт в кабинет, если уже вошла */
+  (function navLogin() {
+    var links = document.querySelectorAll('[data-nav-login]');
+    if (!links.length) return;
+    getMe().then(function (me) {
+      if (!me || !me.user) return;
+      links.forEach(function (a) {
+        a.href = (lang === 'en' ? '/en' : '') + '/account/';
+        a.textContent = lang === 'en' ? 'Account' : 'Кабинет';
+      });
+    });
+  })();
 
   window.LilyBuy = { start: start };
 })();

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Free lesson · Lily</title>
+  <meta name="description" content="A free lesson from Lily Lesik: why the belly stays after giving birth and what to do about it. Enter your email and the lesson opens in your account.">
+  <link rel="canonical" href="https://lily.coach/en/free/">
+  <link rel="alternate" hreflang="ru" href="https://lily.coach/free/">
+  <link rel="alternate" hreflang="en" href="https://lily.coach/en/free/">
+  <link rel="alternate" hreflang="x-default" href="https://lily.coach/free/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lily Smart Fitness">
+  <meta property="og:url" content="https://lily.coach/en/free/">
+  <meta property="og:title" content="A free lesson from Lily">
+  <meta property="og:description" content="Why the belly stays after giving birth and what to do about it.">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="ru_RU">
+  <meta property="og:image" content="https://lily.coach/assets/images/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/variables.css?v=3">
+  <link rel="stylesheet" href="/css/reset.css?v=2">
+  <link rel="stylesheet" href="/css/components.css?v=3">
+  <link rel="stylesheet" href="/css/cabinet.css?v=6">
+  <link rel="stylesheet" href="/css/pages.css?v=1">
+</head>
+<body class="cab-body">
+  <header class="cab-header">
+    <a href="/en/" class="cab-logo">
+      <img src="/assets/images/favicon.png" alt="" width="28" height="28">
+      <span>LILY</span>
+    </a>
+    <nav class="cab-nav" aria-label="Sections">
+      <a href="/en/programs/" class="cab-nav-link">Programs</a>
+      <a href="/en/login/" class="cab-nav-link" data-nav-login>Sign in</a>
+    </nav>
+  </header>
+
+  <main class="pg-main">
+    <!-- First screen: lesson, promise, form -->
+    <section class="lead-hero" id="lead" aria-labelledby="lead-title">
+      <div class="lead-intro">
+        <h1 class="lead-title" id="lead-title" data-free="title">Free lesson</h1>
+        <p class="lead-lesson"><span data-free="video">Diastasis: 3 causes</span><span class="lead-lesson-time" data-free="time">1 min</span></p>
+      </div>
+
+      <picture class="lead-photo">
+        <source type="image/webp" srcset="/assets/images/programs/free.webp">
+        <img src="/assets/images/programs/free.jpg" alt="Lily Lesik in the free lesson" width="480" height="600" fetchpriority="high" decoding="async">
+      </picture>
+
+      <p class="lead-promise">Lily explains why the belly stays after giving birth and what to do about it.</p>
+
+      <div class="lead-action">
+        <!-- Step 1: email -->
+        <div class="lead-step" data-lead-step="email">
+          <form class="cab-form" id="lead-form" novalidate>
+            <label class="cab-label" for="lead-email">Email</label>
+            <input class="cab-input" id="lead-email" name="email" type="email" inputmode="email"
+                   autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" required
+                   aria-describedby="lead-email-error">
+            <p class="cab-error" id="lead-email-error" role="alert" hidden></p>
+            <label class="lead-consent">
+              <input type="checkbox" id="lead-consent" name="consent">
+              <span>Send me emails from Lily</span>
+            </label>
+            <div class="cab-turnstile" id="turnstile"></div>
+            <button type="submit" class="btn-primary cab-submit">Get the lesson</button>
+          </form>
+          <p class="lead-fine">We need your email to open the lesson in your account. <a href="/en/legal/privacy/">Privacy policy</a></p>
+        </div>
+
+        <!-- Step 2: code from the email -->
+        <div class="lead-step" data-lead-step="code" hidden>
+          <h2 class="lead-step-title">Enter the code</h2>
+          <p class="cab-text">We sent a code to <strong class="cab-email" data-email></strong> No email? Check your Spam and Promotions folders.</p>
+          <form class="cab-form" id="code-form" novalidate>
+            <label class="cab-label" for="lead-code">6-digit code</label>
+            <input class="cab-input cab-input--code" id="lead-code" name="code" type="text" inputmode="numeric"
+                   autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required
+                   aria-describedby="lead-code-error">
+            <p class="cab-error" id="lead-code-error" role="alert" hidden></p>
+            <button type="submit" class="btn-primary cab-submit">Open the lesson</button>
+          </form>
+          <div class="cab-links">
+            <button type="button" class="cab-link" data-action="resend" disabled></button>
+            <button type="button" class="cab-link" data-action="change-email">Different email</button>
+          </div>
+        </div>
+
+        <!-- Already signed in -->
+        <div class="lead-step" data-lead-step="member" hidden>
+          <p class="lead-member">You are signed in as <strong data-email></strong>. The lesson is waiting in your account.</p>
+          <a class="btn-primary cab-submit" href="/en/account/#/c/free" data-lesson-link>Watch the lesson</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- What's inside -->
+    <section class="pg-section lead-inside" aria-labelledby="inside-title">
+      <h2 class="pg-h2" id="inside-title">What’s inside</h2>
+      <ul class="cab-videos" data-free="videos">
+        <li class="cab-video">
+          <span class="cab-video-num">1</span>
+          <span class="cab-video-body">
+            <span class="cab-video-title">Diastasis: 3 causes</span>
+            <span class="cab-video-meta">1 min</span>
+            <span class="lead-video-desc">Why the belly stays after giving birth and what to do about it.</span>
+          </span>
+        </li>
+      </ul>
+
+      <h3 class="cab-section-title">How it works</h3>
+      <ol class="lead-steps">
+        <li>Enter your email.</li>
+        <li>Type in the code from the email.</li>
+        <li>Watch the lesson in your account on your phone or computer.</li>
+      </ol>
+      <a class="cab-secondary" href="#lead" data-lead-jump>Get the lesson</a>
+    </section>
+
+    <!-- Next: paid programs -->
+    <section class="pg-section lead-more" aria-labelledby="more-title">
+      <h2 class="pg-h2" id="more-title">When you want more</h2>
+      <p class="pg-text">Lily’s video programs: full workouts at home, at your own pace. One-time payment, no subscription.</p>
+      <a class="cab-link pg-arrow-link" href="/en/programs/"><span>See the programs</span></a>
+    </section>
+  </main>
+
+  <footer class="pg-footer">
+    <nav class="pg-footer-nav" aria-label="Documents">
+      <a href="/en/legal/terms/">Terms</a>
+      <a href="/en/legal/privacy/">Privacy</a>
+      <a href="/en/legal/refunds/">Refunds</a>
+      <a href="/free/" hreflang="ru" lang="ru">Русский</a>
+    </nav>
+  </footer>
+
+  <script src="/js/lead.js?v=1"></script>
+</body>
+</html>

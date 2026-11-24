@@ -1,60 +1,14 @@
 /* ============================================
-   RESPONSIVE — Mobile-First Breakpoints
+   RESPONSIVE: сначала телефон (360–390),
+   дальше 768 (планшет) и 1024 (десктоп)
    ============================================ */
 
 /* ===========================================
-   BASE MOBILE OVERRIDES (< 640px)
-   These supplement the mobile-first defaults
-   already set in hero.css and components.css
-   =========================================== */
-
-/* Trust bar: wrapping on narrow screens */
-.trust-bar-inner {
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  justify-content: center;
-}
-
-/* Pricing on mobile: always single column */
-.grid-3-pricing {
-  grid-template-columns: 1fr;
-  max-width: 380px;
-  margin: 0 auto;
-}
-
-/* Timeline: compact left indent on mobile */
-.timeline {
-  padding-left: 3rem;
-}
-
-.timeline::before {
-  left: 11px;
-}
-
-.timeline-marker {
-  left: -3rem;
-  width: 24px;
-  height: 24px;
-  font-size: 0.6rem;
-}
-
-/* Philosophy photo: constrain height on mobile */
-.philosophy-photo {
-  max-height: 360px;
-}
-
-
-/* ===========================================
-   SMALL PHONE FIX (< 375px)
+   SMALL PHONE (< 375px)
    =========================================== */
 @media (max-width: 374px) {
-
   .hero-title {
     font-size: 2.25rem;
-  }
-
-  .hero-ctas {
-    max-width: 100%;
   }
 
   .btn-primary,
@@ -63,148 +17,120 @@
     letter-spacing: 0.16em;
   }
 
-  .stats-row {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-    text-align: left;
-  }
-
-  .trust-bar-item {
-    font-size: 0.625rem;
-  }
-
-  .timeline {
-    padding-left: 2.5rem;
-  }
-
-  .timeline-marker {
-    left: -2.5rem;
-    width: 24px;
-    height: 24px;
+  .about-stat-num {
+    font-size: 1.375rem;
   }
 }
 
 /* ===========================================
-   MEDIUM MOBILE / LARGE PHONE (480px+)
+   TABLET (768px+)
    =========================================== */
-@media (min-width: 480px) {
-
-  /* Pricing: allow slightly wider card */
-  .grid-3-pricing {
-    max-width: 420px;
-  }
-}
-
-/* ===========================================
-   TABLET (640px+)
-   =========================================== */
-@media (min-width: 640px) {
-
-  /* Trust bar: single row with dividers */
-  .trust-bar-divider {
-    display: inline;
-  }
-
-  .trust-bar-inner {
-    flex-wrap: nowrap;
-    gap: 0 1.25rem;
-  }
-
-  .trust-bar-item {
-    letter-spacing: 0.12em;
-  }
-
-  /* Hero: restore wider letter-spacing */
-  .hero-eyebrow {
-    letter-spacing: 0.25em;
-  }
-
+@media (min-width: 768px) {
   .section-eyebrow {
     letter-spacing: 0.3em;
   }
 
-  /* Philosophy photo: remove mobile max-height constraint */
-  .philosophy-photo {
-    max-height: none;
-    margin: 0;
-  }
-
-  /* Stats row: always 3 columns */
-  .stats-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  /* Pricing: allow 2 columns on wider tablets */
-  .grid-3-pricing {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: none;
-    margin: 0;
-  }
-
-  /* Timeline: expand left indent */
-  .timeline {
-    padding-left: 4.5rem;
-  }
-
-  .timeline::before {
-    left: 20px;
-  }
-
-  .timeline-marker {
-    left: -4.5rem;
-    width: 42px;
-    height: 42px;
-    font-size: var(--text-xs);
-  }
-}
-
-/* ===========================================
-   TABLET / SMALL DESKTOP (768px+)
-   =========================================== */
-@media (min-width: 768px) {
-
-  /* Two-column grid: philosophy layout */
-  .grid-2 {
+  /* Обо мне: фото слева крупно, текст справа */
+  .about-grid {
     grid-template-columns: 5fr 7fr;
+    grid-template-areas:
+      "photo head"
+      "photo body";
+    column-gap: var(--space-xl);
+    row-gap: var(--space-md);
+    align-items: start;
   }
 
-  /* Three-column grid: pillars, testimonials */
-  .grid-3 {
-    grid-template-columns: repeat(3, 1fr);
+  .about-photo {
+    width: 100%;
+    align-self: start;
   }
 
-
-  /* Pricing: stay 2-col at this breakpoint, 3-col on desktop */
-  .grid-3-pricing {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: none;
-    margin: 0;
+  .about-head {
+    align-self: end;
   }
 
-  /* Timeline: wider indent */
-  .timeline {
-    padding-left: 5rem;
+  .home .about .section-title {
+    font-size: var(--text-3xl);
   }
 
-  .timeline::before {
-    left: 24px;
+  .about-text {
+    font-size: var(--text-base);
   }
 
-  .timeline-marker {
-    left: -5rem;
-    width: 50px;
-    height: 50px;
+  .about-creds li {
     font-size: var(--text-sm);
   }
 
-  /* Sticky CTA — hide on tablet+ */
+  .about-quote {
+    font-size: var(--text-2xl);
+    margin: var(--space-md) 0;
+    padding: var(--space-md) 0;
+  }
+
+  .about-stat-num {
+    font-size: 2rem;
+  }
+
+  /* Бесплатный урок: фото слева, текст справа */
+  .free-grid {
+    grid-template-columns: 16rem minmax(0, 1fr);
+    grid-template-areas:
+      "photo head"
+      "photo body";
+    column-gap: var(--space-xl);
+    row-gap: var(--space-md);
+    align-items: start;
+  }
+
+  .free-head {
+    align-self: end;
+  }
+
+  .home .free-lesson .section-title {
+    font-size: var(--text-3xl);
+  }
+
+  .free-text {
+    font-size: var(--text-base);
+    max-width: 32rem;
+  }
+
+  .free-cta {
+    width: auto;
+    min-width: 15rem;
+  }
+
+  .how-step {
+    grid-template-columns: 4rem minmax(0, 1fr);
+    padding: var(--space-md) 0;
+  }
+
+  .how-text {
+    font-size: var(--text-base);
+  }
+
+  .services-intro {
+    font-size: var(--text-base);
+  }
+
+  /* Липкая кнопка только на телефоне */
   .sticky-cta {
     display: none !important;
   }
 
-  /* Footer — remove mobile sticky CTA extra padding */
   .footer {
     padding-bottom: 1.5rem;
+  }
+
+  .footer-row {
+    padding-bottom: var(--space-sm);
+  }
+
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--space-md);
   }
 }
 
@@ -212,10 +138,13 @@
    DESKTOP (1024px+)
    =========================================== */
 @media (min-width: 1024px) {
-
-  /* Navigation: show full links and CTA */
+  /* Шапка: ссылки и «Написать Лиле» вместо бургера */
   .burger {
     display: none;
+  }
+
+  .nav {
+    padding-right: var(--container-padding);
   }
 
   .nav-links {
@@ -226,67 +155,52 @@
     display: inline-flex;
   }
 
-  /* Pricing: full 3 columns */
-  .grid-3-pricing {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: none;
-    margin: 0;
+  /* Тарифы: три колонки без ленты */
+  .pricing-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    overflow: visible;
   }
 
-  /* Pillar cards: slightly more generous padding */
-  .pillar-card {
-    padding: 2.25rem 2rem;
+  .pricing-peek::after {
+    display: none;
   }
 
-  /* Hero video: larger on desktop */
-  .hero-video {
-    max-width: 340px;
+  .pricing-card {
+    padding: var(--space-md);
   }
 
-  /* Timeline: large marker circles */
-  .timeline {
-    padding-left: 5.5rem;
+  .pricing-features li,
+  .pricing-tagline {
+    font-size: var(--text-sm);
   }
 
-  .timeline::before {
-    left: 27px;
+  .pricing-footnote {
+    font-size: var(--text-sm);
   }
 
-  .timeline-marker {
-    left: -5.5rem;
-    width: 56px;
-    height: 56px;
+  /* Отзывы: три колонки без ленты */
+  .testimonials-scroll {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md);
+    overflow: visible;
+  }
+
+  .results .scroll-peek::after {
+    display: none;
+  }
+
+  .testimonial-card {
+    padding: var(--space-md);
   }
 }
 
-/* ===========================================
-   LARGE DESKTOP (1200px+)
-   =========================================== */
 @media (min-width: 1200px) {
-
-  .grid-2 {
-    gap: var(--space-2xl);
-  }
-
-  .grid-3 {
-    gap: var(--space-lg);
-  }
-
-  .hero-video {
-    max-width: 380px;
-  }
-
-  .timeline {
-    padding-left: 6rem;
-  }
-
-  .timeline::before {
-    left: 29px;
-  }
-
-  .timeline-marker {
-    left: -6rem;
-    width: 60px;
-    height: 60px;
+  .nav-links {
+    gap: 2.25rem;
   }
 }

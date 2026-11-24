@@ -49,12 +49,18 @@ const LOGIN_CODE = {
     ttl: 'Код действует 10 минут. Если ты не запрашивала вход, просто проигнорируй это письмо.',
     help: 'Вопросы можно задать Лиле в Telegram:',
   },
+  en: {
+    subject: (code: string) => `Your sign-in code: ${code}`,
+    intro: 'Your code to sign in to your lily.coach account:',
+    ttl: 'The code is valid for 10 minutes. If you did not ask to sign in, just ignore this email.',
+    help: 'Questions? Message Lily on Telegram:',
+  },
 };
 
-export async function sendLoginCode(env: Env, email: string, code: string): Promise<void> {
-  const t = LOGIN_CODE.ru;
+export async function sendLoginCode(env: Env, email: string, code: string, locale: 'ru' | 'en' = 'ru'): Promise<void> {
+  const t = LOGIN_CODE[locale];
   const text = `${t.intro}\n\n${code}\n\n${t.ttl}\n\n${t.help} ${TELEGRAM_URL}\n`;
-  const html = `<!doctype html><html lang="ru"><body style="margin:0;padding:0;background:#F5F0EB;">
+  const html = `<!doctype html><html lang="${locale}"><body style="margin:0;padding:0;background:#F5F0EB;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0EB;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#1A1714;">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FDFCFA;border:1px solid rgba(26,23,20,0.08);padding:32px 28px;">
@@ -71,19 +77,36 @@ export async function sendLoginCode(env: Env, email: string, code: string): Prom
 }
 
 // Письмо о покупке: черновик до согласования с Лилей.
-export async function sendPurchaseEmail(env: Env, email: string, programTitle: string, origin: string): Promise<void> {
-  const loginUrl = `${origin}/login/?next=${encodeURIComponent('/account/')}`;
-  const subject = `Доступ открыт: «${programTitle}»`;
-  const lines = {
-    thanks: 'Спасибо за покупку!',
-    ready: `Программа «${programTitle}» уже ждёт тебя в личном кабинете.`,
-    button: 'Открыть кабинет',
-    how: `Входить можно с любого устройства: открой ${origin}/login/, введи этот email (${email}), и мы пришлём код. Пароль не нужен.`,
-    receipt: 'Чек об оплате всегда есть в кабинете, в разделе «Профиль».',
-    help: 'Вопросы можно задать Лиле в Telegram:',
-  };
+export async function sendPurchaseEmail(
+  env: Env,
+  email: string,
+  programTitle: string,
+  origin: string,
+  locale: 'ru' | 'en' = 'ru',
+): Promise<void> {
+  const prefix = locale === 'en' ? '/en' : '';
+  const loginUrl = `${origin}${prefix}/login/?next=${encodeURIComponent(`${prefix}/account/`)}`;
+  const subject = locale === 'en' ? `Access is open: “${programTitle}”` : `Доступ открыт: «${programTitle}»`;
+  const lines =
+    locale === 'en'
+      ? {
+          thanks: 'Thank you for your purchase!',
+          ready: `“${programTitle}” is waiting for you in your account.`,
+          button: 'Open my account',
+          how: `You can sign in from any device: open ${origin}/en/login/, enter this email (${email}) and we will send you a code. No password needed.`,
+          receipt: 'Your payment receipt is always in your account, under “Profile”.',
+          help: 'Questions? Message Lily on Telegram:',
+        }
+      : {
+          thanks: 'Спасибо за покупку!',
+          ready: `Программа «${programTitle}» уже ждёт тебя в личном кабинете.`,
+          button: 'Открыть кабинет',
+          how: `Входить можно с любого устройства: открой ${origin}/login/, введи этот email (${email}), и мы пришлём код. Пароль не нужен.`,
+          receipt: 'Чек об оплате всегда есть в кабинете, в разделе «Профиль».',
+          help: 'Вопросы можно задать Лиле в Telegram:',
+        };
   const text = `${lines.thanks}\n\n${lines.ready}\n\n${lines.button}: ${loginUrl}\n\n${lines.how}\n\n${lines.receipt}\n\n${lines.help} ${TELEGRAM_URL}\n`;
-  const html = `<!doctype html><html lang="ru"><body style="margin:0;padding:0;background:#F5F0EB;">
+  const html = `<!doctype html><html lang="${locale}"><body style="margin:0;padding:0;background:#F5F0EB;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0EB;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#1A1714;">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FDFCFA;border:1px solid rgba(26,23,20,0.08);padding:32px 28px;">

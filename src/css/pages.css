@@ -1,0 +1,561 @@
+/* ============================================
+   PAGES — /free/, /links/, /legal/ (RU и EN)
+   /free/ и /legal/ стоят на шапке кабинета (cabinet.css).
+   /links/ самодостаточна: variables + reset + этот файл.
+   Только токены из variables.css, радиусы 2 px.
+   Сначала телефон (360–390), один блок = один экран.
+   ============================================ */
+
+/* ============================================
+   Общее: колонка, секции, подвал
+   ============================================ */
+
+.pg-main {
+  flex: 1;
+  width: 100%;
+  max-width: calc(720px + 2 * var(--container-padding));
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+.pg-section {
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--border);
+}
+
+.pg-h2 {
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.pg-text {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  text-wrap: pretty;
+}
+
+.pg-footer {
+  width: 100%;
+  max-width: calc(720px + 2 * var(--container-padding));
+  margin: 0 auto;
+  padding: 1rem var(--container-padding) 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.pg-footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+
+.pg-footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--warm-black);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--transition-fast);
+}
+
+.pg-footer-nav a:hover {
+  text-decoration-color: var(--warm-black);
+}
+
+.pg-footer-nav a[aria-current] {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+/* ============================================
+   /free/ — бесплатный урок за email
+   ============================================ */
+
+/* Первый экран: фото справа, заголовок слева у нижнего края фото,
+   под ними обещание и форма во всю ширину */
+.lead-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44%;
+  grid-template-areas:
+    "intro photo"
+    "promise promise"
+    "action action";
+  column-gap: 1rem;
+  padding: 0.5rem 0 var(--space-lg);
+  /* якорь #lead: шапка не липкая, отступ только для воздуха */
+  scroll-margin-top: 0.5rem;
+}
+
+.lead-photo {
+  grid-area: photo;
+}
+
+.lead-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--blush);
+}
+
+.lead-intro {
+  grid-area: intro;
+  align-self: end;
+  min-width: 0;
+}
+
+.lead-title {
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 0.75rem;
+  overflow-wrap: break-word;
+}
+
+.lead-lesson {
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  color: var(--warm-black);
+  font-variant-numeric: tabular-nums;
+  text-wrap: pretty;
+}
+
+.lead-lesson-time {
+  display: block;
+  margin-top: 0.125rem;
+  color: var(--text-muted);
+}
+
+.lead-promise {
+  grid-area: promise;
+  margin: 1.25rem 0;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--warm-black);
+  text-wrap: pretty;
+}
+
+.lead-action {
+  grid-area: action;
+  min-width: 0;
+}
+
+.lead-step[hidden] {
+  display: none;
+}
+
+/* Шаг кода: обещание уже не нужно, экран целиком под ввод кода */
+.lead-hero[data-step="code"] .lead-promise {
+  display: none;
+}
+
+.lead-hero[data-step="code"] .lead-action {
+  margin-top: 1.25rem;
+}
+
+.lead-step-title {
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+/* Согласие на письма: вся строка нажимается, 44 px */
+.lead-consent {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  color: var(--warm-black);
+  cursor: pointer;
+}
+
+.lead-consent input {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  accent-color: var(--olive);
+  cursor: pointer;
+}
+
+.lead-action .cab-submit {
+  margin-top: 0.75rem;
+}
+
+/* Мелкий шрифт под кнопкой; у ссылки поля расширяют зону нажатия до 44 px */
+.lead-fine {
+  margin-top: 0.75rem;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.lead-fine a {
+  padding: 0.8rem 0;
+  color: var(--warm-black);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}
+
+.lead-fine a:hover {
+  text-decoration-color: var(--warm-black);
+}
+
+/* Уже вошла: строка и кнопка к уроку */
+.lead-member {
+  margin-bottom: 1rem;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--warm-black);
+  overflow-wrap: anywhere;
+}
+
+.lead-member strong {
+  font-weight: 600;
+}
+
+.lead-action .lead-member + .btn-primary {
+  width: 100%;
+}
+
+/* --- Что внутри --- */
+.lead-inside .cab-videos {
+  margin-top: 0;
+}
+
+.lead-video-desc {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.lead-steps {
+  display: grid;
+  gap: 0.625rem;
+  margin: 0.75rem 0 1.5rem;
+  counter-reset: lead-step;
+}
+
+.lead-steps li {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr;
+  gap: 0.875rem;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--warm-black);
+}
+
+.lead-steps li::before {
+  counter-increment: lead-step;
+  content: counter(lead-step);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+/* --- Мягкая ссылка на программы --- */
+.lead-more .pg-text {
+  margin-bottom: 0.5rem;
+}
+
+/* Подчёркнут только текст, стрелка без линии */
+.pg-arrow-link {
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.pg-arrow-link span {
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--transition-fast);
+}
+
+.pg-arrow-link:hover span {
+  text-decoration-color: var(--warm-black);
+}
+
+.pg-arrow-link::after {
+  content: '→';
+  content: '→' / '';
+  color: var(--gold);
+  transition: transform var(--transition-fast);
+}
+
+.pg-arrow-link:hover::after {
+  transform: translateX(3px);
+}
+
+/* Номер видео на уровне названия, а не по центру строки с описанием */
+.lead-inside .cab-video {
+  align-items: flex-start;
+}
+
+.lead-inside .cab-video-num {
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .lead-hero {
+    grid-template-columns: minmax(0, 1fr) 17.5rem;
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "intro photo"
+      "promise photo"
+      "action photo";
+    column-gap: 3rem;
+    align-items: start;
+    padding-top: 1.5rem;
+  }
+
+  .lead-intro {
+    align-self: start;
+    padding-top: 1.5rem;
+  }
+
+  .lead-action {
+    max-width: 26rem;
+  }
+
+  .lead-inside,
+  .lead-more {
+    max-width: 34rem;
+  }
+
+  .lead-inside .cab-secondary {
+    width: auto;
+    display: inline-flex;
+    min-width: 12rem;
+  }
+}
+
+/* ============================================
+   /legal/* — заглушки до текстов юриста
+   ============================================ */
+
+.legal {
+  padding-bottom: var(--space-xl);
+}
+
+.legal .cab-title {
+  margin: 1rem 0 1.25rem;
+  text-wrap: balance;
+}
+
+.legal-status {
+  max-width: 34rem;
+  margin-bottom: 1.75rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--gold);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--warm-black);
+  text-wrap: pretty;
+}
+
+.legal .cab-list {
+  max-width: 34rem;
+}
+
+.legal .cab-list .cab-link {
+  align-self: flex-start;
+  font-size: var(--text-base);
+  min-height: 44px;
+}
+
+/* ============================================
+   /links/ — страница для шапки Instagram
+   Свой минимум стилей: грузится без cabinet.css и components.css
+   ============================================ */
+
+.links-body {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+}
+
+.links-body :focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 3px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 26rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 0 var(--container-padding) 1.25rem;
+}
+
+.links-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.75rem;
+  padding: 0.5rem 0;
+}
+
+.links-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  line-height: 1;
+  letter-spacing: 0.15em;
+  color: var(--warm-black);
+}
+
+.links-logo img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0);
+}
+
+.links-lang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.links-lang:hover {
+  color: var(--warm-black);
+}
+
+/* Содержимое по центру свободной высоты: на телефоне кнопки ближе к большому пальцу */
+.links-content {
+  margin: auto 0;
+  padding: 0.5rem 0 1rem;
+}
+
+.links-hero {
+  display: grid;
+  grid-template-columns: 44% minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: end;
+  margin-bottom: 1.75rem;
+}
+
+.links-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--blush);
+}
+
+.links-name {
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 0.625rem;
+}
+
+.links-role {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.links-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  /* на 360 «Персональное сопровождение» помещается в одну строку */
+  padding: 0.75rem 1.125rem;
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--warm-black);
+  background: transparent;
+  border: 1px solid var(--taupe);
+  border-radius: 2px;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.links-btn::after {
+  content: '→';
+  content: '→' / '';
+  flex: 0 0 auto;
+  color: var(--gold);
+  transition: transform var(--transition-fast);
+}
+
+.links-btn:hover {
+  border-color: var(--warm-black);
+}
+
+.links-btn:hover::after {
+  transform: translateX(3px);
+}
+
+.links-btn--primary {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.links-btn--primary::after {
+  color: var(--warm-black);
+}
+
+.links-btn--primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+/* Высокий экран телефона: фото крупнее, чтобы не оставалось пустоты */
+@media (min-height: 740px) {
+  .links-hero {
+    grid-template-columns: 52% minmax(0, 1fr);
+    margin-bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .links-btn,
+  .links-btn::after {
+    transition: none;
+  }
+}

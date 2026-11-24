@@ -7,7 +7,7 @@
 (function () {
   'use strict';
 
-  // Тексты: черновик до согласования с Лилей. EN добавится на этапе 5.
+  // Тексты: черновик до согласования с Лилей. Язык берётся из <html lang>.
   var I18N = {
     ru: {
       help: 'Помощь',
@@ -39,11 +39,44 @@
         network: 'Нет связи с сервером. Проверь интернет и попробуй ещё раз.',
         server_error: 'Что-то пошло не так. Попробуй ещё раз.'
       }
+    },
+    en: {
+      help: 'Help',
+      emailTitle: 'Sign in to your account',
+      emailText: 'Enter the email you used at checkout. We will send you a code, no password needed.',
+      emailLabel: 'Email',
+      emailSubmit: 'Get a code',
+      sending: 'Sending…',
+      codeTitle: 'Enter the code',
+      codeSentTo: 'We sent a code to',
+      codeSpam: 'No email? Check your Spam and Promotions folders.',
+      codeLabel: '6-digit code',
+      codeSubmit: 'Sign in',
+      checking: 'Checking…',
+      resend: 'Send a new code',
+      resendIn: 'New code in {s} s',
+      resent: 'A new code is on its way.',
+      changeEmail: 'Different email',
+      errors: {
+        invalid_email: 'Please check your email: it looks like there is a typo.',
+        captcha_failed: 'The browser check did not pass. Reload the page and try again.',
+        captcha_wait: 'One moment, the browser check is still running. Tap again in a couple of seconds.',
+        rate_limited: 'Too many attempts. Please try again in an hour.',
+        email_failed: 'We could not send the email. Try again in a minute or message Lily on Telegram.',
+        invalid_code: 'Wrong code. Attempts left: {n}.',
+        invalid_code_format: 'The code has 6 digits.',
+        code_expired: 'This code has expired. Request a new one.',
+        too_many_attempts: 'Too many wrong attempts. Request a new code.',
+        network: 'No connection to the server. Check your internet and try again.',
+        server_error: 'Something went wrong. Please try again.'
+      }
     }
   };
 
-  var locale = 'ru';
+  var locale = (document.documentElement.lang || 'ru').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
   var t = I18N[locale];
+  // EN-страницы живут под /en/: кабинет и вход в своей языковой ветке
+  var BASE = locale === 'en' ? '/en' : '';
   var RESEND_COOLDOWN_SEC = 60;
   var STORAGE_KEY = 'lily_login';
 
@@ -141,10 +174,21 @@
     });
   }
 
-  /** Куда вести после входа: ?next= (только пути этого сайта) или кабинет. */
+  /**
+   * Куда вести после входа: ?next= (только пути этого сайта) или кабинет.
+   * Строку разбираем как URL и сверяем origin: «/\evil.com» браузер читает как «//evil.com».
+   */
   function nextUrl() {
+    var fallback = BASE + '/account/';
     var next = new URLSearchParams(window.location.search).get('next');
-    return next && /^\/(?!\/)/.test(next) ? next : '/account/';
+    if (!next || next.charAt(0) !== '/') return fallback;
+    try {
+      var url = new URL(next, window.location.origin);
+      if (url.origin !== window.location.origin) return fallback;
+      return url.pathname + url.search + url.hash;
+    } catch (e) {
+      return fallback;
+    }
   }
 
   /* ---------- Turnstile ---------- */
@@ -201,7 +245,7 @@
   function requestCode(email) {
     return takeTurnstileToken().then(function (token) {
       if (token === null) return { ok: false, data: { error: 'captcha_wait' } };
-      return api('/api/auth/request-code', { email: email, turnstileToken: token });
+      return api('/api/auth/request-code', { email: email, turnstileToken: token, locale: locale });
     }).then(function (res) {
       resetTurnstile();
       return res;
@@ -269,7 +313,7 @@
     }
     showError(codeForm, '');
     setBusy(codeForm, true, t.checking);
-    api('/api/auth/verify-code', { email: state.email, code: code }).then(function (res) {
+    api('/api/auth/verify-code', { email: state.email, code: code, locale: locale }).then(function (res) {
       setBusy(codeForm, false);
       if (res.ok) {
         loggedIn();

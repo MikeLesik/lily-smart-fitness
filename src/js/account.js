@@ -10,9 +10,11 @@
 (function () {
   'use strict';
 
-  // Тексты: черновик до согласования с Лилей. EN добавится на этапе 5.
+  // Тексты: черновик до согласования с Лилей. Язык берётся из <html lang>.
   var I18N = {
     ru: {
+      dateLocale: 'ru-RU',
+      decimal: ',',
       programsTitle: 'Мои программы',
       moreSection: 'Ещё программы',
       workoutForms: ['тренировка', 'тренировки', 'тренировок'],
@@ -73,11 +75,77 @@
       orders: 'Покупки',
       receipt: 'Чек',
       refunded: 'Возврат'
+    },
+    en: {
+      dateLocale: 'en-GB',
+      decimal: '.',
+      programsTitle: 'My programs',
+      moreSection: 'More programs',
+      workoutForms: ['workout', 'workouts'],
+      programForms: ['program', 'programs'],
+      minutes: '{n}\u00a0min',
+      seconds: '{n}\u00a0sec',
+      previewFree: 'free\u00a0preview',
+      previewMark: 'preview',
+      stoppedAt: 'Left off at\u00a0{time} of\u00a0{total}',
+      stoppedAtShort: 'left off at {time}',
+      watchedMark: 'watched',
+      continue: 'Continue',
+      continueFrom: 'Continue from {time}',
+      again: 'Watch again',
+      start: 'Start',
+      preview: 'Watch preview · {d}',
+      buy: 'Buy · {price}',
+      bundleTitle: 'All programs',
+      bundleBoth: 'Both programs and every new one',
+      bundleMany: '{n}\u00a0{programs} and every new one',
+      bundleInstead: 'instead of\u00a0{price}',
+      back: 'My programs',
+      toProgram: 'Back to the program',
+      toAll: 'Back to my programs',
+      next: 'Next: {title}',
+      lockedVideo: 'This workout is part of the “{title}” program.',
+      lockedProgram: 'The whole program opens right after purchase.',
+      previewPart: 'You can watch {part} for free.',
+      previewFirstMinute: 'the first minute',
+      previewMinuteHalf: 'the first minute and a half',
+      previewFirstN: 'the first {n} {unit}',
+      secondForms: ['second', 'seconds'],
+      minuteForms: ['minute', 'minutes'],
+      lockedLabel: 'Locked',
+      doneLabel: 'Watched',
+      unavailable: 'This video is temporarily unavailable. Please try again later.',
+      networkTitle: 'No connection to the server',
+      network: 'Check your internet connection and reload the page.',
+      networkVideo: 'No connection to the server. Check your internet connection and reload the page.',
+      reload: 'Reload',
+      notFoundTitle: 'Video not found',
+      notFoundText: 'The link may be outdated or have a typo in it.',
+      loadingVideo: 'Loading the video…',
+      profileTitle: 'Profile',
+      email: 'Email',
+      purchases: 'Access',
+      noPurchases: 'No purchases yet.',
+      noPurchasesFree: 'No purchases yet. Start with the free lesson.',
+      noAccess: 'You have no open programs right now.',
+      forever: 'Lifetime access',
+      until: 'Until {date}',
+      allPrograms: 'All programs',
+      writeLily: 'Message Lily',
+      writeLilyText: 'Hi Lily! I\u2019m writing from my account.',
+      logout: 'Sign out',
+      paid: 'Payment received. “{title}” is already open, and we have emailed you a sign-in link.',
+      paidAll: 'Payment received. All programs are open, and we have emailed you a sign-in link.',
+      orders: 'Purchases',
+      receipt: 'Receipt',
+      refunded: 'Refunded'
     }
   };
 
-  var t = I18N.ru;
-  var locale = 'ru';
+  var locale = (document.documentElement.lang || 'ru').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
+  var t = I18N[locale];
+  // EN-кабинет живёт под /en/: вход и выход ведут в ту же языковую ветку
+  var BASE = locale === 'en' ? '/en' : '';
   var TELEGRAM = 'https://t.me/LilyLesik';
   var SAVE_EVERY_MS = 15000;
   // Разделитель в мете: перенос строки только после точки, не перед ней
@@ -119,8 +187,9 @@
     return obj[locale] || obj.ru || '';
   }
 
-  /** Склонение: 1 тренировка, 2 тренировки, 5 тренировок. */
+  /** Склонение: 1 тренировка, 2 тренировки, 5 тренировок; EN: 1 workout, 2 workouts. */
   function plural(n, forms) {
+    if (locale === 'en') return n === 1 ? forms[0] : forms[1];
     var m10 = n % 10;
     var m100 = n % 100;
     if (m10 === 1 && m100 !== 11) return forms[0];
@@ -128,12 +197,12 @@
     return forms[2];
   }
 
-  /** 1346 → «22 мин», 90 → «1,5 мин», 40 → «40 с». */
+  /** 1346 → «22 мин», 90 → «1,5 мин», 40 → «40 с» (EN: «22 min», «1.5 min», «40 sec»). */
   function duration(sec) {
     if (sec < 60) return fmt(t.seconds, { n: Math.round(sec) });
     var min = sec / 60;
     var frac = min - Math.floor(min);
-    if (min < 10 && frac >= 0.25 && frac < 0.75) return fmt(t.minutes, { n: Math.floor(min) + ',5' });
+    if (min < 10 && frac >= 0.25 && frac < 0.75) return fmt(t.minutes, { n: Math.floor(min) + t.decimal + '5' });
     return fmt(t.minutes, { n: Math.round(min) });
   }
 
@@ -150,10 +219,16 @@
   function price(p) {
     if (!p) return '';
     var value = p.amount / 100;
-    var num = value % 1 === 0 ? String(value) : value.toFixed(2).replace('.', ',');
+    var num = value % 1 === 0 ? String(value) : value.toFixed(2).replace('.', t.decimal);
     var symbols = { eur: '€', usd: '$', rub: '₽' };
     var sym = symbols[(p.currency || '').toLowerCase()];
     return sym === '₽' ? num + ' ₽' : (sym || '') + num;
+  }
+
+  /** Дата из секунд Unix: RU «24.11.2026», EN «24 Nov 2026» (без путаницы день/месяц). */
+  function date(sec) {
+    var opts = locale === 'en' ? { day: 'numeric', month: 'short', year: 'numeric' } : undefined;
+    return new Date(sec * 1000).toLocaleDateString(t.dateLocale, opts);
   }
 
   function telegram(text) {
@@ -178,7 +253,7 @@
 
   function toLogin() {
     var next = location.pathname + location.hash;
-    location.replace('/login/?next=' + encodeURIComponent(next));
+    location.replace(BASE + '/login/?next=' + encodeURIComponent(next));
   }
 
   /* ---------- доступ (отображение; решает сервер) ---------- */
@@ -652,7 +727,7 @@
     state.catalog.categories.forEach(function (c) { titles[c.slug] = L(c.title); });
     var items = state.entitlements.map(function (e) {
       var name = e.scope === 'all' ? t.allPrograms : (titles[e.scope] || e.scope);
-      var until = e.expiresAt ? fmt(t.until, { date: new Date(e.expiresAt * 1000).toLocaleDateString('ru-RU') }) : t.forever;
+      var until = e.expiresAt ? fmt(t.until, { date: date(e.expiresAt) }) : t.forever;
       return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(until) + '</span></li>';
     });
     var free = state.catalog.categories.find(function (c) { return c.free; });
@@ -666,8 +741,7 @@
 
     var orders = (state.orders || []).map(function (o) {
       var name = o.scope === 'all' ? t.allPrograms : (titles[o.scope] || o.scope);
-      var date = new Date(o.createdAt * 1000).toLocaleDateString('ru-RU');
-      var note = price({ amount: o.amount, currency: o.currency }) + SEP + date;
+      var note = price({ amount: o.amount, currency: o.currency }) + SEP + date(o.createdAt);
       var link = o.status === 'refunded'
         ? SEP + esc(t.refunded)
         : (o.receiptUrl ? SEP + '<a class="cab-inline-link" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">' + esc(t.receipt) + '</a>' : '');
@@ -732,7 +806,7 @@
     if (action === 'reload') location.reload();
     if (action === 'logout') {
       el.disabled = true;
-      api('/api/auth/logout', {}).then(function () { location.replace('/login/'); });
+      api('/api/auth/logout', {}).then(function () { location.replace(BASE + '/login/'); });
     }
   });
 

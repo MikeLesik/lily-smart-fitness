@@ -39,38 +39,54 @@ package.json             wrangler, vitest, typescript (только для ра�
 .dev.vars.example        локальные секреты; скопировать в .dev.vars
 content/catalog.json     категории, видео, цены (источник правды; UID видео в браузер не уходят)
 migrations/              схема D1 (0001_auth: users, login_codes, sessions, entitlements, rate_limits; 0002_progress; 0003_orders: orders, stripe_events)
-functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, catalog.ts,
+functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, catalog.ts, leads.ts,
                          videos/[id]/playback.ts, progress.ts, checkout/index.ts, checkout/complete.ts,
                          stripe/webhook.ts, [[path]].ts (JSON 404)
+functions/programs/, functions/en/programs/   /programs/ и /programs/<slug>/: HTML с сервера из catalog.json
+functions/sitemap.xml.ts sitemap из каталога
 server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile,
                          catalog, access (правило доступа), video-provider/ (интерфейс + stream.ts),
-                         stripe (API, цены, подпись вебхука), orders (заказы, права, возвраты)
+                         stripe (API, цены, подпись вебхука), orders (заказы, права, возвраты),
+                         login-flow (общий путь «прислать код» для входа и лида),
+                         pages/ (шаблоны страниц программ: layout, program, programs-index, i18n, html)
 tests/                   тесты API (vitest)
 src/
-  index.html             главная RU
+  index.html             главная RU: оффер программ → обо мне → #programs → как это работает → отзывы →
+                         бесплатный урок → #services (сопровождение) → FAQ → футер с юр. ссылками
   login/index.html       вход по email и коду (js/login.js, css/cabinet.css), после входа ведёт в /account/
   account/index.html     кабинет: программы, категория, плеер, профиль (js/account.js, hash-маршруты #/c/, #/v/, #/profile)
   checkout/success/, checkout/cancel/   возврат из Stripe: оплата ещё обрабатывается / не завершена
+  free/                  бесплатный урок за email (js/lead.js → /api/leads → код → кабинет)
+  links/                 страница для шапки Instagram: 4 кнопки, передаёт utm_* дальше
+  legal/terms|privacy|refunds/   заглушки до текстов юриста (noindex)
+  en/...                 EN-зеркала всех страниц, включая login, account, checkout, free, links, legal
   404.html               страница 404 RU (абсолютные пути к CSS)
-  robots.txt, sitemap.xml   sitemap содержит только / и /en/
+  robots.txt             sitemap.xml отдаёт функция (из каталога)
   en/index.html, en/404.html
   css/
     variables.css        дизайн-токены (цвета, шрифты, размеры, отступы)
     reset.css, layout.css, hero.css, components.css, animations.css, responsive.css
     workouts.css         витрина видеотренировок на главной (карточки из /api/catalog)
     buy.css              окно покупки (email → Stripe)
+    pages.css            /free/, /links/, /legal/
+    programs.css         страницы программ
   js/
     main.js              меню, липкая кнопка, FAQ, появление блоков, счётчики, таймлайн,
                          витрина видеотренировок из /api/catalog, обёртка аналитики window.track
-    buy.js               покупка: любой [data-buy="<scope>"] открывает оплату (вошедшая сразу в Stripe, гость вводит email)
+    buy.js               покупка: любой [data-buy="<scope>"] открывает оплату (вошедшая сразу в Stripe, гость вводит email);
+                         UTM первого касания в localStorage.lily_utm; «Войти» [data-nav-login] → «Кабинет»
+    lead.js, program.js  форма бесплатного урока; превью-плеер на странице программы
+    login.js, account.js тексты в словаре I18N ru/en, язык по <html lang>
   assets/images/         фавиконки, og-image.jpg (1200×630); foto.psd в .gitignore
   assets/videos/hero.mp4
   content/site-content.json   старая выгрузка текстов, страницами не используется
 ```
 
-## Главная: блоки по порядку
+## Главная: блоки по порядку (этап 5)
 
-Навигация (логотип, ссылки, EN/RU, «Написать Лиле»; на телефоне бургер и полноэкранное меню) → hero с вертикальным видео → полоса доверия (5+ лет, 360+ клиентов) → `#philosophy` обо мне → `#approach` три столпа → `#results` отзывы → `#workouts` каталог видеотренировок (рендерится из `courses.js`) → `#services` тарифы сопровождения → `#process` как проходит работа → CTA-баннер → `#faq` → футер. На телефоне снизу липкая кнопка Telegram, она появляется после hero и прячется, пока открыто меню.
+Шапка 60 px (логотип, «Войти», EN/RU, бургер; на десктопе ссылки и «Написать Лиле») → первый экран: оффер видеопрограмм, цена «от €25» (`data-min-price` из каталога), «Выбрать программу», «Бесплатный урок», вертикальное видео → «Обо мне» с цифрами и цитатой → `#programs` (карточки из `/api/catalog`, лента на телефоне) → как это работает (3 шага) → `#results` отзывы → бесплатный урок → `#services` сопровождение (тарифы лентой, Telegram) → `#faq` → футер (разделы, Войти, оферта/конфиденциальность/возврат). Липкая кнопка на телефоне: «Программы от €25» и Telegram. Светлые страницы (программы, /free/, /legal/) используют общую шапку `.cab-header`: LILY, Программы, Войти.
+
+Правило Михаила: один смысловой блок = один экран (≤660 px при 390, ≤640 при 360). Проверять `getBoundingClientRect().height` секций.
 
 ## Дизайн-система
 

@@ -31,22 +31,25 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     return redirect('/checkout/cancel/');
   }
 
+  const locale = session.metadata?.locale === 'en' ? 'en' : 'ru';
+  const prefix = locale === 'en' ? '/en' : '';
   const r = await fulfillCheckoutSession(env, session);
-  if (r.result === 'unpaid') return redirect('/checkout/success/?pending=1');
-  if (r.result === 'skipped') return redirect('/checkout/cancel/');
+  if (r.result === 'unpaid') return redirect(`${prefix}/checkout/success/?pending=1`);
+  if (r.result === 'skipped') return redirect(`${prefix}/checkout/cancel/`);
 
   if (r.result === 'created') {
     try {
-      await sendPurchaseEmail(env, r.user.email, findSellable(r.scope)!.title.ru, url.origin);
+      const title = findSellable(r.scope)!.title;
+      await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, url.origin, locale);
     } catch (err) {
       console.error('[checkout] purchase email failed', String(err));
     }
   }
 
-  const target = r.scope === 'all' ? '/account/?paid=all#/' : `/account/?paid=${r.scope}#/c/${r.scope}`;
+  const target = r.scope === 'all' ? `${prefix}/account/?paid=all#/` : `${prefix}/account/?paid=${r.scope}#/c/${r.scope}`;
   const fresh = nowSec() - r.order.created_at < LOGIN_WINDOW_SEC;
   if (fresh && r.order.status === 'paid' && (await claimCheckoutLogin(env, r.order.id))) {
     return redirect(target, await createSession(env, r.order.user_id));
   }
-  return redirect(`/login/?next=${encodeURIComponent(target)}`);
+  return redirect(`${prefix}/login/?next=${encodeURIComponent(target)}`);
 };

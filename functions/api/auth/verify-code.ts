@@ -4,16 +4,17 @@ import { hit } from '../../../server/ratelimit';
 import { checkLoginCode } from '../../../server/auth';
 import { getOrCreateUser } from '../../../server/db';
 import { createSession } from '../../../server/session';
+import { localeOf } from '../../../server/login-flow';
 
 const HOUR = 60 * 60;
 const PER_IP_PER_HOUR = 60;
 
 /**
- * POST { email, code } → 200 { ok, user } + cookie сессии.
+ * POST { email, code, locale? } → 200 { ok, user } + cookie сессии. locale задаёт язык нового пользователя.
  * Ошибки: invalid_code (с attemptsLeft), code_expired, too_many_attempts (429), rate_limited (429).
  */
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
-  const body = await readJson<{ email: string; code: string }>(request);
+  const body = await readJson<{ email: string; code: string; locale: string }>(request);
 
   if (!(await hit(env, `verify:ip:${clientIp(request)}`, PER_IP_PER_HOUR, HOUR))) {
     return json({ error: 'rate_limited' }, 429);
@@ -30,7 +31,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json(error, check.error === 'too_many_attempts' ? 429 : 400);
   }
 
-  const user = await getOrCreateUser(env, email);
+  const user = await getOrCreateUser(env, email, localeOf(body.locale));
   const setCookie = await createSession(env, user.id);
   return json({ ok: true, user: { id: user.id, email: user.email } }, 200, { 'set-cookie': setCookie });
 };

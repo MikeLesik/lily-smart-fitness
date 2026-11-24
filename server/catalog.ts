@@ -20,6 +20,16 @@ export interface CatalogVideo {
   providerVideoId: string;
 }
 
+export interface LocalizedList {
+  ru: string[];
+  en?: string[];
+}
+
+export interface CatalogFaqItem {
+  q: Localized;
+  a: Localized;
+}
+
 export interface CatalogCategory {
   slug: string;
   title: Localized;
@@ -29,6 +39,16 @@ export interface CatalogCategory {
   free: boolean;
   published: boolean;
   price: Price | null;
+  /** Продающая страница /programs/<slug>/: meta description и описание товара (до ~160 символов). */
+  description?: Localized;
+  /** Кадр 9:16 для превью-плеера (/assets/images/programs/<slug>-preview.jpg), иначе обложка. */
+  previewPoster?: string;
+  /** «Что понадобится», строчными: «гантели и устойчивая ступенька». */
+  equipment?: Localized;
+  /** «Для кого»: 3–4 коротких пункта. */
+  forWhom?: LocalizedList;
+  /** Вопросы этой программы, идут перед общими. */
+  faq?: CatalogFaqItem[];
   videos: CatalogVideo[];
 }
 
@@ -50,6 +70,11 @@ export const catalog = raw as unknown as Catalog;
 
 export function publishedCategories(): CatalogCategory[] {
   return catalog.categories.filter((c) => c.published);
+}
+
+/** Платные опубликованные категории с ценой: то, что продают страницы /programs/. */
+export function paidCategories(): CatalogCategory[] {
+  return publishedCategories().filter((c) => !c.free && c.price !== null);
 }
 
 export function findVideo(id: string): { video: CatalogVideo; category: CatalogCategory } | null {

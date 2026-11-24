@@ -1,50 +1,50 @@
 /* ============================================
-   MAIN JS — Lily Personal Brand Website
-   Nav scroll, mobile menu, FAQ, scroll reveal,
-   mobile sticky CTA, timeline progress line,
-   витрина видеотренировок из /api/catalog
+   MAIN JS: главная lily.coach (RU и EN)
+   Шапка при прокрутке, мобильное меню, FAQ, появление блоков,
+   липкая кнопка, плавные якоря, счётчики, ленты со scroll-snap,
+   обёртка аналитики window.track, витрина программ из /api/catalog
    ============================================ */
 
 (function () {
   'use strict';
 
-  const TELEGRAM_CTA = 'https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85.';
+  var html = document.documentElement;
+  var locale = (html.lang || 'ru').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
+  var prefix = locale === 'en' ? '/en' : '';
 
   /* -----------------------------------------
-     1. Navigation — scroll behavior
+     1. Шапка: фон после 80 px прокрутки
      ----------------------------------------- */
-  const nav = document.querySelector('.nav');
-  const hero = document.querySelector('.hero, .course-hero');
+  var nav = document.querySelector('.nav');
+  var hero = document.querySelector('.hero');
 
   function handleNavScroll() {
-    if (!nav || !hero) return;
-    const threshold = 80;
-    if (window.scrollY > threshold) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
+    if (!nav) return;
+    nav.classList.toggle('scrolled', window.scrollY > 80);
   }
 
   /* -----------------------------------------
-     2. Mobile Menu
+     2. Мобильное меню: aria-expanded, Esc, фокус
      ----------------------------------------- */
-  const burger = document.querySelector('.burger');
-  const overlay = document.querySelector('.mobile-overlay');
+  var burger = document.querySelector('.burger');
+  var overlay = document.querySelector('.mobile-overlay');
 
-  function setMobileMenu(isOpen) {
+  function setMobileMenu(isOpen, opts) {
     if (!burger || !overlay) return;
     burger.classList.toggle('open', isOpen);
     overlay.classList.toggle('open', isOpen);
+    if (nav) nav.classList.toggle('menu-open', isOpen);
     burger.setAttribute('aria-expanded', String(isOpen));
     overlay.setAttribute('aria-hidden', String(!isOpen));
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    if (typeof handleStickyCta === 'function') handleStickyCta();
-  }
-
-  function toggleMobileMenu() {
-    if (!burger) return;
-    setMobileMenu(!burger.classList.contains('open'));
+    handleStickyCta();
+    if (isOpen && opts && opts.focusFirst) {
+      // Оверлей становится видимым с переходом: фокус чуть позже
+      setTimeout(function () {
+        var first = overlay.querySelector('a');
+        if (first) first.focus();
+      }, 60);
+    }
   }
 
   function closeMobileMenu() {
@@ -52,7 +52,10 @@
   }
 
   if (burger) {
-    burger.addEventListener('click', toggleMobileMenu);
+    burger.addEventListener('click', function (e) {
+      // С клавиатуры (detail === 0) фокус сразу на первый пункт
+      setMobileMenu(!burger.classList.contains('open'), { focusFirst: e.detail === 0 });
+    });
   }
 
   if (overlay) {
@@ -68,10 +71,15 @@
     }
   });
 
+  // Меню только для телефона: при переходе на десктоп закрываем
+  window.addEventListener('resize', function () {
+    if (window.innerWidth >= 1024 && burger && burger.classList.contains('open')) closeMobileMenu();
+  }, { passive: true });
+
   /* -----------------------------------------
-     3. FAQ Accordion
+     3. FAQ: открыт один вопрос
      ----------------------------------------- */
-  const faqItems = document.querySelectorAll('.faq-item');
+  var faqItems = document.querySelectorAll('.faq-item');
 
   faqItems.forEach(function (item) {
     var question = item.querySelector('.faq-question');
@@ -79,15 +87,11 @@
 
     question.addEventListener('click', function () {
       var isActive = item.classList.contains('active');
-
-      // Close all and reset aria
       faqItems.forEach(function (other) {
         other.classList.remove('active');
         var btn = other.querySelector('.faq-question');
         if (btn) btn.setAttribute('aria-expanded', 'false');
       });
-
-      // Open clicked (if was closed)
       if (!isActive) {
         item.classList.add('active');
         question.setAttribute('aria-expanded', 'true');
@@ -96,35 +100,33 @@
   });
 
   /* -----------------------------------------
-     4. Scroll Reveal (IntersectionObserver)
+     4. Появление блоков (IntersectionObserver)
      ----------------------------------------- */
-  var reveals = document.querySelectorAll('.reveal');
+  var revealObserver = null;
 
-  if ('IntersectionObserver' in window && reveals.length > 0) {
-    var revealObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
+  if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }
 
-    reveals.forEach(function (el) {
-      revealObserver.observe(el);
-    });
-  } else {
-    // Fallback: show all
-    reveals.forEach(function (el) {
-      el.classList.add('visible');
+  function observeReveal(root) {
+    (root || document).querySelectorAll('.reveal:not(.visible)').forEach(function (el) {
+      if (revealObserver) revealObserver.observe(el);
+      else el.classList.add('visible');
     });
   }
 
+  observeReveal();
+
   /* -----------------------------------------
-     5. Mobile Sticky CTA
+     5. Липкая кнопка (телефон): после первого экрана,
+        прячется, пока открыто меню
      ----------------------------------------- */
   var stickyCta = document.querySelector('.sticky-cta');
 
@@ -132,171 +134,103 @@
     if (!stickyCta || !hero) return;
     var heroBottom = hero.offsetTop + hero.offsetHeight;
     var isMenuOpen = burger && burger.classList.contains('open');
-
-    var isVisible = window.scrollY > heroBottom && !isMenuOpen;
+    var isVisible = window.scrollY > heroBottom - 80 && !isMenuOpen;
     stickyCta.classList.toggle('visible', isVisible);
     stickyCta.setAttribute('aria-hidden', String(!isVisible));
     stickyCta.inert = !isVisible;
   }
 
   /* -----------------------------------------
-     6. Smooth Scroll for anchor links
+     6. Плавная прокрутка к якорям с учётом шапки
      ----------------------------------------- */
-  document.querySelectorAll('a[href^="#"]').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      var targetId = this.getAttribute('href');
-      if (targetId === '#') return;
-      var target = document.querySelector(targetId);
-      if (target) {
-        e.preventDefault();
-        var navHeight = nav ? nav.offsetHeight : 0;
-        var top = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
-        window.scrollTo({ top: top, behavior: 'smooth' });
-      }
-    });
+  document.addEventListener('click', function (e) {
+    var link = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!link) return;
+    var targetId = link.getAttribute('href');
+    if (targetId === '#') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    var target = document.getElementById(targetId.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    var navHeight = nav ? nav.offsetHeight : 0;
+    var top = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    if (history.replaceState) history.replaceState(null, '', targetId);
   });
 
   /* -----------------------------------------
-     7. Count-Up Animation (Trust Bar)
+     7. Счётчики (5+, 360+)
      ----------------------------------------- */
   var countEls = document.querySelectorAll('.count-up');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function animateCount(el) {
     var target = parseInt(el.getAttribute('data-target'), 10);
-    var duration = 1600; // ms
+    var duration = 1600;
     var start = null;
 
     function step(timestamp) {
       if (!start) start = timestamp;
       var progress = Math.min((timestamp - start) / duration, 1);
-      // ease-out cubic
       var eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = Math.floor(eased * target);
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      } else {
-        el.textContent = target;
-      }
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target;
     }
 
     requestAnimationFrame(step);
   }
 
-  if ('IntersectionObserver' in window && countEls.length > 0) {
-    var countObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            animateCount(entry.target);
-            countObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.5 }
-    );
-
-    countEls.forEach(function (el) {
-      countObserver.observe(el);
-    });
-  } else {
-    // Fallback: show final numbers
-    countEls.forEach(function (el) {
-      el.textContent = el.getAttribute('data-target');
-    });
-  }
-
-  /* -----------------------------------------
-     8. Timeline Progress Line
-     ----------------------------------------- */
-  /*
-     Injects a .timeline-progress element as the first child of
-     .timeline, then grows it downward (via height) as the user
-     scrolls through each step. Each marker gets the .reached
-     class when the progress line passes it.
-  */
-  var timelineEl = document.querySelector('.timeline');
-
-  if (timelineEl) {
-    // Inject the animated gold line element
-    var progressLine = document.createElement('div');
-    progressLine.className = 'timeline-progress';
-    timelineEl.insertBefore(progressLine, timelineEl.firstChild);
-
-    var timelineSteps = timelineEl.querySelectorAll('.timeline-step');
-    var timelineMarkers = timelineEl.querySelectorAll('.timeline-marker');
-
-    function updateTimelineProgress() {
-      if (!timelineEl || timelineSteps.length === 0) return;
-
-      var timelineRect = timelineEl.getBoundingClientRect();
-      var viewportH = window.innerHeight;
-
-      // If timeline is not yet in view, do nothing
-      if (timelineRect.bottom < 0 || timelineRect.top > viewportH) return;
-
-      // Total scrollable height of the timeline track
-      var timelineH = timelineEl.offsetHeight;
-
-      // Progress: how far the center of the viewport has moved
-      // through the timeline, clamped 0–1.
-      // We start counting when the top of the timeline enters the
-      // bottom 70% of the viewport, finish when the bottom leaves.
-      var triggerStart = viewportH * 0.7;
-      var progressPx = triggerStart - timelineRect.top;
-      var ratio = Math.max(0, Math.min(1, progressPx / timelineH));
-      var lineHeight = Math.round(ratio * timelineH);
-
-      progressLine.style.height = lineHeight + 'px';
-
-      // Mark each step whose marker center is within the drawn line
-      timelineMarkers.forEach(function (marker, i) {
-        var markerRect = marker.getBoundingClientRect();
-        var markerCenter = markerRect.top + markerRect.height / 2;
-        // If the drawn line reaches the marker's vertical midpoint
-        var markerOffsetFromTop = markerRect.top - timelineRect.top + markerRect.height / 2;
-
-        if (lineHeight >= markerOffsetFromTop) {
-          marker.classList.add('reached');
-          if (timelineSteps[i]) timelineSteps[i].classList.add('reached');
-        } else {
-          marker.classList.remove('reached');
-          if (timelineSteps[i]) timelineSteps[i].classList.remove('reached');
+  if ('IntersectionObserver' in window && countEls.length && !reduceMotion) {
+    var countObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
         }
       });
-    }
+    }, { threshold: 0.5 });
 
-    // Run on scroll and on load
-    window.addEventListener('scroll', updateTimelineProgress, { passive: true });
-    updateTimelineProgress();
+    countEls.forEach(function (el) {
+      // Без JS и до прокрутки в разметке стоит итоговое число
+      el.textContent = '0';
+      countObserver.observe(el);
+    });
   }
 
   /* -----------------------------------------
-     9. Scroll Peek — fade gradient on overflow
+     8. Ленты: мягкий край справа, пока есть что листать
      ----------------------------------------- */
-  var scrollPeekWrappers = document.querySelectorAll('.scroll-peek');
+  var peekUpdaters = [];
 
-  scrollPeekWrappers.forEach(function (wrapper) {
+  document.querySelectorAll('.scroll-peek').forEach(function (wrapper) {
     var scroller = wrapper.querySelector('.horizontal-scroll');
     if (!scroller) return;
 
     function updatePeek() {
       var hasOverflow = scroller.scrollWidth > scroller.clientWidth + 1;
       var atEnd = scroller.scrollLeft + scroller.clientWidth >= scroller.scrollWidth - 5;
-
       wrapper.classList.toggle('has-overflow', hasOverflow && !atEnd);
       wrapper.classList.toggle('scrolled-end', atEnd);
     }
 
     scroller.addEventListener('scroll', updatePeek, { passive: true });
-    window.addEventListener('resize', updatePeek, { passive: true });
+    peekUpdaters.push(updatePeek);
     updatePeek();
   });
 
+  window.addEventListener('resize', function () {
+    peekUpdaters.forEach(function (fn) { fn(); });
+  }, { passive: true });
+
   /* -----------------------------------------
-     10. Analytics — wrapper
+     9. Аналитика: обёртка
      -----------------------------------------
-     Если на сайт добавят Метрику/GA — переопределить window.track
-     или хук внутри. Пока пишем в dataLayer (если есть) и console.
+     Если подключат PostHog/Метрику, переопределить window.track.
+     Пока пишем в dataLayer (если есть) и console.debug.
   */
   if (typeof window.track !== 'function') {
     window.track = function (event, payload) {
@@ -304,7 +238,6 @@
         if (Array.isArray(window.dataLayer)) {
           window.dataLayer.push(Object.assign({ event: event }, payload || {}));
         }
-        // TODO: подключить ym(ID, 'reachGoal', event, payload) или gtag('event', ...)
         if (window.console && console.debug) {
           console.debug('[track]', event, payload || {});
         }
@@ -316,35 +249,52 @@
 
   // Делегированный клик по элементам с data-analytics
   document.addEventListener('click', function (e) {
-    var el = e.target.closest('[data-analytics]');
+    var el = e.target.closest && e.target.closest('[data-analytics]');
     if (!el) return;
-    var event = el.getAttribute('data-analytics');
     var payload = {};
     Array.prototype.forEach.call(el.attributes, function (attr) {
-      if (attr.name.indexOf('data-analytics-') === 0 && attr.name !== 'data-analytics') {
+      if (attr.name.indexOf('data-analytics-') === 0) {
         payload[attr.name.replace('data-analytics-', '')] = attr.value;
       }
     });
-    window.track(event, payload);
+    window.track(el.getAttribute('data-analytics'), payload);
   });
 
   /* -----------------------------------------
-     11. Видеотренировки — витрина из /api/catalog
+     10. Программы: карточки из /api/catalog
      -----------------------------------------
-     Контейнер: <div class="workouts-grid" data-courses-grid data-locale="ru|en"></div>
-     Кнопка «Купить» с data-buy открывает покупку (js/buy.js).
+     Контейнер: <div class="programs-list" data-programs data-locale="ru|en">.
+     Бесплатная категория здесь не продаётся (у неё свой блок).
+     «Купить» с data-buy открывает покупку (js/buy.js).
+     Цена «от» в первом экране и липкой кнопке: [data-min-price].
   */
+  var T = {
+    ru: {
+      buy: 'Купить',
+      bundleMeta: function (n) { return n + ' ' + plural(n, ['программа', 'программы', 'программ']) + ' и все новые'; },
+      bundleSubtitle: function (sum) { return 'Одна оплата вместо ' + sum + ', доступ навсегда'; },
+      meta: function (n, min) { return n + ' ' + plural(n, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + min + ' мин'; }
+    },
+    en: {
+      buy: 'Buy',
+      bundleMeta: function (n) { return n + ' ' + (n === 1 ? 'program' : 'programs') + ' and all new ones'; },
+      bundleSubtitle: function (sum) { return 'One payment instead of ' + sum + ', lifetime access'; },
+      meta: function (n, min) { return n + ' ' + (n === 1 ? 'workout' : 'workouts') + ' · ' + min + ' min'; }
+    }
+  }[locale];
+
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function catalogPrice(p) {
+  function formatPrice(p) {
     if (!p) return '';
     var v = p.amount / 100;
     var sym = { eur: '€', usd: '$' }[(p.currency || '').toLowerCase()];
-    return (sym || '') + (v % 1 === 0 ? v : v.toFixed(2));
+    var num = v % 1 === 0 ? String(v) : v.toFixed(2);
+    return sym ? sym + num : num + ' ' + String(p.currency || '').toUpperCase();
   }
 
   function plural(n, forms) {
@@ -354,83 +304,105 @@
     return forms[2];
   }
 
-  function catalogCard(item, locale, isBundle) {
-    var L = function (o) { return o ? (o[locale] || o.ru || '') : ''; };
-    var en = locale === 'en';
+  function L(o) {
+    return o ? (o[locale] || o.ru || '') : '';
+  }
+
+  function coverHtml(cover) {
+    if (!cover) return '';
+    var webp = /\.jpe?g$/i.test(cover) ? cover.replace(/\.jpe?g$/i, '.webp') : '';
+    return '<div class="program-card-cover"><picture>' +
+      (webp ? '<source srcset="' + escapeHtml(webp) + '" type="image/webp">' : '') +
+      '<img src="' + escapeHtml(cover) + '" alt="" width="480" height="600" loading="lazy" decoding="async">' +
+      '</picture></div>';
+  }
+
+  function programCard(item, opts) {
     var title = L(item.title);
-    var mains = isBundle ? [] : item.videos.filter(function (v) { return !v.preview; });
-    var minutes = Math.max(1, Math.round(mains.reduce(function (s, v) { return s + v.durationSec; }, 0) / 60));
-    var meta = isBundle
-      ? (en ? 'All programs, including new ones' : 'Все программы, включая новые')
-      : (en
-          ? mains.length + ' ' + (mains.length === 1 ? 'workout' : 'workouts') + ' · ' + minutes + ' min'
-          : mains.length + ' ' + plural(mains.length, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + minutes + ' мин');
-    var subtitle = isBundle
-      ? (en ? 'One payment, lifetime access.' : 'Одна оплата, доступ навсегда.')
-      : L(item.subtitle);
-    var cover = item.cover || '';
-    var coverHtml = cover
-      ? '<picture><source srcset="' + escapeHtml(cover.replace(/\.jpg$/, '.webp')) + '" type="image/webp">' +
-        '<img src="' + escapeHtml(cover) + '" alt="" width="480" height="600" loading="lazy" decoding="async"></picture>'
-      : '';
-    var cta;
-    if (item.free) {
-      var next = encodeURIComponent('/account/#/c/' + item.slug);
-      cta = '<a class="btn-ghost course-card-cta" href="/login/?next=' + next + '">' + (en ? 'Get it free' : 'Получить бесплатно') + '</a>';
+    var price = formatPrice(item.price);
+    var href = opts.href;
+    var meta, subtitle;
+
+    if (opts.bundle) {
+      meta = T.bundleMeta(opts.count);
+      subtitle = opts.sum ? T.bundleSubtitle(opts.sum) : '';
     } else {
-      var price = catalogPrice(item.price);
-      cta = '<a class="btn-primary course-card-cta" href="#workouts" data-buy="' + escapeHtml(item.slug) + '"' +
-        ' data-buy-title="' + escapeHtml(title) + '" data-buy-price="' + escapeHtml(price) + '"' +
-        ' data-analytics="course_buy_click" data-analytics-slug="' + escapeHtml(item.slug) + '">' +
-        (en ? 'Buy' : 'Купить') + '</a>';
+      var mains = (item.videos || []).filter(function (v) { return !v.preview; });
+      var seconds = mains.reduce(function (s, v) { return s + (v.durationSec || 0); }, 0);
+      meta = T.meta(mains.length, Math.max(1, Math.round(seconds / 60)));
+      subtitle = L(item.subtitle);
     }
+
     return '' +
-      '<article class="course-card reveal">' +
-        (coverHtml ? '<div class="course-card-cover">' + coverHtml + '</div>' : '') +
-        '<div class="course-card-body">' +
-          '<p class="course-card-meta">' + escapeHtml(meta) + '</p>' +
-          '<h3 class="course-card-title">' + escapeHtml(title) + '</h3>' +
-          (subtitle ? '<p class="course-card-subtitle">' + escapeHtml(subtitle) + '</p>' : '') +
-          '<div class="course-card-footer">' +
-            '<span class="course-card-price">' + escapeHtml(item.free ? (en ? 'Free' : 'Бесплатно') : catalogPrice(item.price)) + '</span>' +
-            cta +
+      '<article class="program-card">' +
+        coverHtml(item.cover) +
+        '<div class="program-card-body">' +
+          '<p class="program-card-meta">' + escapeHtml(meta) + '</p>' +
+          '<h3 class="program-card-title"><a class="program-card-link" href="' + escapeHtml(href) + '">' + escapeHtml(title) + '</a></h3>' +
+          (subtitle ? '<p class="program-card-subtitle">' + escapeHtml(subtitle) + '</p>' : '') +
+          '<div class="program-card-footer">' +
+            '<span class="program-card-price">' + escapeHtml(price) + '</span>' +
+            '<a class="btn-primary program-card-buy" href="' + escapeHtml(href) + '"' +
+              ' data-buy="' + escapeHtml(item.slug) + '"' +
+              ' data-buy-title="' + escapeHtml(title) + '"' +
+              ' data-buy-price="' + escapeHtml(price) + '"' +
+              ' data-analytics="course_buy_click" data-analytics-slug="' + escapeHtml(item.slug) + '"' +
+              ' aria-label="' + escapeHtml(T.buy + ': ' + title + ', ' + price) + '">' +
+              T.buy +
+            '</a>' +
           '</div>' +
         '</div>' +
       '</article>';
   }
 
   function renderCatalog(cat) {
-    document.querySelectorAll('[data-courses-grid]').forEach(function (grid) {
-      var locale = (grid.getAttribute('data-locale') || document.documentElement.lang || 'ru').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
-      var paid = cat.categories.filter(function (c) { return !c.free; });
-      var free = cat.categories.filter(function (c) { return c.free; });
-      var html = paid.map(function (c) { return catalogCard(c, locale, false); }).join('') +
-        (paid.length > 1 ? cat.bundles.map(function (b) { return catalogCard(b, locale, true); }).join('') : '') +
-        free.map(function (c) { return catalogCard(c, locale, false); }).join('');
-      grid.innerHTML = html;
-      grid.querySelectorAll('.reveal').forEach(function (el) {
-        if (typeof revealObserver !== 'undefined' && revealObserver) revealObserver.observe(el);
-        else el.classList.add('visible');
-      });
+    var paid = (cat.categories || []).filter(function (c) { return !c.free && c.price; });
+    if (!paid.length) return;
+
+    // Цена «от»: самая низкая цена платной программы
+    var min = paid.reduce(function (m, c) { return !m || c.price.amount < m.amount ? c.price : m; }, null);
+    document.querySelectorAll('[data-min-price]').forEach(function (el) { el.textContent = formatPrice(min); });
+
+    var sumAmount = paid.reduce(function (s, c) { return s + c.price.amount; }, 0);
+    var sum = formatPrice({ amount: sumAmount, currency: paid[0].price.currency });
+
+    var cards = paid.map(function (c) {
+      return programCard(c, { href: prefix + '/programs/' + encodeURIComponent(c.slug) + '/' });
     });
+
+    if (paid.length > 1) {
+      (cat.bundles || []).forEach(function (b) {
+        if (!b.price) return;
+        cards.push(programCard(b, {
+          bundle: true,
+          count: paid.length,
+          sum: sumAmount > b.price.amount ? sum : '',
+          href: prefix + '/programs/'
+        }));
+      });
+    }
+
+    document.querySelectorAll('[data-programs]').forEach(function (list) {
+      list.innerHTML = cards.join('');
+    });
+    peekUpdaters.forEach(function (fn) { fn(); });
   }
 
-  if (document.querySelector('[data-courses-grid]') && window.fetch) {
-    fetch('/api/catalog')
+  if (document.querySelector('[data-programs], [data-min-price]') && window.fetch) {
+    fetch('/api/catalog', { headers: { Accept: 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (cat) { if (cat) renderCatalog(cat); })
-      .catch(function () { /* витрина просто не появится */ });
+      .catch(function () { /* остаётся ссылка «Все программы» */ });
   }
 
   /* -----------------------------------------
-     Event Listeners
+     Прокрутка
      ----------------------------------------- */
   window.addEventListener('scroll', function () {
     handleNavScroll();
     handleStickyCta();
   }, { passive: true });
 
-  // Initialize on load
   handleNavScroll();
   handleStickyCta();
 

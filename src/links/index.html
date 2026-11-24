@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Лиля Лесик · Lily</title>
+  <meta name="description" content="Лиля Лесик, нутрициолог и интегративный тренер: бесплатный урок, видеопрограммы, персональное сопровождение и Telegram-канал.">
+  <meta name="robots" content="noindex">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lily Smart Fitness">
+  <meta property="og:url" content="https://lily.coach/links/">
+  <meta property="og:title" content="Лиля Лесик">
+  <meta property="og:description" content="Бесплатный урок, видеопрограммы, сопровождение и Telegram-канал.">
+  <meta property="og:image" content="https://lily.coach/assets/images/og-image.jpg">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+
+  <!-- Шрифты не блокируют отрисовку: страница открывается сразу, шрифт подменяется по готовности -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Manrope:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Manrope:wght@400;500;600&display=swap"></noscript>
+
+  <link rel="preload" as="image" href="/assets/images/lily-links.webp" type="image/webp">
+  <link rel="stylesheet" href="/css/variables.css?v=3">
+  <link rel="stylesheet" href="/css/reset.css?v=2">
+  <link rel="stylesheet" href="/css/pages.css?v=1">
+</head>
+<body class="links-body">
+  <main class="links">
+    <div class="links-top">
+      <a href="/" class="links-logo" data-utm>
+        <img src="/assets/images/favicon.png" alt="" width="28" height="28">
+        <span>LILY</span>
+      </a>
+      <a href="/en/links/" class="links-lang" hreflang="en" lang="en" data-utm aria-label="English">EN</a>
+    </div>
+
+    <div class="links-content">
+      <div class="links-hero">
+        <picture class="links-photo">
+          <source type="image/webp" srcset="/assets/images/lily-links.webp">
+          <img src="/assets/images/lily-links.jpg" alt="Лиля Лесик" width="400" height="500" fetchpriority="high">
+        </picture>
+        <div>
+          <h1 class="links-name">Лиля Лесик</h1>
+          <p class="links-role">Нутрициолог и интегративный тренер</p>
+        </div>
+      </div>
+
+      <nav class="links-list" aria-label="Ссылки">
+        <a class="links-btn links-btn--primary" href="/free/" data-utm>Бесплатный урок</a>
+        <a class="links-btn" href="/programs/" data-utm>Видеопрограммы</a>
+        <a class="links-btn" href="/#services" data-utm>Персональное сопровождение</a>
+        <a class="links-btn" href="https://t.me/Lily_Smart_Fitness" target="_blank" rel="noopener">Telegram-канал</a>
+      </nav>
+    </div>
+  </main>
+
+  <script>
+    /* UTM: первое касание в localStorage.lily_utm (формат как в buy.js)
+       и те же utm_* дальше по внутренним ссылкам (data-utm). */
+    (function () {
+      'use strict';
+      var q = new URLSearchParams(location.search);
+      var pass = [];
+      q.forEach(function (v, k) { if (/^utm_[a-z_]+$/.test(k) && v) pass.push([k, v.slice(0, 100)]); });
+      if (!pass.length) return;
+      var first = {};
+      ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) { if (q.get(k)) first[k] = q.get(k).slice(0, 100); });
+      try {
+        if (Object.keys(first).length && !localStorage.getItem('lily_utm')) localStorage.setItem('lily_utm', JSON.stringify(first));
+      } catch (e) { /* приватный режим */ }
+      document.querySelectorAll('a[data-utm]').forEach(function (a) {
+        var url = new URL(a.getAttribute('href'), location.href);
+        pass.forEach(function (p) { url.searchParams.set(p[0], p[1]); });
+        a.setAttribute('href', url.pathname + url.search + url.hash);
+      });
+    })();
+  </script>
+</body>
+</html>

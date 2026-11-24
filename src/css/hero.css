@@ -1,5 +1,7 @@
 /* ============================================
-   HERO SECTION
+   HERO
+   База (.hero, .hero-title, .hero-ctas…) общая с 404.html.
+   Первый экран главной: .hero--home.
    ============================================ */
 
 .hero {
@@ -43,7 +45,7 @@
   z-index: 1;
 }
 
-/* --- Gold Vertical Lines --- */
+/* --- Gold Vertical Lines (404) --- */
 .hero-lines {
   position: absolute;
   inset: 0;
@@ -63,37 +65,12 @@
 .hero-lines span:nth-child(2) { left: 50%; }
 .hero-lines span:nth-child(3) { left: 75%; }
 
-/* --- Hero Content --- */
+/* --- Hero Content (404) --- */
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
   max-width: 800px;
-}
-
-/* --- Split Layout — mobile-first: stacked, text first --- */
-.hero-split {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-lg);
-  max-width: 1100px;
-  text-align: center;
-  width: 100%;
-}
-
-/* On mobile: hero-right (text) comes first in DOM and visually */
-.hero-right {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  order: 1;
-}
-
-/* On mobile: video is second */
-.hero-left {
-  flex-shrink: 0;
-  order: 2;
 }
 
 .hero-eyebrow {
@@ -104,7 +81,6 @@
   text-transform: uppercase;
   color: var(--gold);
   margin-bottom: 0.875rem;
-  opacity: 0.85;
 }
 
 .hero-title {
@@ -116,32 +92,11 @@
   margin-bottom: var(--space-md);
 }
 
-.hero-title em {
-  font-style: italic;
-  color: var(--gold-light);
-}
-
-/* --- Hero Video --- */
-.hero-video {
-  width: 100%;
-  max-width: 240px;
-  margin: 0 auto;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
-}
-
-.hero-video video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .hero-subtitle {
   font-family: var(--font-body);
   font-size: var(--text-lg);
   font-weight: 300;
-  color: rgba(253, 252, 250, 0.65);
+  color: rgba(253, 252, 250, 0.72);
   line-height: 1.65;
   margin-bottom: var(--space-lg);
   max-width: 540px;
@@ -163,82 +118,219 @@
   letter-spacing: 0.04em;
 }
 
-/* --- Scroll Indicator --- */
-.hero-scroll {
-  position: absolute;
-  bottom: 1.75rem;
-  left: 50%;
-  transform: translateX(-50%);
+/* ============================================
+   ГЛАВНАЯ: первый экран
+   Телефон: видео Лили на весь экран, оффер сверху (над потолком кадра),
+   цена и кнопка снизу (над полом), Лиля между ними.
+   Высота: экран, но не больше 660 px (правило «блок = экран»).
+   ============================================ */
+
+.hero--home {
+  display: block;
+  height: 100vh;
+  height: 100svh;
+  min-height: 33rem;
+  max-height: 41.25rem;
+  padding: 0;
+  text-align: left;
+}
+
+.hero--home::after {
+  display: none;
+}
+
+.hero--home .hero-inner {
+  position: relative;
   z-index: 2;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 4.75rem var(--container-padding) 1rem;
+}
+
+.hero--home .hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--warm-black) url("../assets/images/hero-poster.jpg") center 60% / cover no-repeat;
+}
+
+.hero--home .hero-media video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 60%;
+}
+
+/* Затемнение: сверху и снизу плотное (текст), посередине Лиля видна */
+.hero--home .hero-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(26, 23, 20, 0.92) 0%,
+    rgba(26, 23, 20, 0.8) 34%,
+    rgba(26, 23, 20, 0.28) 54%,
+    rgba(26, 23, 20, 0.22) 66%,
+    rgba(26, 23, 20, 0.82) 84%,
+    rgba(26, 23, 20, 0.94) 100%
+  );
+}
+
+.hero--home .hero-copy,
+.hero--home .hero-offer {
+  position: relative;
+}
+
+.hero--home .hero-eyebrow {
+  margin-bottom: 0.75rem;
+}
+
+.hero--home .hero-title {
+  font-size: clamp(2.25rem, 1.55rem + 3vw, 4.5rem);
+  line-height: 1.04;
+  margin-bottom: 0.75rem;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.hero--home .hero-subtitle {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  margin-bottom: 0;
+  max-width: 34ch;
+}
+
+/* Цена: цифры в Manrope */
+.hero-price {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: rgba(253, 252, 250, 0.78);
+  margin-bottom: 0.75rem;
+}
+
+.hero-price-amount {
+  font-size: 1.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--white);
+  margin: 0 0.125rem;
+}
+
+.hero--home .hero-ctas {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  margin-bottom: 0;
+}
+
+.hero--home .hero-cta {
+  min-height: 3rem;
+}
+
+.hero-link {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  color: rgba(253, 252, 250, 0.25);
+  justify-content: center;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35rem;
+  transition: color var(--transition-fast);
 }
 
-.hero-scroll svg {
-  width: 18px;
-  height: 18px;
+.hero-link:hover {
+  color: var(--gold-light);
 }
 
-/* --- Tablet+: side-by-side, video left / text right --- */
+/* --- Планшет и десктоп: видео карточкой слева, текст справа --- */
 @media (min-width: 768px) {
-  .hero {
-    padding-top: 6rem;
-    padding-bottom: 4rem;
+  .hero--home {
+    height: auto;
+    max-height: none;
+    min-height: 0;
   }
 
-  .hero-split {
+  .hero--home .hero-inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "media copy"
+      "media offer";
+    align-content: center;
+    align-items: end;
+    column-gap: var(--space-xl);
+    row-gap: var(--space-lg);
+    padding-top: 6.5rem;
+    padding-bottom: var(--space-xl);
+  }
+
+  .hero--home .hero-media {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    grid-area: media;
+    width: 16rem;
+    aspect-ratio: 9 / 16;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
+  }
+
+  .hero--home .hero-media::after {
+    display: none;
+  }
+
+  .hero--home .hero-copy {
+    grid-area: copy;
+  }
+
+  .hero--home .hero-offer {
+    grid-area: offer;
+    align-self: start;
+  }
+
+  .hero--home .hero-subtitle {
+    font-size: var(--text-lg);
+  }
+
+  .hero--home .hero-ctas {
     flex-direction: row;
-    text-align: left;
-    gap: var(--space-xl);
     align-items: center;
+    gap: var(--space-md);
   }
 
-  /* Video moves to the left */
-  .hero-left {
-    order: -1;
-    flex-shrink: 0;
-  }
-
-  .hero-right {
-    align-items: flex-start;
-    order: 0;
-  }
-
-  .hero-video {
-    max-width: 300px;
-    margin: 0;
-  }
-
-  .hero-subtitle {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .hero-ctas {
-    justify-content: flex-start;
+  .hero--home .hero-cta {
+    min-width: 15rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .hero {
-    padding-top: 7rem;
-    padding-bottom: 5rem;
+  .hero--home .hero-inner {
+    column-gap: var(--space-2xl);
+    padding-top: 7.5rem;
+    padding-bottom: var(--space-2xl);
   }
 
-  .hero-video {
-    max-width: 360px;
+  .hero--home .hero-media {
+    width: 21rem;
   }
 
-  .hero-eyebrow {
+  .hero--home .hero-eyebrow {
     letter-spacing: 0.25em;
-  }
-}
-
-@media (min-width: 1200px) {
-  .hero-video {
-    max-width: 400px;
   }
 }

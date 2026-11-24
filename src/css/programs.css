@@ -1,0 +1,791 @@
+/* ============================================
+   PROGRAMS — продающие страницы /programs/ и /programs/<slug>/
+   (HTML рендерит server/pages, функции в functions/programs).
+   Только токены из variables.css. Шапка и кнопки: cabinet.css, components.css.
+   Сначала телефон: каждый блок ≤ 660 px при 390 и ≤ 640 px при 360.
+   ============================================ */
+
+/* cabinet.css выключает плавную прокрутку; здесь якоря «Смотреть превью» и «#buy» */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   Шапка и колонка: шире, чем в кабинете
+   ============================================ */
+
+.prg-body .cab-header,
+.prg-main,
+.prg-footer {
+  width: 100%;
+  max-width: calc(960px + 2 * var(--container-padding));
+  margin: 0 auto;
+}
+
+.prg-nav {
+  gap: 1rem;
+}
+
+.prg-nav .cab-nav-link {
+  white-space: nowrap;
+}
+
+.prg-main {
+  flex: 1;
+  padding: 0 var(--container-padding);
+}
+
+/* ============================================
+   Общие элементы
+   ============================================ */
+
+.prg-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 1.55rem + 3vw, 4.25rem);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  text-wrap: balance;
+}
+
+.prg-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  text-wrap: balance;
+}
+
+.prg-sub {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--warm-black);
+  text-wrap: pretty;
+}
+
+.prg-lead {
+  max-width: 36rem;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.prg-meta {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  text-wrap: pretty;
+}
+
+.prg-note {
+  margin-top: 1rem;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.prg-note a,
+.prg-faq-item p a {
+  color: var(--warm-black);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--transition-fast);
+}
+
+.prg-note a:hover,
+.prg-faq-item p a:hover {
+  text-decoration-color: var(--warm-black);
+}
+
+.prg-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--blush);
+}
+
+/* Цена: цифры только Manrope */
+.prg-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.prg-price-value {
+  font-family: var(--font-body);
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--warm-black);
+}
+
+.prg-price-note {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.prg-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prg-actions > * {
+  width: 100%;
+}
+
+/* Список с тонкой золотой чертой вместо точки */
+.prg-list {
+  display: grid;
+  gap: 0.875rem;
+  margin-top: 1rem;
+}
+
+.prg-list li {
+  position: relative;
+  padding-left: 1.75rem;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.prg-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.75em;
+  width: 1rem;
+  height: 1px;
+  background: var(--gold);
+}
+
+.prg-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Секции: отступ только сверху, чтобы блоки мерились без лишнего воздуха */
+.prg-section {
+  padding-top: 2rem;
+}
+
+/* ============================================
+   Первый экран программы
+   Телефон: название и подзаголовок слева, обложка справа, ниже мета, цена, кнопки.
+   ============================================ */
+
+.prg-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44%;
+  grid-template-areas:
+    "head cover"
+    "offer offer";
+  column-gap: 1rem;
+  padding-top: 0.75rem;
+}
+
+.prg-hero-head {
+  grid-area: head;
+  align-self: end;
+  min-width: 0;
+}
+
+.prg-hero .prg-title {
+  margin-bottom: 0.625rem;
+}
+
+.prg-hero-cover {
+  grid-area: cover;
+}
+
+.prg-hero-offer {
+  grid-area: offer;
+  margin-top: 1.25rem;
+}
+
+.prg-hero .prg-price {
+  margin: 0.5rem 0 1rem;
+}
+
+/* ============================================
+   Превью: вертикальный плеер в один экран
+   ============================================ */
+
+.prg-preview-text {
+  margin-bottom: 1rem;
+}
+
+.prg-player {
+  position: relative;
+  width: min(100%, calc((100vh - 10rem) * 9 / 16), 18rem);
+  width: min(100%, calc((100svh - 10rem) * 9 / 16), 18rem);
+  aspect-ratio: 9 / 16;
+  margin: 0 auto;
+  background: var(--warm-black);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.prg-player picture,
+.prg-player-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.prg-player-poster {
+  object-fit: cover;
+}
+
+.prg-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Вся обложка нажимается; метка ▶ внизу, чтобы не закрывать Лилю */
+.prg-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end center;
+  width: 100%;
+  padding-bottom: 1.25rem;
+  cursor: pointer;
+}
+
+.prg-play-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 3.5rem;
+  padding: 0 1.25rem 0 1.125rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--white);
+  background: rgba(26, 23, 20, 0.8);
+  border-radius: 2px;
+  transition: background-color var(--transition-fast);
+}
+
+.prg-play-chip .prg-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gold-light);
+}
+
+.prg-play:hover .prg-play-chip {
+  background: var(--warm-black);
+}
+
+/* Фокус на метке: двойное кольцо видно и на светлой стене, и на тёмном полу */
+.cab-body .prg-play:focus-visible {
+  outline: none;
+}
+
+.prg-play:focus-visible .prg-play-chip {
+  background: var(--warm-black);
+  box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--olive);
+}
+
+.prg-player.is-loading .prg-play {
+  cursor: progress;
+}
+
+.prg-player-msg {
+  max-width: 18rem;
+  margin: 0.75rem auto 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--gold);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: var(--warm-black);
+}
+
+.prg-player-msg[hidden] {
+  display: none;
+}
+
+/* ============================================
+   Для кого, что внутри
+   ============================================ */
+
+.prg-inside .prg-meta {
+  margin-bottom: 1rem;
+}
+
+.prg-items {
+  border-top: 1px solid var(--border);
+}
+
+.prg-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 4rem;
+  padding: 0.875rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--warm-black);
+}
+
+.prg-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.prg-item-title {
+  display: block;
+  font-size: var(--text-base);
+  line-height: 1.4;
+  transition: color var(--transition-fast);
+}
+
+.prg-item-meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.prg-item-desc {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+.prg-item-state {
+  flex: 0 0 auto;
+  display: inline-flex;
+  color: var(--text-muted);
+}
+
+.prg-item-state--play {
+  color: var(--olive);
+}
+
+a.prg-item:hover .prg-item-title {
+  color: var(--olive);
+}
+
+/* ============================================
+   Цена
+   ============================================ */
+
+.prg-buy-box {
+  padding: 1.75rem 1.25rem 1.5rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.prg-price--big {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.prg-price--big .prg-price-value {
+  font-size: 2.75rem;
+  font-weight: 400;
+}
+
+.prg-list--compact {
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+}
+
+.prg-list--compact li {
+  font-size: var(--text-sm);
+}
+
+.prg-bundle-offer {
+  margin-top: 0.25rem;
+}
+
+/* ============================================
+   FAQ
+   ============================================ */
+
+.prg-faq-list {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.prg-faq-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.prg-faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 0;
+  font-size: var(--text-base);
+  line-height: 1.4;
+  cursor: pointer;
+  list-style: none;
+}
+
+.prg-faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.prg-faq-item summary::after {
+  content: '+';
+  content: '+' / '';
+  flex: 0 0 auto;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--gold);
+  transition: transform var(--transition-fast);
+}
+
+.prg-faq-item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+/* Ссылка после ответа стоит отдельно: зона нажатия 44 px за счёт полей */
+.prg-faq-item p a {
+  display: inline-block;
+  padding: 0.7rem 0;
+  margin: -0.7rem 0;
+}
+
+.prg-faq-item p {
+  padding: 0 2rem 1.25rem 0;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* ============================================
+   Каталог /programs/
+   ============================================ */
+
+.prg-intro {
+  padding-top: 0.5rem;
+}
+
+.prg-intro .prg-title {
+  margin-bottom: 0.375rem;
+}
+
+.prg-intro .prg-lead {
+  margin-bottom: 1.25rem;
+}
+
+/* Телефон: лента со scroll-snap, следующая карточка выглядывает справа */
+.prg-cards {
+  display: flex;
+  gap: 1rem;
+  margin: 0 calc(-1 * var(--container-padding));
+  padding: 0 var(--container-padding) 0.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 var(--container-padding);
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.prg-cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* position: relative держит скрытые подписи (.visually-hidden) внутри ленты, иначе они выходят за экран */
+.prg-card {
+  position: relative;
+  flex: 0 0 min(64%, 17rem);
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+}
+
+.prg-card-cover {
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.prg-card-title {
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.prg-card-title a {
+  display: block;
+  min-height: 44px;
+  padding: 0.5rem 0;
+  margin: -0.5rem 0;
+  transition: color var(--transition-fast);
+}
+
+.prg-card-title a:hover {
+  color: var(--olive);
+}
+
+.prg-card-price {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--warm-black);
+}
+
+.prg-card-sub {
+  margin-top: 0.25rem;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.prg-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.75rem;
+  margin-top: 0.375rem;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.prg-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.prg-body .prg-card-actions .btn-primary,
+.prg-card-actions .cab-secondary {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.5rem;
+  letter-spacing: 0.14em;
+}
+
+/* --- Набор «Все программы» --- */
+.prg-bundle-box {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+.prg-bundle-box .prg-h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: 0.25rem;
+}
+
+.prg-bundle-text {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.prg-bundle-box .prg-price {
+  margin-top: 0.375rem;
+}
+
+.prg-bundle-box .prg-price-value {
+  font-size: 1.375rem;
+}
+
+.prg-bundle-box .prg-actions {
+  grid-column: 1 / -1;
+}
+
+.prg-free .prg-lead {
+  margin-bottom: 1.25rem;
+}
+
+/* ============================================
+   Подвал
+   ============================================ */
+
+.prg-footer {
+  padding: 3rem var(--container-padding) 2rem;
+}
+
+.prg-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.prg-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.prg-footer-links a:hover {
+  color: var(--warm-black);
+}
+
+.prg-footer-copy {
+  margin-top: 0.25rem;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ============================================
+   Планшет
+   ============================================ */
+
+@media (min-width: 768px) {
+  .prg-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .prg-actions > * {
+    width: auto;
+    flex: 0 0 auto;
+    min-width: 12rem;
+  }
+
+  .prg-hero {
+    grid-template-columns: minmax(0, 1fr) 17rem;
+    grid-template-areas:
+      "head cover"
+      "offer cover";
+    column-gap: var(--space-lg);
+    padding-top: var(--space-lg);
+  }
+
+  .prg-hero-offer {
+    margin-top: 1.5rem;
+  }
+
+  .prg-section {
+    padding-top: var(--space-xl);
+  }
+
+  .prg-intro {
+    padding-top: var(--space-lg);
+  }
+
+  .prg-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-lg);
+    align-items: center;
+  }
+
+  .prg-preview-text {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    margin: 0;
+  }
+
+  .prg-player {
+    grid-column: 2;
+    width: min(20rem, calc((100vh - 9rem) * 9 / 16));
+    width: min(20rem, calc((100svh - 9rem) * 9 / 16));
+    margin: 0;
+  }
+
+  .prg-player-msg {
+    grid-column: 2;
+    margin-left: 0;
+  }
+
+  .prg-buy-box {
+    max-width: 34rem;
+    padding: 2.25rem 2.5rem 2rem;
+  }
+
+  .prg-faq-list,
+  .prg-list,
+  .prg-items {
+    max-width: 44rem;
+  }
+
+  .prg-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: var(--space-lg) var(--space-md);
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .prg-bundle-box {
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    gap: 1.5rem;
+    max-width: 44rem;
+    padding: 1.25rem 1.5rem 1.25rem 1.25rem;
+  }
+
+  .prg-bundle-box .prg-actions {
+    grid-column: auto;
+  }
+}
+
+/* ============================================
+   Десктоп
+   ============================================ */
+
+@media (min-width: 1024px) {
+  .prg-hero {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    column-gap: var(--space-xl);
+    padding-top: var(--space-xl);
+  }
+
+  .prg-hero .prg-sub {
+    font-size: var(--text-lg);
+  }
+
+  .prg-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .prg-faq-item summary::after,
+  .prg-play-chip {
+    transition: none;
+  }
+}

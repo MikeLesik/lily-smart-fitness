@@ -18,6 +18,41 @@
         "amount": 3900,
         "currency": "eur"
       },
+      "description": {
+        "ru": "Полная тренировка на ягодицы под музыку с Лилей Лесик: 22 минуты дома с гантелями и ступенькой. Разовая оплата, доступ навсегда, превью бесплатно.",
+        "en": "A full glute workout to music with Lily Lesik: 22 minutes at home with dumbbells and a step. One-time payment, lifetime access, free preview."
+      },
+      "previewPoster": "/assets/images/programs/yagodicy-preview.jpg",
+      "equipment": {
+        "ru": "гантели и устойчивая ступенька",
+        "en": "dumbbells and a sturdy step"
+      },
+      "forWhom": {
+        "ru": [
+          "Хочешь подтянуть и укрепить ягодицы дома, без зала",
+          "Удобнее заниматься по готовому видео, чем придумывать тренировку самой",
+          "Есть 20–25 минут и пара гантелей",
+          "Нравится заниматься под музыку, в одном темпе с тренером"
+        ],
+        "en": [
+          "You want firmer, stronger glutes at home, no gym needed",
+          "You would rather follow a ready-made video than plan a workout yourself",
+          "You have 20–25 minutes and a pair of dumbbells",
+          "You like training to music, in step with your coach"
+        ]
+      },
+      "faq": [
+        {
+          "q": {
+            "ru": "Подойдёт, если я давно не занималась?",
+            "en": "Is it for me if I have not trained in a while?"
+          },
+          "a": {
+            "ru": "Да, если нет противопоказаний. Возьми гантели полегче и ставь видео на паузу, когда нужно отдохнуть.",
+            "en": "Yes, unless you have contraindications. Take lighter dumbbells and pause the video whenever you need a rest."
+          }
+        }
+      ],
       "videos": [
         {
           "id": "yagodicy-preview",
@@ -41,8 +76,8 @@
             "en": "Glute workout"
           },
           "description": {
-            "ru": "Разминка, основная часть и заминка. Понадобится коврик.",
-            "en": "Warm-up, main part and cool-down. You will need a mat."
+            "ru": "Разминка, основная часть и заминка под музыку.",
+            "en": "Warm-up, main part and cool-down, all to music."
           },
           "durationSec": 1346,
           "preview": false,
@@ -68,6 +103,41 @@
         "amount": 2500,
         "currency": "eur"
       },
+      "description": {
+        "ru": "Утренняя зарядка с Лилей Лесик: 11 минут на коврике для лимфы и диафрагмы, мягкое пробуждение тела. Разовая оплата, доступ навсегда, превью бесплатно.",
+        "en": "A morning routine with Lily Lesik: 11 minutes on a mat for lymph flow and the diaphragm, a gentle wake-up for the body. One-time payment, lifetime access, free preview."
+      },
+      "previewPoster": "/assets/images/programs/zaryadka-preview.jpg",
+      "equipment": {
+        "ru": "коврик",
+        "en": "a mat"
+      },
+      "forWhom": {
+        "ru": [
+          "Утром тело тяжёлое, лицо отекает, и хочется проснуться мягко",
+          "Нужна короткая практика, которая впишется в любое утро",
+          "Хочешь дышать свободнее и снять напряжение в теле",
+          "Только начинаешь заниматься или возвращаешься после перерыва"
+        ],
+        "en": [
+          "Your body feels heavy and puffy in the morning, and you want a gentle wake-up",
+          "You need a short practice that fits into any morning",
+          "You want to breathe more freely and release tension",
+          "You are just starting out or coming back after a break"
+        ]
+      },
+      "faq": [
+        {
+          "q": {
+            "ru": "Когда лучше делать зарядку?",
+            "en": "When is the best time to do it?"
+          },
+          "a": {
+            "ru": "Утром, до завтрака. Хватит 11 минут и места на коврике.",
+            "en": "In the morning, before breakfast. All you need is 11 minutes and room for a mat."
+          }
+        }
+      ],
       "videos": [
         {
           "id": "zaryadka-preview",

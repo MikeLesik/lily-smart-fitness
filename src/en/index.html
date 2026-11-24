@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Lily — Certified Nutritionist & Integrative Personal Trainer</title>
-  <meta name="description" content="A personalized nutrition and training system that fits into your real life. 5+ years of practice, 360+ clients.">
+  <title>Lily · Home workout programs and personal coaching</title>
+  <meta name="description" content="Video workouts by Lily, a nutritionist and personal trainer: programs from €25 with a one-time payment and lifetime access. A free lesson and personal coaching.">
   <link rel="canonical" href="https://lily.coach/en/">
   <link rel="alternate" hreflang="ru" href="https://lily.coach/">
   <link rel="alternate" hreflang="en" href="https://lily.coach/en/">
@@ -14,8 +14,8 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Lily Smart Fitness">
   <meta property="og:url" content="https://lily.coach/en/">
-  <meta property="og:title" content="Lily — Certified Nutritionist & Integrative Personal Trainer">
-  <meta property="og:description" content="A personalized nutrition and training system. 5+ years of practice, 360+ clients.">
+  <meta property="og:title" content="Lily · Home workout programs and personal coaching">
+  <meta property="og:description" content="Train at home with Lily: video programs from €25, pay once, keep access forever.">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="ru_RU">
   <meta property="og:image" content="https://lily.coach/assets/images/og-image.jpg">
@@ -34,247 +34,125 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <!-- Styles -->
   <link rel="stylesheet" href="../css/variables.css?v=3">
   <link rel="stylesheet" href="../css/reset.css?v=2">
-  <link rel="stylesheet" href="../css/layout.css?v=2">
-  <link rel="stylesheet" href="../css/hero.css?v=2">
-  <link rel="stylesheet" href="../css/components.css?v=2">
-  <link rel="stylesheet" href="../css/animations.css?v=2">
-  <link rel="stylesheet" href="../css/responsive.css?v=2">
-  <link rel="stylesheet" href="../css/workouts.css?v=3">
-  <link rel="stylesheet" href="../css/buy.css?v=1">
+  <link rel="stylesheet" href="../css/layout.css?v=3">
+  <link rel="stylesheet" href="../css/hero.css?v=3">
+  <link rel="stylesheet" href="../css/components.css?v=3">
+  <link rel="stylesheet" href="../css/animations.css?v=3">
+  <link rel="stylesheet" href="../css/responsive.css?v=3">
+  <link rel="stylesheet" href="../css/workouts.css?v=4">
+  <link rel="stylesheet" href="../css/buy.css?v=2">
 </head>
-<body>
+<body class="home">
 
   <!-- ========================================
        NAVIGATION
        ======================================== -->
-  <nav class="nav" role="navigation" aria-label="Main navigation">
-    <a href="#" class="nav-logo">
-      <img src="../assets/images/favicon.png" alt="" class="nav-logo-icon">
+  <nav class="nav" aria-label="Main navigation">
+    <a href="#" class="nav-logo" aria-label="Lily, back to top">
+      <img src="../assets/images/favicon.png" alt="" class="nav-logo-icon" width="32" height="32">
       <span>LILY</span>
     </a>
 
     <div class="nav-links">
-      <a href="#philosophy" class="nav-link">About</a>
-      <a href="#approach" class="nav-link">Method</a>
+      <a href="/en/programs/" class="nav-link">Programs</a>
+      <a href="#about" class="nav-link">About</a>
       <a href="#results" class="nav-link">Results</a>
-      <a href="#workouts" class="nav-link">Workouts</a>
-      <a href="#services" class="nav-link">Programs</a>
+      <a href="#services" class="nav-link">Coaching</a>
       <a href="#faq" class="nav-link">FAQ</a>
     </div>
 
     <div class="nav-actions">
-      <a href="/" class="lang-switch" aria-label="Переключить на русский">RU</a>
+      <a href="/en/login/" class="nav-text-link">Sign in</a>
+      <a href="/" class="nav-text-link lang-switch" lang="ru" aria-label="Русская версия">RU</a>
       <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener" class="btn-primary nav-cta">Message Lily</a>
+      <button class="burger" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
-
-    <button class="burger" aria-label="Menu" aria-expanded="false">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
   </nav>
 
   <!-- Mobile Overlay -->
-  <div class="mobile-overlay" aria-hidden="true">
-    <a href="#philosophy" class="mobile-nav-link">About</a>
-    <a href="#approach" class="mobile-nav-link">Method</a>
+  <div class="mobile-overlay" id="mobile-menu" aria-hidden="true">
+    <a href="/en/programs/" class="mobile-nav-link">Programs</a>
+    <a href="/en/free/" class="mobile-nav-link">Free lesson</a>
+    <a href="#about" class="mobile-nav-link">About</a>
     <a href="#results" class="mobile-nav-link">Results</a>
-    <a href="#workouts" class="mobile-nav-link">Workouts</a>
-    <a href="#services" class="mobile-nav-link">Programs</a>
+    <a href="#services" class="mobile-nav-link">Coaching</a>
     <a href="#faq" class="mobile-nav-link">FAQ</a>
+    <a href="/en/login/" class="mobile-nav-link mobile-nav-link--small">Sign in to your account</a>
     <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener" class="mobile-nav-link mobile-nav-link--cta">Message Lily</a>
   </div>
 
+  <main>
 
   <!-- ========================================
-       SECTION 1: HERO
+       1. FIRST SCREEN: offer, price, button, video
        ======================================== -->
-  <section class="hero">
-    <div class="hero-lines">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-
-    <div class="hero-content hero-split">
-      <div class="hero-right">
-        <p class="hero-eyebrow hero-fade">
-          Certified Nutritionist · Integrative Trainer · 5+ Years of Practice
-        </p>
-
-        <h1 class="hero-title hero-fade">
-          A body that has the resource for&nbsp;a&nbsp;healthy, fulfilling life
-        </h1>
-
-        <p class="hero-subtitle hero-fade">
-          A personalized nutrition and movement system that fits into your real life
-        </p>
-
-        <div class="hero-ctas hero-fade">
-          <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener" class="btn-primary">Message Lily</a>
-          <a href="#philosophy" class="btn-ghost">Learn more</a>
-        </div>
-
-        <p class="hero-micro hero-fade">
-          Individual approach only · I respond within 24 hours
-        </p>
+  <section class="hero hero--home" aria-labelledby="hero-title">
+    <div class="hero-inner">
+      <div class="hero-media" aria-hidden="true">
+        <video autoplay loop muted playsinline poster="../assets/images/hero-poster.jpg">
+          <source src="../assets/videos/hero.mp4" type="video/mp4">
+        </video>
       </div>
 
-      <div class="hero-left">
-        <div class="hero-video hero-fade">
-          <video autoplay loop muted playsinline>
-            <source src="../assets/videos/hero.mp4" type="video/mp4">
-          </video>
+      <div class="hero-copy">
+        <p class="hero-eyebrow hero-fade">Nutritionist · personal trainer</p>
+        <h1 class="hero-title hero-fade" id="hero-title">Train at home with&nbsp;Lily</h1>
+        <p class="hero-subtitle hero-fade">Video programs with a&nbsp;one-time payment. Train at your own pace and keep access forever.</p>
+      </div>
+
+      <div class="hero-offer hero-fade">
+        <p class="hero-price">from <span class="hero-price-amount" data-min-price>€25</span> per&nbsp;program</p>
+        <div class="hero-ctas">
+          <a href="#programs" class="btn-primary hero-cta">Choose a program</a>
+          <a href="/en/free/" class="hero-link">Free lesson</a>
         </div>
       </div>
-    </div>
-
-    <div class="hero-scroll scroll-indicator" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
     </div>
   </section>
 
 
   <!-- ========================================
-       SECTION 2: TRUST BAR
+       2. TRUST: about, credentials, numbers
        ======================================== -->
-  <div class="trust-bar">
+  <section id="about" class="section about">
+    <span id="philosophy" class="anchor-alias" aria-hidden="true"></span>
     <div class="container">
-      <div class="trust-bar-inner">
-        <span class="trust-bar-item"><span class="count-up" data-target="5">0</span>+ years of practice</span>
-        <span class="trust-bar-divider" aria-hidden="true">·</span>
-        <span class="trust-bar-item"><span class="count-up" data-target="360">0</span>+ clients</span>
-        <span class="trust-bar-divider" aria-hidden="true">·</span>
-        <span class="trust-bar-item">Certified nutritionist</span>
-        <span class="trust-bar-divider" aria-hidden="true">·</span>
-        <span class="trust-bar-item">Personal trainer</span>
-        <span class="trust-bar-divider" aria-hidden="true">·</span>
-        <span class="trust-bar-item">1.1K+ Telegram subscribers</span>
-      </div>
-    </div>
-  </div>
+      <div class="about-grid">
+        <picture class="about-photo reveal">
+          <source type="image/webp" srcset="../assets/images/lily-about-480.webp 480w, ../assets/images/lily-about.webp 720w" sizes="(min-width: 768px) 22rem, 7.5rem">
+          <img src="../assets/images/lily-about-480.jpg" srcset="../assets/images/lily-about-480.jpg 480w, ../assets/images/lily-about.jpg 720w" sizes="(min-width: 768px) 22rem, 7.5rem" alt="Lily, nutritionist and personal trainer" width="480" height="600" loading="lazy" decoding="async">
+        </picture>
 
-
-  <!-- ========================================
-       SECTION 3: PHILOSOPHY / ABOUT
-       ======================================== -->
-  <section id="philosophy" class="section">
-    <div class="container">
-      <div class="grid-2">
-
-        <!-- Photo Column -->
-        <div class="philosophy-photo reveal">
-          <span class="philosophy-photo-placeholder" aria-hidden="true">L</span>
+        <div class="about-head reveal">
+          <p class="section-eyebrow">About me</p>
+          <h2 class="section-title">Hi, I'm&nbsp;Lily</h2>
+          <ul class="about-creds">
+            <li>Certified nutritionist, integrative approach</li>
+            <li>Personal trainer: Gray Institute USA, FPA</li>
+          </ul>
         </div>
 
-        <!-- Text Column -->
-        <div class="philosophy-text">
-          <div class="section-header reveal">
-            <p class="section-eyebrow">About me</p>
-            <h2 class="section-title">Not&nbsp;diets, but a&nbsp;focus on&nbsp;nutrient-dense food and comfortable workouts that deliver results through proper technique and addressing weak points. That&nbsp;is the&nbsp;system.</h2>
-          </div>
+        <div class="about-body reveal reveal-delay-1">
+          <p class="about-text">Not&nbsp;diets, but a&nbsp;focus on&nbsp;nutrient-dense food and comfortable workouts that deliver results through proper technique and addressing weak points. That&nbsp;is the&nbsp;system.</p>
 
-          <div class="reveal reveal-delay-1">
-            <p>I came to nutrition and fitness through my own experience — when I realized that no diet works long-term if it doesn't account for your real life. Over 5+ years of practice, I've helped more than 360 clients build a system that works specifically for them.</p>
-            <p>My approach is integrative. This means I don't work with nutrition or training separately. I build a program around your entire life: sleep, stress, schedule, habits. That's exactly why my clients' results are sustainable.</p>
-            <p>If you're tired of approaches that give results for a month and then everything comes back — you need a system, not another diet. And I can help.</p>
-          </div>
-
-          <blockquote class="philosophy-quote reveal reveal-delay-2">
+          <blockquote class="about-quote">
             "Your body is not a project. It's a system that needs tuning, not breaking."
           </blockquote>
 
-          <div class="philosophy-credentials reveal reveal-delay-3">
-            <h4>Education and Certifications</h4>
-            <ul class="credential-list">
-              <li>Certified nutritionist (integrative approach)</li>
-              <li>Personal trainer: Gray Institute USA, FPA</li>
-              <li>5+ years of practice, 360+ clients</li>
-            </ul>
-          </div>
-
-          <div class="stats-row reveal reveal-delay-4">
-            <div class="stat-item">
-              <div class="stat-number"><span class="count-up" data-target="5">0</span>+</div>
-              <div class="stat-label">years of practice</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number"><span class="count-up" data-target="360">0</span>+</div>
-              <div class="stat-label">clients</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">Online</div>
-              <div class="stat-label">worldwide</div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       SECTION 4: APPROACH / METHOD
-       ======================================== -->
-  <section id="approach" class="section">
-    <div class="container">
-      <div class="section-header section-header--center reveal">
-        <p class="section-eyebrow">My method</p>
-        <h2 class="section-title">Three pillars of sustainable results</h2>
-      </div>
-
-      <div class="scroll-peek">
-        <div class="pillars-scroll horizontal-scroll">
-
-          <!-- Pillar 01 -->
-          <div class="pillar-card card-lift reveal reveal-delay-1">
-            <span class="pillar-number" aria-hidden="true">01</span>
-            <div class="pillar-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 20V10M12 20V4M6 20v-6"/>
-              </svg>
-            </div>
-            <h3 class="pillar-title">Smart Training</h3>
-            <p class="pillar-outcome">Workouts that work with your physiology, not against it</p>
-            <p class="pillar-desc">A program adapted to your level, schedule, and goals. No pain — just progress.</p>
-          </div>
-
-          <!-- Pillar 02 -->
-          <div class="pillar-card card-lift reveal reveal-delay-2">
-            <span class="pillar-number" aria-hidden="true">02</span>
-            <div class="pillar-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a5 5 0 0 1 5 5c0 3-5 7-5 7s-5-4-5-7a5 5 0 0 1 5-5z"/>
-                <path d="M12 22c-4 0-8-2-8-6 0-2 1.5-3.5 3-4M12 22c4 0 8-2 8-6 0-2-1.5-3.5-3-4"/>
-              </svg>
-            </div>
-            <h3 class="pillar-title">Mindful Nutrition</h3>
-            <p class="pillar-outcome">Nutrition built around your life — with no forbidden foods</p>
-            <p class="pillar-desc">A personalized plan that considers your preferences, routine, and real-life conditions.</p>
-          </div>
-
-          <!-- Pillar 03 -->
-          <div class="pillar-card card-lift reveal reveal-delay-3">
-            <span class="pillar-number" aria-hidden="true">03</span>
-            <div class="pillar-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
-              </svg>
-            </div>
-            <h3 class="pillar-title">Lifestyle Integration</h3>
-            <p class="pillar-outcome">Results that last — because they're woven into your lifestyle</p>
-            <p class="pillar-desc">Sleep, stress, daily routine — it's all part of the program. That's why the changes stick.</p>
-          </div>
-
+          <ul class="about-stats">
+            <li><span class="about-stat-num"><span class="count-up" data-target="5">5</span>+</span><span class="about-stat-label">years of practice</span></li>
+            <li><span class="about-stat-num"><span class="count-up" data-target="360">360</span>+</span><span class="about-stat-label">clients</span></li>
+            <li><span class="about-stat-num">1.1K+</span><span class="about-stat-label">Telegram subscribers</span></li>
+          </ul>
         </div>
       </div>
     </div>
@@ -282,20 +160,82 @@
 
 
   <!-- ========================================
-       SECTION 5: RESULTS / PROOF
+       3. PROGRAMS: cards rendered by main.js from /api/catalog,
+       Buy opens the purchase dialog (js/buy.js)
        ======================================== -->
-  <section id="results" class="section">
+  <section id="programs" class="section programs" aria-labelledby="programs-title">
+    <span id="workouts" class="anchor-alias" aria-hidden="true"></span>
     <div class="container">
-      <div class="section-header section-header--center reveal">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Video programs</p>
+        <h2 class="section-title" id="programs-title">Choose a program</h2>
+      </div>
+    </div>
+
+    <div class="scroll-peek programs-peek reveal">
+      <div class="programs-list horizontal-scroll" data-programs data-locale="en" aria-live="polite"></div>
+    </div>
+
+    <div class="container">
+      <a href="/en/programs/" class="text-link programs-all">All programs <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       4. HOW THE ACCOUNT WORKS: 3 steps
+       ======================================== -->
+  <section id="how" class="section how" aria-labelledby="how-title">
+    <div class="container container--narrow">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Your account</p>
+        <h2 class="section-title" id="how-title">How it works</h2>
+      </div>
+
+      <ol class="how-steps">
+        <li class="how-step reveal">
+          <span class="how-num" aria-hidden="true">01</span>
+          <div>
+            <h3 class="how-title">Payment</h3>
+            <p class="how-text">Card, Apple Pay or Google Pay. No sign-up needed, just your email.</p>
+          </div>
+        </li>
+        <li class="how-step reveal reveal-delay-1">
+          <span class="how-num" aria-hidden="true">02</span>
+          <div>
+            <h3 class="how-title">Sign in without a password</h3>
+            <p class="how-text">You get a 6-digit code by email. Enter it and you are in your account.</p>
+          </div>
+        </li>
+        <li class="how-step reveal reveal-delay-2">
+          <span class="how-num" aria-hidden="true">03</span>
+          <div>
+            <h3 class="how-title">Videos forever</h3>
+            <p class="how-text">The program stays in your account forever. Watch on your phone, tablet or computer.</p>
+          </div>
+        </li>
+      </ol>
+
+      <a href="/en/login/" class="text-link how-login">Already bought? Sign in</a>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       5. RESULTS
+       ======================================== -->
+  <section id="results" class="section results" aria-labelledby="results-title">
+    <div class="container">
+      <div class="section-header reveal">
         <p class="section-eyebrow">Results</p>
-        <h2 class="section-title">Transformation Stories</h2>
+        <h2 class="section-title" id="results-title">Transformation Stories</h2>
       </div>
 
-      <div class="scroll-peek">
+      <div class="scroll-peek reveal">
         <div class="testimonials-scroll horizontal-scroll">
 
           <!-- Testimonial 1 -->
-          <div class="testimonial-card reveal reveal-delay-1">
+          <div class="testimonial-card">
             <span class="testimonial-quote-mark" aria-hidden="true">&laquo;</span>
             <p class="testimonial-text">In 3 months working with Lily, I didn't just lose 9 kg — I finally stopped thinking of food as the enemy.</p>
             <p class="testimonial-author">Anna K.</p>
@@ -307,7 +247,7 @@
           </div>
 
           <!-- Testimonial 2 -->
-          <div class="testimonial-card reveal reveal-delay-2">
+          <div class="testimonial-card">
             <span class="testimonial-quote-mark" aria-hidden="true">&laquo;</span>
             <p class="testimonial-text">For the first time in my life, I actually enjoy working out. Lily explained what my body needed — and everything fell into place.</p>
             <p class="testimonial-author">Maria L.</p>
@@ -319,7 +259,7 @@
           </div>
 
           <!-- Testimonial 3 -->
-          <div class="testimonial-card reveal reveal-delay-3">
+          <div class="testimonial-card">
             <span class="testimonial-quote-mark" aria-hidden="true">&laquo;</span>
             <p class="testimonial-text">I stopped being afraid of carbs. I learned to listen to my body. Losing 6 kg was a nice bonus.</p>
             <p class="testimonial-author">Elena R.</p>
@@ -332,51 +272,60 @@
 
         </div>
       </div>
-
-    </div>
-  </section>
-
-
-
-  <!-- ========================================
-       SECTION 5.5: WORKOUTS CATALOG
-       Cards are rendered by main.js from /api/catalog; Buy opens Stripe checkout (js/buy.js).
-       ======================================== -->
-  <section id="workouts" class="section workouts-section">
-    <div class="container">
-      <div class="section-header section-header--center reveal">
-        <p class="section-eyebrow">Workouts</p>
-        <h2 class="section-title">Lifetime access. Train at your own pace.</h2>
-        <p class="section-subtitle">One-time payment, no subscription, no commitment. Watch on any device, any time.</p>
-      </div>
-
-      <div class="workouts-grid" data-courses-grid data-locale="en" aria-live="polite">
-        <!-- cards rendered by main.js from /api/catalog -->
-      </div>
     </div>
   </section>
 
 
   <!-- ========================================
-       SECTION 6: SERVICES / PRICING
+       6. FREE LESSON
        ======================================== -->
-  <section id="services" class="section section--dark">
+  <section id="free" class="section free-lesson" aria-labelledby="free-title">
     <div class="container">
-      <div class="section-header section-header--center reveal">
-        <p class="section-eyebrow">Programs</p>
-        <h2 class="section-title">Choose your format</h2>
-      </div>
+      <div class="free-grid">
+        <a href="/en/free/" class="free-photo reveal" tabindex="-1" aria-hidden="true">
+          <picture>
+            <source type="image/webp" srcset="../assets/images/programs/free.webp">
+            <img src="../assets/images/programs/free.jpg" alt="" width="480" height="600" loading="lazy" decoding="async">
+          </picture>
+        </a>
 
-      <div class="grid-3 grid-3-pricing">
+        <div class="free-head reveal">
+          <p class="section-eyebrow">Free lesson</p>
+          <h2 class="section-title" id="free-title">Why the belly stays after giving birth</h2>
+        </div>
+
+        <div class="free-body reveal reveal-delay-1">
+          <p class="free-text">A short lesson on diastasis: three causes and what to do about them. Leave your email and the lesson opens in your account.</p>
+          <a href="/en/free/" class="btn-primary free-cta">Get the lesson</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================
+       7. PERSONAL COACHING (plans)
+       ======================================== -->
+  <section id="services" class="section section--dark services" aria-labelledby="services-title">
+    <div class="container">
+      <div class="section-header reveal">
+        <p class="section-eyebrow">Personal coaching</p>
+        <h2 class="section-title" id="services-title">Choose your format</h2>
+        <p class="services-intro">Nutrition, training and routine built around your life: a&nbsp;plan within 72&nbsp;hours, weekly adjustments, Telegram support.</p>
+      </div>
+    </div>
+
+    <div class="scroll-peek scroll-peek--dark pricing-peek reveal">
+      <div class="pricing-list horizontal-scroll">
 
         <!-- Tier 1: Start -->
-        <div class="pricing-card reveal reveal-delay-1">
+        <div class="pricing-card">
           <p class="pricing-name">Start</p>
           <h3 class="pricing-label">Nutrition Plan</h3>
-          <div class="pricing-price">
+          <p class="pricing-price">
             <span class="pricing-amount">&euro;229</span>
             <span class="pricing-period">/ month</span>
-          </div>
+          </p>
           <p class="pricing-tagline">For those who want to get their nutrition right</p>
           <ul class="pricing-features">
             <li>Personalized nutrition plan for 4 weeks</li>
@@ -388,14 +337,13 @@
         </div>
 
         <!-- Tier 2: Integration (Featured) -->
-        <div class="pricing-card pricing-card--featured reveal reveal-delay-2">
-          <span class="pricing-badge">Popular</span>
-          <p class="pricing-name">Integration</p>
+        <div class="pricing-card pricing-card--featured">
+          <p class="pricing-name">Integration <span class="pricing-badge">· Popular</span></p>
           <h3 class="pricing-label">Full Integration</h3>
-          <div class="pricing-price">
+          <p class="pricing-price">
             <span class="pricing-amount">&euro;439</span>
             <span class="pricing-period">/ month</span>
-          </div>
+          </p>
           <p class="pricing-tagline">For those who want comprehensive results</p>
           <ul class="pricing-features">
             <li>2 workouts per week, 45 minutes each</li>
@@ -406,13 +354,13 @@
         </div>
 
         <!-- Tier 3: VIP -->
-        <div class="pricing-card reveal reveal-delay-3">
+        <div class="pricing-card">
           <p class="pricing-name">VIP</p>
           <h3 class="pricing-label">VIP Coaching</h3>
-          <div class="pricing-price">
+          <p class="pricing-price">
             <span class="pricing-amount">&euro;559</span>
             <span class="pricing-period">/ month</span>
-          </div>
+          </p>
           <p class="pricing-tagline">For those who want maximum results</p>
           <ul class="pricing-features">
             <li>Everything from the Start plan</li>
@@ -425,100 +373,59 @@
         </div>
 
       </div>
+    </div>
 
-      <p class="pricing-footnote text-center reveal">
-        Payment accepted in EUR, USD, and RUB. Details — via direct message.
-      </p>
+    <div class="container">
+      <p class="pricing-footnote">First step: <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F%20%D0%BD%D0%B0%20%D0%B1%D0%B5%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D0%BD%D1%83%D1%8E%20%D0%B4%D0%B8%D0%B0%D0%B3%D0%BD%D0%BE%D1%81%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D1%83%D1%8E%20%D1%81%D0%B5%D1%81%D1%81%D0%B8%D1%8E." target="_blank" rel="noopener">a free 20-minute assessment</a>. Payment in EUR, USD and RUB.</p>
     </div>
   </section>
 
 
   <!-- ========================================
-       SECTION 7: PROCESS / HOW IT WORKS
+       8. FAQ
        ======================================== -->
-  <section id="process" class="section">
+  <section id="faq" class="section faq" aria-labelledby="faq-title">
     <div class="container container--narrow">
-      <div class="section-header section-header--center reveal">
-        <p class="section-eyebrow">How we work</p>
-        <h2 class="section-title">Your path to results</h2>
-      </div>
-
-      <div class="timeline">
-
-        <!-- Step 01 -->
-        <div class="timeline-step reveal">
-          <div class="timeline-marker">01</div>
-          <h3 class="timeline-title">Assessment</h3>
-          <p class="timeline-timing">60 minutes</p>
-          <p class="timeline-desc">For Start and VIP plans — a 60-minute video assessment. We'll discuss your situation, goals, and lifestyle.</p>
-        </div>
-
-        <!-- Step 02 -->
-        <div class="timeline-step reveal reveal-delay-1">
-          <div class="timeline-marker">02</div>
-          <h3 class="timeline-title">Personalized Plan</h3>
-          <p class="timeline-timing">Within 72 hours</p>
-          <p class="timeline-desc">You'll receive a personalized nutrition plan adapted to your reality.</p>
-        </div>
-
-        <!-- Step 03 -->
-        <div class="timeline-step reveal reveal-delay-2">
-          <div class="timeline-marker">03</div>
-          <h3 class="timeline-title">Ongoing Support</h3>
-          <p class="timeline-timing">Throughout the program</p>
-          <p class="timeline-desc">Weekly check-ins, adjustments, Telegram support. You're not alone.</p>
-        </div>
-
-        <!-- Step 04 -->
-        <div class="timeline-step reveal reveal-delay-3">
-          <div class="timeline-marker">04</div>
-          <h3 class="timeline-title">Lasting Results</h3>
-          <p class="timeline-timing">First changes in 2–4 weeks</p>
-          <p class="timeline-desc">Habits that stick — because they're woven into your life, not layered on top of it.</p>
-        </div>
-
-      </div>
-
-      <!-- Bridge CTA -->
-      <div class="timeline-bridge reveal">
-        <p>The first step is a free 20-minute assessment. No obligations.</p>
-        <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D0%B0%D1%82%D1%8C%D1%81%D1%8F%20%D0%BD%D0%B0%20%D0%B1%D0%B5%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D0%BD%D1%83%D1%8E%20%D0%B4%D0%B8%D0%B0%D0%B3%D0%BD%D0%BE%D1%81%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D1%83%D1%8E%20%D1%81%D0%B5%D1%81%D1%81%D0%B8%D1%8E." target="_blank" rel="noopener" class="btn-primary">Message Lily</a>
-      </div>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       SECTION 8: CTA BANNER
-       ======================================== -->
-  <section class="section section--olive">
-    <div class="cta-banner reveal">
-      <h2 class="cta-banner-title">Your transformation starts with&nbsp;one conversation</h2>
-      <p class="cta-banner-subtitle">Just write — I'll respond within a day.</p>
-      <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BD%D0%B0%D1%87%D0%B0%D1%82%D1%8C%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83.%20%D0%9A%D0%BE%D0%B3%D0%B4%D0%B0%20%D0%BC%D0%BE%D0%B6%D0%BD%D0%BE%20%D0%BF%D0%BE%D0%B3%D0%BE%D0%B2%D0%BE%D1%80%D0%B8%D1%82%D1%8C%3F" target="_blank" rel="noopener" class="btn-primary">Message Lily on Telegram</a>
-      <p class="cta-banner-micro">
-        Individual approach only · Focused only on your goals<br>
-        I respond within 24 hours
-      </p>
-    </div>
-  </section>
-
-
-  <!-- ========================================
-       SECTION 9: FAQ
-       ======================================== -->
-  <section id="faq" class="section">
-    <div class="container container--narrow">
-      <div class="section-header section-header--center reveal">
+      <div class="section-header reveal">
         <p class="section-eyebrow">Questions</p>
-        <h2 class="section-title">Frequently Asked Questions</h2>
+        <h2 class="section-title" id="faq-title">Frequently Asked Questions</h2>
       </div>
 
       <div class="faq-list reveal">
 
         <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            <span>How do sessions work — online or in person?</span>
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How do I open a program after paying?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>The program appears in your account right after payment. You sign in with your email: you get a 6-digit code, no password needed. Watch on your phone, tablet or computer, access stays forever.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Can I pay with a Russian card?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Stripe does not accept Russian cards. <a href="https://t.me/LilyLesik?text=Hi%20Lily!%20I'd%20like%20to%20buy%20a%20video%20program%2C%20but%20my%20card%20is%20Russian." target="_blank" rel="noopener">Message Lily on Telegram</a> and she will open access for you manually.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Can I get a refund?</span>
+            <span class="faq-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>The terms are on the <a href="/en/legal/refunds/">Refunds</a> page. If something went wrong with your access, message Lily on Telegram.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How does coaching work: online or in person?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer">
@@ -527,17 +434,17 @@
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            <span>How long is the program and when will I see results?</span>
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How long is coaching and when will I see results?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer">
-            <p>The minimum duration is 1 month. Most clients work with me for 3–6 months for sustainable results. First changes in how you feel — within 2–3 weeks. Visible physical changes — within 4–8 weeks. Results are individual.</p>
+            <p>The minimum duration is 1 month. Most clients work with me for 3–6 months for sustainable results. First changes in how you feel within 2–3 weeks, visible physical changes within 4–8 weeks. Results are individual.</p>
           </div>
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>Are there any contraindications?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
@@ -547,28 +454,30 @@
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            <span>How do I pay and what payment methods do you accept?</span>
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How do I pay for coaching?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer">
-            <p>I accept payment in EUR, USD, and RUB. Payment is made via online transfer after the first free session. Details — via direct message on Telegram.</p>
+            <p>I accept payment in EUR, USD, and RUB. Payment is made via online transfer after the first free session. Details via direct message on Telegram.</p>
           </div>
         </div>
 
         <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
+          <button class="faq-question" type="button" aria-expanded="false">
             <span>What makes you different from other trainers and nutritionists?</span>
             <span class="faq-toggle" aria-hidden="true">+</span>
           </button>
           <div class="faq-answer">
-            <p>Most approaches deal with food or workouts separately. I work with both — plus lifestyle: sleep, stress, daily routine. The program is built around your real life, not an ideal schedule. That's why it works long-term.</p>
+            <p>Most approaches deal with food or workouts separately. I work with both, plus lifestyle: sleep, stress, daily routine. The program is built around your real life, not an ideal schedule. That's why it works long-term.</p>
           </div>
         </div>
 
       </div>
     </div>
   </section>
+
+  </main>
 
 
   <!-- ========================================
@@ -577,34 +486,38 @@
   <footer class="footer">
     <div class="container">
 
-      <!-- Row 1: brand + nav + social -->
       <div class="footer-row">
-        <a href="#" class="footer-logo">
-          <img src="../assets/images/favicon.png" alt="" class="footer-logo-icon">
+        <a href="#" class="footer-logo" aria-label="Lily, back to top">
+          <img src="../assets/images/favicon.png" alt="" class="footer-logo-icon" width="24" height="24">
           <span>LILY</span>
         </a>
-        <nav class="footer-nav" aria-label="Footer">
-          <a href="#philosophy">About</a>
-          <a href="#approach">Method</a>
-          <a href="#results">Results</a>
-          <a href="#workouts">Workouts</a>
-          <a href="#services">Programs</a>
-          <a href="#faq">FAQ</a>
-        </nav>
         <div class="footer-social">
-          <a href="https://t.me/Lily_Smart_Fitness" target="_blank" rel="noopener" aria-label="Telegram">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          <a href="https://t.me/Lily_Smart_Fitness" target="_blank" rel="noopener" aria-label="Telegram channel">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
           </a>
           <a href="https://www.instagram.com/kpmvl" target="_blank" rel="noopener" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
           </a>
-          <a href="https://t.me/LilyLesik" target="_blank" rel="noopener" aria-label="Telegram DM">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <a href="https://t.me/LilyLesik" target="_blank" rel="noopener" aria-label="Message Lily on Telegram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </a>
         </div>
       </div>
 
-      <!-- Row 2: disclaimer + copyright -->
+      <nav class="footer-nav" aria-label="Site sections">
+        <a href="/en/programs/">Programs</a>
+        <a href="/en/free/">Free lesson</a>
+        <a href="#services">Coaching</a>
+        <a href="#faq">FAQ</a>
+        <a href="/en/login/">Sign in</a>
+      </nav>
+
+      <nav class="footer-legal" aria-label="Legal">
+        <a href="/en/legal/terms/">Terms</a>
+        <a href="/en/legal/privacy/">Privacy</a>
+        <a href="/en/legal/refunds/">Refunds</a>
+      </nav>
+
       <div class="footer-bottom">
         <p class="footer-disclaimer">Lily's services are educational and coaching-based, not medical. If you have health conditions, consult a doctor.</p>
         <p class="footer-copyright">&copy; 2026 Lily</p>
@@ -615,19 +528,19 @@
 
 
   <!-- ========================================
-       MOBILE STICKY CTA
+       MOBILE STICKY CTA: programs + Telegram
        ======================================== -->
   <div class="sticky-cta" aria-hidden="true">
-    <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-      <span>Message Lily</span>
+    <a href="#programs" class="sticky-cta-main">Programs from&nbsp;<span data-min-price>€25</span></a>
+    <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener" class="sticky-cta-tg" aria-label="Message Lily on Telegram">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
     </a>
   </div>
 
 
   <!-- Scripts -->
-  <script src="../js/main.js?v=5"></script>
-  <script src="../js/buy.js?v=1"></script>
+  <script src="../js/main.js?v=6"></script>
+  <script src="../js/buy.js?v=3"></script>
 
 </body>
 </html>
