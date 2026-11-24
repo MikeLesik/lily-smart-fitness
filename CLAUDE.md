@@ -1,240 +1,95 @@
-# LILY — Integrative Fitness & Nutrition | Personal Brand Website
+# LILY: Integrative Fitness & Nutrition (lily.coach)
 
-## Project Overview
+Сайт Лили Лесик, нутрициолога и интегративного персонального тренера. Продаёт персональное сопровождение (кнопка в Telegram), а дальше видеопрограммы с личным кабинетом.
 
-Premium personal brand website for **Lily** — certified nutritionist and integrative personal trainer.
-Target: high-end landing page that converts visitors into Telegram consultations.
+**Текущая работа идёт по плану `docs/PLAN-CABINET.md`.** Прочитай его перед любой задачей: там цель, решения по умолчанию, архитектура кабинета, этапы и что уже сделано. Один этап = одна сессия и один коммит (или PR) в ветке `cabinet`.
 
-**Live channels:**
-- Telegram channel: https://t.me/Lily_Smart_Fitness (~1,159 subscribers)
-- Telegram DM (primary CTA): https://t.me/LilyLesik
-- Instagram: https://www.instagram.com/kpmvl
+## Ветки и выкладка
 
-## Tech Stack
+- Хостинг: Cloudflare Pages, проект `lily-smart-fitness`, подключён к GitHub-репозиторию MikeLesik/lily-smart-fitness. Каталог сборки `src`, команды сборки нет.
+- Пуш в `main` сразу выкладывает живой сайт lily.coach. **В `main` ничего не пушить и не сливать без явного OK Михаила.**
+- Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
+- Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
+- wrangler глобально не установлен: `npx wrangler@4 ...`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
+- Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
-- **Framework:** Astro 5 (static site generator — fast, SEO-optimized, zero JS by default)
-- **Styling:** Tailwind CSS 4 + custom CSS variables for brand tokens
-- **Animations:** CSS animations + Intersection Observer (no heavy libs)
-- **Fonts:** Google Fonts — Cormorant Garamond (display) + Manrope (body)
-- **Deployment target:** Vercel / Netlify / any static hosting
-- **Language:** HTML content in Russian (ru locale)
+## Стек
 
-## Brand Design System
+- Чистые HTML, CSS и ванильный JS. Без фреймворков, без сборки, без npm-зависимостей на фронте.
+- RU в корне `src/`, EN-зеркало в `src/en/`. Тексты живут прямо в HTML.
+- Шрифты Google Fonts: Cormorant Garamond (заголовки) и Manrope (текст).
+- Анимации на CSS, появление блоков через IntersectionObserver в `main.js`.
+- Версии файлов в ссылках (`?v=2`, `main.js?v=4`) служат сбросом кеша: при правке CSS или JS увеличь номер в обеих страницах.
+- Серверная часть кабинета (этап 2 и дальше) будет на Cloudflare Pages Functions + D1 в этом же проекте, см. раздел 5 плана.
 
-### Color Tokens
-```css
---cream: #F5F0EB;          /* page background */
---warm-black: #1A1714;     /* primary text, hero bg */
---olive: #6B7B5E;          /* accent green, section eyebrows */
---olive-light: #8A9A7A;    /* hover states */
---gold: #C4A265;           /* primary CTA, highlights */
---gold-light: #D4B87A;     /* hover gold, italic accents */
---taupe: #A69585;          /* muted decorative */
---blush: #E8D5C8;          /* soft pink accent */
---white: #FDFCFA;          /* card backgrounds */
---text-muted: #7A7067;     /* body text */
---border: rgba(26,23,20,0.08);
-```
-
-### Typography
-- **Display:** `Cormorant Garamond` — weights 300, 400, 500, 600, 700 + italic
-- **Body:** `Manrope` — weights 300, 400, 500, 600, 700
-- **Sizes:** fluid clamp() based — hero title `clamp(3rem, 7vw, 6.5rem)`, section titles `clamp(2rem, 4vw, 3.5rem)`
-- **Letter-spacing:** eyebrows `0.35em`, nav links `0.15em`, CTAs `0.2em`
-
-### Design Aesthetic
-- **Tone:** Luxury editorial wellness. NOT fitness-bro. Think The Parker Practice (London), Goop, Aman resorts.
-- **Photography style:** Warm, natural light, earth tones, no stock fitness photos
-- **Layout:** Generous whitespace, asymmetric grids, vertical rhythm
-- **Effects:** Subtle grain overlay on hero, scroll-triggered reveals, gold line accents
-
-## Site Architecture
+## Структура
 
 ```
-/ (index)
-├── Hero Section
-│   ├── Full-screen dark bg with grain texture
-│   ├── Eyebrow: "Integrative Fitness & Nutrition"
-│   ├── H1: "Умный фитнес, который тебе соответствует"
-│   ├── Subtitle + 2 CTAs (primary → Telegram, ghost → #approach)
-│   └── Scroll indicator
-│
-├── #philosophy — About / Philosophy
-│   ├── 2-column grid: visual placeholder (for photo) + text
-│   ├── Brand story + approach description
-│   └── Stats row: 7+ лет, 1K+ клиентов, 96% довольных
-│
-├── #approach — Method / 3 Pillars
-│   ├── Centered header
-│   └── 3-card grid:
-│       ├── 01 Smart Training
-│       ├── 02 Nutrition Design
-│       └── 03 Lifestyle Integration
-│
-├── #services — Programs / Pricing
-│   ├── Dark section (warm-black bg)
-│   └── 3-tier pricing:
-│       ├── Start: Nutrition Plan — €97/mo
-│       ├── Premium: Full Integration — €247/mo (featured)
-│       └── Elite: VIP Coaching — €497/mo
-│
-├── #results — Testimonials
-│   ├── 3-card testimonial grid
-│   └── Each: quote + text + author avatar/name/meta
-│
-├── #process — How It Works
-│   ├── 4-step vertical timeline
-│   └── Steps: Диагностика → План → Сопровождение → Результат
-│
-├── CTA Banner
-│   ├── Olive gradient background
-│   └── "Записаться в Telegram" button
-│
-├── #faq — FAQ Accordion
-│   └── 5 items with expand/collapse
-│
-└── Footer
-    ├── 4-column grid: brand + nav + programs + contacts
-    └── Bottom bar: copyright + social links (TG, IG)
+CLAUDE.md                этот файл
+docs/
+  PLAN-CABINET.md        план работ по кабинету (главный документ)
+  WORKOUTS.md            описание июньского раздела «Видеотренировки» (модель заменяется кабинетом)
+  AUDIT.md, REDESIGN-PLAN.md, lily-coach-project-brief.md   старые аудит, план редизайна и бриф
+src/
+  index.html             главная RU
+  404.html               страница 404 RU (абсолютные пути к CSS)
+  robots.txt, sitemap.xml   sitemap содержит только / и /en/
+  en/index.html, en/404.html
+  css/
+    variables.css        дизайн-токены (цвета, шрифты, размеры, отступы)
+    reset.css, layout.css, hero.css, components.css, animations.css, responsive.css
+    workouts.css         каталог курсов, лендинг курса, окно оплаты, success-страницы
+  js/
+    main.js              меню, липкая кнопка, FAQ, появление блоков, счётчики, таймлайн,
+                         каталог курсов, окно оплаты, обёртка аналитики window.track
+    courses.js           данные курсов (window.LILY_COURSES), уйдёт на этапе 4
+  workouts/, en/workouts/   лендинги курсов, success-страницы и шаблоны (переедут в /programs/ на этапе 5)
+  assets/images/         фавиконки, og-image.jpg (1200×630); foto.psd в .gitignore
+  assets/videos/hero.mp4
+  content/site-content.json   старая выгрузка текстов, страницами не используется
 ```
 
-## Component Requirements
+## Главная: блоки по порядку
 
-### Navigation
-- Fixed, transparent on hero → solid cream bg on scroll
-- Logo left, links center/right, CTA button "Записаться"
-- Mobile: burger → fullscreen overlay menu
-- Transition: padding shrinks + bg appears on scroll past 100px
+Навигация (логотип, ссылки, EN/RU, «Написать Лиле»; на телефоне бургер и полноэкранное меню) → hero с вертикальным видео → полоса доверия (5+ лет, 360+ клиентов) → `#philosophy` обо мне → `#approach` три столпа → `#results` отзывы → `#workouts` каталог видеотренировок (рендерится из `courses.js`) → `#services` тарифы сопровождения → `#process` как проходит работа → CTA-баннер → `#faq` → футер. На телефоне снизу липкая кнопка Telegram, она появляется после hero и прячется, пока открыто меню.
 
-### Hero
-- Min-height 100vh, centered content
-- Background: multi-layer (solid → radial gradients → grain SVG overlay → gold vertical lines at 25/50/75%)
-- Staggered fade-up animations (eyebrow 0.5s → title 0.7s → subtitle 0.9s → CTAs 1.1s)
-- Scroll indicator at bottom with pulse animation
+## Дизайн-система
 
-### Buttons
-- `.btn-primary`: gold bg, warm-black text, sliding hover overlay
-- `.btn-ghost`: transparent with border, gold text on hover
-- `.service-btn`: full-width, border → gold fill on hover
+Токены в `src/css/variables.css`, новые цвета и шрифты не вводить.
 
-### Cards (Pillars)
-- White bg, subtle border, lift on hover (-4px + shadow)
-- Large faded number (01/02/03), icon in top-right circle
-- Number turns gold on hover, icon gets olive bg
+| Токен | Значение | Где |
+|---|---|---|
+| `--cream` | #F5F0EB | фон страницы |
+| `--warm-black` | #1A1714 | текст, тёмные секции, hero |
+| `--olive` / `--olive-light` | #6B7B5E / #8A9A7A | акцент, надзаголовки |
+| `--gold` / `--gold-light` | #C4A265 / #D4B87A | главная кнопка, акценты |
+| `--taupe`, `--blush` | #A69585, #E8D5C8 | декоративные |
+| `--white` | #FDFCFA | фон карточек |
+| `--text-muted` | #7A7067 | основной текст |
 
-### Pricing Cards
-- Dark bg, subtle borders between cards
-- Featured card: gold-tinted bg, gold border, pre-filled CTA
-- "Популярное" label on featured card
+- Тон: спокойная редакционная эстетика wellness, не «фитнес-бро». Много воздуха, тонкие золотые линии, зерно на hero.
+- Кнопки: `.btn-primary` (золотая заливка), `.btn-ghost` (контур), без скруглений больше 2–3 px.
+- Только реальные фото и видео Лили. Без новых декоративных приёмов (сетки точек, «таблетки», сетки иконок, плашки-уведомления).
+- Сначала телефон, ширина 360–390. Брейкпоинты: 768 px (планшет), 1024 px (десктоп: ссылки в шапке вместо бургера).
 
-### Testimonials
-- Large decorative quote mark (Cormorant, 5rem, gold, 0.3 opacity)
-- Italic body text
-- Author: circle avatar with initials + name + meta
+## Тексты и контент
 
-### Process Timeline
-- Vertical line (gold gradient) on left
-- Numbered circle markers (60px)
-- Step content: h3 title + description
+- Новые тексты на «ты», в женском роде, без длинных тире. Всё новое считается черновиком до согласования с Лилей.
+- Без Лили не трогать: отзывы (Анна К., Мария Л., Елена Р. похожи на образцы), состав и цены тарифов сопровождения, цитату Лили.
+- Кнопки связи ведут в личку Лили `https://t.me/LilyLesik` (с готовым текстом приветствия), `target="_blank" rel="noopener"`.
+- Канал: https://t.me/Lily_Smart_Fitness. Instagram: https://www.instagram.com/kpmvl.
 
-### FAQ
-- Click to expand/collapse (only one open at a time)
-- Plus icon rotates 45° → becomes × when open
-- Smooth max-height transition
+## Безопасность
 
-### Scroll Reveal
-- All sections use `.reveal` class
-- IntersectionObserver triggers `.visible` state
-- Fade-up from 40px, 0.8s ease
-- Stagger with delay classes (.1s, .2s, .3s)
+- В репозитории ни одного ключа и ни одной ссылки доступа (инвайты в закрытые каналы, ссылки на закрытые видео). Секреты только через `wrangler secret` и переменные проекта Cloudflare. `.dev.vars` в `.gitignore`.
+- Ссылки оплаты принимаются только `https://`.
 
-## Content (Russian)
-
-All text content is defined in `src/content/site-content.json`. Key copy:
-
-- **Hero tagline:** "Умный фитнес, который тебе соответствует"
-- **Philosophy headline:** "Не диеты и не изнуряющие тренировки. Система."
-- **Approach headline:** "Три столпа трансформации"
-- **Services headline:** "Выберите свой формат"
-- **Results headline:** "Истории трансформаций"
-- **Process headline:** "Путь к результату"
-- **CTA:** "Ваша трансформация начинается с одного шага"
-
-## All External Links
-
-Every CTA button on the site must link to: `https://t.me/LilyLesik` (target="_blank")
-Social links in footer:
-- Telegram channel: `https://t.me/Lily_Smart_Fitness`
-- Instagram: `https://www.instagram.com/kpmvl`
-
-## Performance Requirements
-
-- Lighthouse score: 95+ on all metrics
-- No JavaScript frameworks — vanilla JS only for interactivity
-- All animations CSS-based (except IntersectionObserver trigger)
-- Lazy load images below the fold
-- Preconnect to Google Fonts
-- Inline critical CSS if possible
-
-## Responsive Breakpoints
-
-- **Desktop:** 1200px+ (full grid layouts)
-- **Tablet:** 768px–1024px (stack grids to 1-col where needed)
-- **Mobile:** <768px (burger menu, single column, adjusted font sizes)
-
-## File Structure
-
-```
-lily-project/
-├── CLAUDE.md              ← this file
-├── README.md              ← setup & deploy instructions
-├── package.json           ← project metadata + scripts
-├── src/
-│   ├── index.html         ← main page
-│   ├── css/
-│   │   ├── variables.css  ← design tokens
-│   │   ├── reset.css      ← minimal reset
-│   │   ├── layout.css     ← grid, section, container
-│   │   ├── components.css ← nav, cards, buttons, etc.
-│   │   ├── hero.css       ← hero-specific styles
-│   │   ├── animations.css ← keyframes, reveal, transitions
-│   │   └── responsive.css ← media queries
-│   ├── js/
-│   │   └── main.js        ← nav scroll, mobile menu, FAQ, reveal observer
-│   ├── assets/
-│   │   └── images/        ← placeholder for client photos
-│   └── content/
-│       └── site-content.json ← all text content (Russian)
-└── docs/
-    ├── STRATEGY.md         ← marketing strategy & analysis
-    └── CUSTOMIZATION.md    ← guide for client to update content
-```
-
-## Commands
+## Локальный запуск
 
 ```bash
-# Development (simple live server)
-npx serve src
-
-# Or use any static server
-cd src && python3 -m http.server 3000
-
-# Build for production (just copy src/ to hosting)
-cp -r src/ dist/
+cd src && python3 -m http.server 8000
 ```
 
-## IMPORTANT Implementation Notes
+Открыть http://localhost:8000/ и http://localhost:8000/en/. Локальный сервер не умеет отдавать `404.html`, проверять 404 на предпросмотре.
 
-1. **Photos:** The site currently uses a decorative "L" letter as placeholder in the About section. Client needs to replace with their professional photo (aspect ratio 3:4, warm tones).
-
-2. **Testimonials:** Current testimonials are sample text. Client should replace with real reviews.
-
-3. **Prices:** €97 / €247 / €497 are suggested positioning. Client should adjust to actual pricing.
-
-4. **SEO:** Add proper meta tags: title, description, og:image, og:title, structured data (Person + LocalBusiness).
-
-5. **Analytics:** Add Yandex.Metrika and/or Google Analytics before launch.
-
-6. **Cookie consent:** May be needed depending on target audience jurisdiction.
-
-7. **Favicon:** Create a minimal "L" monogram favicon in gold on dark bg.
+Перед пушем проверь на 375 px: меню (открытие, `aria-expanded`, Esc, переход к разделам), липкую кнопку, отсутствие горизонтальной прокрутки и ошибок в консоли.

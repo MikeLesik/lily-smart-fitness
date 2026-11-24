@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Page not found · Lily</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Абсолютные пути: Cloudflare Pages отдаёт этот файл на любом несуществующем адресе -->
+  <link rel="stylesheet" href="/css/variables.css?v=2">
+  <link rel="stylesheet" href="/css/reset.css?v=2">
+  <link rel="stylesheet" href="/css/layout.css?v=2">
+  <link rel="stylesheet" href="/css/hero.css?v=2">
+  <link rel="stylesheet" href="/css/components.css?v=2">
+  <link rel="stylesheet" href="/css/animations.css?v=2">
+  <link rel="stylesheet" href="/css/responsive.css?v=2">
+  <style>
+    .notfound .hero-subtitle { margin-left: auto; margin-right: auto; }
+    .notfound .hero-ctas { justify-content: center; }
+    .notfound-logo { display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: var(--space-lg); font-family: var(--font-display); font-size: var(--text-xl); letter-spacing: 0.15em; color: var(--white); }
+    .notfound-logo img { width: 28px; height: 28px; filter: brightness(0) invert(1); }
+    .notfound-switch { display: inline-block; margin-top: var(--space-md); }
+  </style>
+</head>
+<body>
+  <main class="hero notfound">
+    <div class="hero-lines" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="hero-content">
+      <a href="/en/" class="notfound-logo hero-fade">
+        <img src="/assets/images/favicon.png" alt="">
+        <span>LILY</span>
+      </a>
+
+      <p class="hero-eyebrow hero-fade">Error 404</p>
+      <h1 class="hero-title hero-fade">This page does not exist</h1>
+      <p class="hero-subtitle hero-fade">The link may be outdated or the address has a typo. Go to the home page or message Lily on Telegram.</p>
+
+      <div class="hero-ctas hero-fade">
+        <a href="/en/" class="btn-primary">Home page</a>
+        <a href="https://t.me/LilyLesik?text=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%2C%20%D0%9B%D0%B8%D0%BB%D1%8F!%20%D0%9D%D0%B0%D1%88%D0%BB%D0%B0%20%D1%82%D0%B5%D0%B1%D1%8F%20%D1%87%D0%B5%D1%80%D0%B5%D0%B7%20%D1%81%D0%B0%D0%B9%D1%82%20%D0%B8%20%D1%85%D0%BE%D1%87%D1%83%20%D1%83%D0%B7%D0%BD%D0%B0%D1%82%D1%8C%20%D0%B1%D0%BE%D0%BB%D1%8C%D1%88%D0%B5%20%D0%BE%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85." target="_blank" rel="noopener" class="btn-ghost">Message Lily</a>
+      </div>
+
+      <a href="/" class="hero-micro notfound-switch hero-fade">Русская версия</a>
+    </div>
+  </main>
+</body>
+</html>

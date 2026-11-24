@@ -9,7 +9,7 @@
      id, slug         — техн. идентификаторы (slug = имя папки в URL)
      published        — false → карточка покажется как «Скоро»
      title, subtitle  — { ru, en }
-     cover            — путь к обложке (3:4 рекомендуется)
+     cover            — путь к обложке (3:4 рекомендуется); пусто → буква «L» вместо обложки
      priceRub         — число, ₽ (без копеек)
      priceEur         — число, € (без центов)
      duration         — { ru, en }
@@ -40,7 +40,7 @@ window.LILY_COURSES = [
       ru: 'Короткие тренировки для здоровой осанки и снятия напряжения',
       en: 'Short workouts for healthy posture and tension release'
     },
-    cover: 'assets/images/courses/spina-cover.jpg', // TODO: добавить файл обложки 3:4, ≥1200px по короткой стороне
+    cover: '', // TODO: положить обложку 3:4 (≥1200px по короткой стороне) в assets/images/courses/spina-cover.jpg и вписать путь сюда
     priceRub: 2900,
     priceEur: 39,
     duration: { ru: '≈ 3 недели', en: '≈ 3 weeks' },
@@ -74,7 +74,7 @@ window.LILY_COURSES = [
       ru: '10 минут утром, чтобы запустить тело и день',
       en: '10 minutes in the morning to wake up your body'
     },
-    cover: 'assets/images/courses/zaryadka-cover.jpg', // TODO: добавить файл обложки
+    cover: '', // TODO: assets/images/courses/zaryadka-cover.jpg, когда появится файл
     priceRub: 1900,
     priceEur: 25,
     duration: { ru: '≈ 4 недели', en: '≈ 4 weeks' },
