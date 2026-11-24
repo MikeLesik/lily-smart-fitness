@@ -29,7 +29,6 @@ export interface CatalogCategory {
   free: boolean;
   published: boolean;
   price: Price | null;
-  stripePriceId: string | null;
   videos: CatalogVideo[];
 }
 
@@ -39,7 +38,6 @@ export interface CatalogBundle {
   cover?: string;
   categories: '*' | string[];
   price: Price;
-  stripePriceId: string | null;
 }
 
 export interface Catalog {
@@ -88,4 +86,21 @@ export function publicCatalog() {
       price: b.price,
     })),
   };
+}
+
+/** То, что можно купить: опубликованная платная категория или набор. */
+export interface Sellable {
+  scope: string;
+  kind: 'category' | 'bundle';
+  title: Localized;
+  price: Price;
+}
+
+export function findSellable(scope: string): Sellable | null {
+  const category = publishedCategories().find((c) => c.slug === scope);
+  if (category) {
+    return !category.free && category.price ? { scope, kind: 'category', title: category.title, price: category.price } : null;
+  }
+  const bundle = catalog.bundles.find((b) => b.slug === scope);
+  return bundle ? { scope, kind: 'bundle', title: bundle.title, price: bundle.price } : null;
 }

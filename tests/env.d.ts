@@ -11,6 +11,8 @@ declare namespace Cloudflare {
     STREAM_CUSTOMER_CODE?: string;
     STREAM_SIGNING_KEY_ID?: string;
     STREAM_SIGNING_JWK?: string;
+    STRIPE_SECRET_KEY?: string;
+    STRIPE_WEBHOOK_SECRET?: string;
     TEST_MIGRATIONS: import('@cloudflare/vitest-plugin').D1Migration[];
   }
 }

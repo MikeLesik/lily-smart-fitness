@@ -842,3 +842,35 @@ a.cab-video:hover .cab-video-title {
     transition: none;
   }
 }
+
+/* --- После оплаты: одна строка подтверждения (не плашка) --- */
+.cab-paid {
+  margin: 0 0 var(--space-md);
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--gold);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--warm-black);
+}
+
+.cab-inline-link {
+  color: var(--warm-black);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}
+
+/* --- Подпись под кнопками (страницы оплаты) --- */
+.cab-note {
+  margin-top: var(--space-md);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.cab-note a {
+  color: var(--warm-black);
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 3px;
+}

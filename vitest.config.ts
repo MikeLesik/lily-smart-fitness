@@ -17,6 +17,8 @@ export default defineConfig(async () => {
             AUTH_SECRET: 'test-secret',
             APP_ENV: 'test',
             EMAIL_FROM: 'Lily <hello@lily.coach>',
+            STRIPE_SECRET_KEY: 'rk_test_dummy',
+            STRIPE_WEBHOOK_SECRET: 'whsec_test_secret',
           },
         },
       }),

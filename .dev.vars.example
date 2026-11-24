@@ -6,3 +6,6 @@ TURNSTILE_SITE_KEY=1x00000000000000000000AA
 TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
 # Cloudflare Stream (необязательно): без них видео в кабинете показывает «временно недоступно».
 # STREAM_SIGNING_JWK=<base64 JWK ключа подписи Stream>
+# Stripe (песочница restoreLab): ограниченный ключ и секрет из `stripe listen --print-secret`.
+# STRIPE_SECRET_KEY=rk_test_...
+# STRIPE_WEBHOOK_SECRET=whsec_...

@@ -183,7 +183,7 @@ describe('сессия: /api/me и выход', () => {
   it('без cookie /api/me отвечает гостем', async () => {
     const res = await call(me);
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ user: null, entitlements: [] });
+    expect(await res.json()).toEqual({ user: null, entitlements: [], orders: [] });
   });
 
   it('полный путь: код из письма, вход, /api/me с правами, выход', async () => {
@@ -216,7 +216,7 @@ describe('сессия: /api/me и выход', () => {
     expect(out.status).toBe(200);
     expect(out.headers.get('set-cookie')).toContain('Max-Age=0');
 
-    expect(await (await call(me, { cookie })).json()).toEqual({ user: null, entitlements: [] });
+    expect(await (await call(me, { cookie })).json()).toEqual({ user: null, entitlements: [], orders: [] });
   });
 
   it('истёкшая сессия не пускает', async () => {

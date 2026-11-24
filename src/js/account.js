@@ -61,13 +61,18 @@
       purchases: 'Доступы',
       noPurchases: 'Покупок пока нет.',
       noPurchasesFree: 'Покупок пока нет. Начни с бесплатного урока.',
+      noAccess: 'Открытых программ сейчас нет.',
       forever: 'Навсегда',
       until: 'До {date}',
       allPrograms: 'Все программы',
       writeLily: 'Написать Лиле',
       writeLilyText: 'Привет, Лиля! Пишу из личного кабинета.',
-      buyText: 'Привет, Лиля! Хочу купить программу «{title}».',
-      logout: 'Выйти'
+      logout: 'Выйти',
+      paid: 'Оплата прошла. «{title}» уже открыта, письмо со входом отправили на почту.',
+      paidAll: 'Оплата прошла. Все программы открыты, письмо со входом отправили на почту.',
+      orders: 'Покупки',
+      receipt: 'Чек',
+      refunded: 'Возврат'
     }
   };
 
@@ -82,6 +87,20 @@
   // recent: id видео с записью прогресса, свежие первыми (сервер отдаёт по updated_at DESC)
   var state = { user: null, entitlements: [], catalog: { categories: [], bundles: [] }, progress: {}, recent: [] };
   var player = null; // { cleanup: fn }
+  // ?paid=<scope> после возврата из Stripe: показываем подтверждение один раз
+  var paidScope = new URLSearchParams(location.search).get('paid');
+  if (paidScope) {
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* ignore */ }
+  }
+
+  function paidNotice() {
+    if (!paidScope) return '';
+    var scope = paidScope;
+    paidScope = null;
+    var cat = state.catalog.categories.find(function (c) { return c.slug === scope; });
+    var text = scope === 'all' || !cat ? t.paidAll : fmt(t.paid, { title: L(cat.title) });
+    return '<p class="cab-paid" role="status">' + esc(text) + '</p>';
+  }
 
   /* ---------- helpers ---------- */
 
@@ -282,10 +301,10 @@
       started[0] || cats[0];
   }
 
-  // Этап 4 заменит это на Stripe Checkout (/api/checkout). Пока покупка через Лилю в Telegram.
-  function buyButton(title, p) {
-    return '<a class="btn-primary" href="' + esc(telegram(fmt(t.buyText, { title: title }))) + '" target="_blank" rel="noopener">' +
-      esc(fmt(t.buy, { price: price(p) })) + '</a>';
+  /** Покупка через Stripe Checkout: data-buy подхватывает js/buy.js. */
+  function buyButton(scope, title, p) {
+    return '<a class="btn-primary" href="#" data-buy="' + esc(scope) + '" data-buy-title="' + esc(title) + '"' +
+      ' data-buy-price="' + esc(price(p)) + '">' + esc(fmt(t.buy, { price: price(p) })) + '</a>';
   }
 
   /** «Первую минуту можно посмотреть бесплатно.» */
@@ -364,7 +383,7 @@
     var meta = n === 2 ? t.bundleBoth : fmt(t.bundleMany, { n: n, programs: plural(n, t.programForms) });
     if (sum > bundle.price.amount) meta += SEP + fmt(t.bundleInstead, { price: price({ amount: sum, currency: bundle.price.currency }) });
     var title = L(bundle.title) || t.bundleTitle;
-    return '<li><a class="cab-row" href="' + esc(telegram(fmt(t.buyText, { title: title }))) + '" target="_blank" rel="noopener">' +
+    return '<li><a class="cab-row" href="#" data-buy="' + esc(bundle.slug) + '" data-buy-title="' + esc(title) + '" data-buy-price="' + esc(price(bundle.price)) + '">' +
       cover(bundle.cover, false) +
       '<span class="cab-row-body"><span class="cab-row-title">' + esc(title) + '</span>' +
       '<span class="cab-row-meta">' + esc(meta) + '</span></span>' +
@@ -380,7 +399,7 @@
     var bundle = state.catalog.bundles.find(function (b) { return b.slug === 'all'; });
     var lockedPaid = locked.filter(function (c) { return !c.free; }).length;
 
-    var html = '<h1 class="cab-title">' + esc(t.programsTitle) + '</h1>';
+    var html = '<h1 class="cab-title">' + esc(t.programsTitle) + '</h1>' + paidNotice();
     if (cont) html += continueCard(cont);
     if (open.length) html += '<ul class="cab-rows">' + open.map(programRow).join('') + '</ul>';
     if (locked.length) {
@@ -429,7 +448,7 @@
         '<h1 class="cab-title">' + esc(L(cat.title)) + '</h1>' +
         (cat.subtitle ? '<p class="cab-sub">' + esc(L(cat.subtitle)) + '</p>' : '') +
         '<p class="cab-meta">' + esc(countMeta(cat)) + '</p>' +
-      '</div>';
+      '</div>' + paidNotice();
 
     if (open) {
       var v = resumeVideo(cat);
@@ -440,7 +459,7 @@
     } else {
       var preview = firstPreview(cat);
       html += '<p class="cab-text">' + esc((preview ? previewSentence(preview.durationSec) + ' ' : '') + t.lockedProgram) + '</p>' +
-        '<div class="cab-actions">' + buyButton(L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div>';
+        '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div>';
     }
 
     // В списке только основные видео: в купленной превью не нужно, в закрытой оно на кнопке.
@@ -549,7 +568,7 @@
     if (kind === 'locked') {
       var text = fmt(t.lockedVideo, { title: L(cat.title) }) + (preview ? ' ' + previewSentence(preview.durationSec) : '');
       box = '<section class="cab-locked"><p class="cab-text">' + esc(text) + '</p>' +
-        '<div class="cab-actions">' + buyButton(L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div></section>';
+        '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div></section>';
     } else {
       box = '<section class="cab-panel"><p class="cab-text">' + esc(kind === 'unavailable' ? t.unavailable : t.networkVideo) + '</p>' +
         '<div class="cab-actions"><button type="button" class="cab-secondary" data-action="reload">' + esc(t.reload) + '</button></div></section>';
@@ -640,8 +659,20 @@
 
     var purchases = items.length
       ? '<ul class="cab-list">' + items.join('') + '</ul>'
-      : '<p class="cab-text">' + esc(free ? t.noPurchasesFree : t.noPurchases) + '</p>' +
+      : (state.orders && state.orders.length)
+        ? '<p class="cab-text">' + esc(t.noAccess) + '</p>'
+        : '<p class="cab-text">' + esc(free ? t.noPurchasesFree : t.noPurchases) + '</p>' +
         (free ? '<div class="cab-actions cab-empty-actions"><a class="cab-secondary" href="#/c/' + esc(free.slug) + '">' + esc(L(free.title)) + '</a></div>' : '');
+
+    var orders = (state.orders || []).map(function (o) {
+      var name = o.scope === 'all' ? t.allPrograms : (titles[o.scope] || o.scope);
+      var date = new Date(o.createdAt * 1000).toLocaleDateString('ru-RU');
+      var note = price({ amount: o.amount, currency: o.currency }) + SEP + date;
+      var link = o.status === 'refunded'
+        ? SEP + esc(t.refunded)
+        : (o.receiptUrl ? SEP + '<a class="cab-inline-link" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">' + esc(t.receipt) + '</a>' : '');
+      return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(note) + link + '</span></li>';
+    });
 
     app.innerHTML =
       '<h1 class="cab-title">' + esc(t.profileTitle) + '</h1>' +
@@ -649,6 +680,7 @@
         '<span class="cab-list-value">' + esc(state.user.email) + '</span></li></ul>' +
       '<h2 class="cab-section-title">' + esc(t.purchases) + '</h2>' +
       purchases +
+      (orders.length ? '<h2 class="cab-section-title">' + esc(t.orders) + '</h2><ul class="cab-list">' + orders.join('') + '</ul>' : '') +
       '<div class="cab-actions">' +
         '<a class="btn-primary" href="' + esc(telegram(t.writeLilyText)) + '" target="_blank" rel="noopener">' + esc(t.writeLily) + '</a>' +
       '</div>' +
@@ -716,6 +748,7 @@
     }
     state.user = me.data.user;
     state.entitlements = me.data.entitlements || [];
+    state.orders = me.data.orders || [];
     state.catalog = cat.data;
     (prog.ok && prog.data.progress || []).forEach(function (p) {
       state.progress[p.videoId] = p;

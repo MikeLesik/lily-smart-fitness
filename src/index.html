@@ -44,7 +44,8 @@
   <link rel="stylesheet" href="css/components.css?v=2">
   <link rel="stylesheet" href="css/animations.css?v=2">
   <link rel="stylesheet" href="css/responsive.css?v=2">
-  <link rel="stylesheet" href="css/workouts.css?v=2">
+  <link rel="stylesheet" href="css/workouts.css?v=3">
+  <link rel="stylesheet" href="css/buy.css?v=1">
 </head>
 <body>
 
@@ -340,19 +341,19 @@
 
   <!-- ========================================
        SECTION 5.5: WORKOUTS CATALOG
-       Каталог рендерится из js/courses.js в main.js.
-       Добавил курс в LILY_COURSES → карточка появилась.
+       Карточки рендерит main.js из /api/catalog (content/catalog.json),
+       «Купить» открывает покупку через Stripe (js/buy.js).
        ======================================== -->
   <section id="workouts" class="section workouts-section">
     <div class="container">
       <div class="section-header section-header--center reveal">
         <p class="section-eyebrow">Видеотренировки</p>
         <h2 class="section-title">Доступ навсегда. Тренируйся в своём ритме.</h2>
-        <p class="section-subtitle">Курсы с разовой оплатой — без подписки, без обязательств. Смотри в удобное время на любом устройстве.</p>
+        <p class="section-subtitle">Разовая оплата, без подписки и обязательств. Смотри в удобное время на любом устройстве.</p>
       </div>
 
       <div class="workouts-grid" data-courses-grid data-locale="ru" aria-live="polite">
-        <!-- карточки рендерятся JS из window.LILY_COURSES -->
+        <!-- карточки рендерит main.js из /api/catalog -->
       </div>
     </div>
   </section>
@@ -627,8 +628,8 @@
 
 
   <!-- Scripts -->
-  <script src="js/courses.js?v=3"></script>
-  <script src="js/main.js?v=4"></script>
+  <script src="js/main.js?v=5"></script>
+  <script src="js/buy.js?v=1"></script>
 
 </body>
 </html>

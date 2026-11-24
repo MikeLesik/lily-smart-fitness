@@ -18,4 +18,8 @@ export interface Env {
   STREAM_SIGNING_KEY_ID?: string;
   /** Ключ подписи Stream: base64 от JSON JWK, как его отдаёт API Stream. Секрет. */
   STREAM_SIGNING_JWK?: string;
+  /** Ограниченный ключ Stripe (rk_test_/rk_live_). Секрет. */
+  STRIPE_SECRET_KEY?: string;
+  /** Секрет подписи вебхука (whsec_...). Секрет. */
+  STRIPE_WEBHOOK_SECRET?: string;
 }

@@ -44,7 +44,8 @@
   <link rel="stylesheet" href="../css/components.css?v=2">
   <link rel="stylesheet" href="../css/animations.css?v=2">
   <link rel="stylesheet" href="../css/responsive.css?v=2">
-  <link rel="stylesheet" href="../css/workouts.css?v=2">
+  <link rel="stylesheet" href="../css/workouts.css?v=3">
+  <link rel="stylesheet" href="../css/buy.css?v=1">
 </head>
 <body>
 
@@ -339,18 +340,18 @@
 
   <!-- ========================================
        SECTION 5.5: WORKOUTS CATALOG
-       Rendered from js/courses.js in main.js.
+       Cards are rendered by main.js from /api/catalog; Buy opens Stripe checkout (js/buy.js).
        ======================================== -->
   <section id="workouts" class="section workouts-section">
     <div class="container">
       <div class="section-header section-header--center reveal">
         <p class="section-eyebrow">Workouts</p>
         <h2 class="section-title">Lifetime access. Train at your own pace.</h2>
-        <p class="section-subtitle">Self-paced courses with one-time payment — no subscription, no commitment. Watch on any device, any time.</p>
+        <p class="section-subtitle">One-time payment, no subscription, no commitment. Watch on any device, any time.</p>
       </div>
 
       <div class="workouts-grid" data-courses-grid data-locale="en" aria-live="polite">
-        <!-- cards rendered by JS from window.LILY_COURSES -->
+        <!-- cards rendered by main.js from /api/catalog -->
       </div>
     </div>
   </section>
@@ -625,8 +626,8 @@
 
 
   <!-- Scripts -->
-  <script src="../js/courses.js?v=3"></script>
-  <script src="../js/main.js?v=4"></script>
+  <script src="../js/main.js?v=5"></script>
+  <script src="../js/buy.js?v=1"></script>
 
 </body>
 </html>

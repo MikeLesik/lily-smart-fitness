@@ -69,3 +69,34 @@ export async function sendLoginCode(env: Env, email: string, code: string): Prom
 </body></html>`;
   await send(env, { to: email, subject: t.subject(code), text, html });
 }
+
+// Письмо о покупке: черновик до согласования с Лилей.
+export async function sendPurchaseEmail(env: Env, email: string, programTitle: string, origin: string): Promise<void> {
+  const loginUrl = `${origin}/login/?next=${encodeURIComponent('/account/')}`;
+  const subject = `Доступ открыт: «${programTitle}»`;
+  const lines = {
+    thanks: 'Спасибо за покупку!',
+    ready: `Программа «${programTitle}» уже ждёт тебя в личном кабинете.`,
+    button: 'Открыть кабинет',
+    how: `Входить можно с любого устройства: открой ${origin}/login/, введи этот email (${email}), и мы пришлём код. Пароль не нужен.`,
+    receipt: 'Чек об оплате всегда есть в кабинете, в разделе «Профиль».',
+    help: 'Вопросы можно задать Лиле в Telegram:',
+  };
+  const text = `${lines.thanks}\n\n${lines.ready}\n\n${lines.button}: ${loginUrl}\n\n${lines.how}\n\n${lines.receipt}\n\n${lines.help} ${TELEGRAM_URL}\n`;
+  const html = `<!doctype html><html lang="ru"><body style="margin:0;padding:0;background:#F5F0EB;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F5F0EB;padding:32px 16px;font-family:Arial,Helvetica,sans-serif;color:#1A1714;">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#FDFCFA;border:1px solid rgba(26,23,20,0.08);padding:32px 28px;">
+<tr><td style="font-family:Georgia,'Times New Roman',serif;font-size:22px;letter-spacing:0.15em;">LILY</td></tr>
+<tr><td style="padding-top:24px;font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.3;color:#1A1714;">${lines.thanks}</td></tr>
+<tr><td style="padding-top:12px;font-size:15px;line-height:1.6;color:#746A61;">${lines.ready}</td></tr>
+<tr><td style="padding:24px 0;"><a href="${loginUrl}" style="display:inline-block;background:#C4A265;color:#1A1714;text-decoration:none;font-size:12px;font-weight:bold;letter-spacing:0.2em;text-transform:uppercase;padding:14px 24px;border-radius:2px;">${lines.button}</a></td></tr>
+<tr><td style="font-size:14px;line-height:1.6;color:#746A61;">${lines.how}</td></tr>
+<tr><td style="padding-top:12px;font-size:14px;line-height:1.6;color:#746A61;">${lines.receipt}</td></tr>
+<tr><td style="padding-top:20px;font-size:14px;line-height:1.6;color:#746A61;">${lines.help} <a href="${TELEGRAM_URL}" style="color:#6B7B5E;">@LilyLesik</a></td></tr>
+</table>
+</td></tr>
+</table>
+</body></html>`;
+  await send(env, { to: email, subject, text, html });
+}

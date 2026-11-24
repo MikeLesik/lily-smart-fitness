@@ -26,6 +26,9 @@ export interface CallOptions {
   env?: Partial<Env>;
   path?: string;
   params?: Record<string, string>;
+  headers?: Record<string, string>;
+  /** Тело как есть (для вебхука Stripe, где важна точная строка). */
+  rawBody?: string;
 }
 
 export async function call(handler: Handler, opts: CallOptions = {}): Promise<Response> {
@@ -33,11 +36,12 @@ export async function call(handler: Handler, opts: CallOptions = {}): Promise<Re
   if (opts.cookie) headers.set('cookie', opts.cookie);
   headers.set('cf-connecting-ip', opts.ip ?? freshIp());
   if (opts.origin) headers.set('origin', opts.origin);
-  const method = opts.method ?? (opts.body === undefined ? 'GET' : 'POST');
+  for (const [k, v] of Object.entries(opts.headers ?? {})) headers.set(k, v);
+  const method = opts.method ?? (opts.body === undefined && opts.rawBody === undefined ? 'GET' : 'POST');
   const request = new Request(`https://cabinet.lily-smart-fitness.pages.dev${opts.path ?? '/api/test'}`, {
     method,
     headers,
-    body: method === 'GET' ? undefined : JSON.stringify(opts.body ?? {}),
+    body: method === 'GET' ? undefined : opts.rawBody ?? JSON.stringify(opts.body ?? {}),
   });
   return handler({
     request,

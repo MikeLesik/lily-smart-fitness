@@ -2,7 +2,7 @@
    MAIN JS — Lily Personal Brand Website
    Nav scroll, mobile menu, FAQ, scroll reveal,
    mobile sticky CTA, timeline progress line,
-   pricing card entrance
+   витрина видеотренировок из /api/catalog
    ============================================ */
 
 (function () {
@@ -329,297 +329,98 @@
   });
 
   /* -----------------------------------------
-     11. Workouts catalog — рендер из window.LILY_COURSES
+     11. Видеотренировки — витрина из /api/catalog
      -----------------------------------------
      Контейнер: <div class="workouts-grid" data-courses-grid data-locale="ru|en"></div>
-     Источник: js/courses.js (window.LILY_COURSES).
+     Кнопка «Купить» с data-buy открывает покупку (js/buy.js).
   */
-  function formatPrice(value, currency) {
-    if (value == null) return '';
-    var formatted = String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    if (currency === 'RUB') return formatted + ' ₽';
-    if (currency === 'EUR') return '€' + formatted;
-    return formatted;
-  }
-
-  function paymentUrl(value) {
-    return typeof value === 'string' && /^https:\/\//i.test(value.trim()) ? value.trim() : '';
-  }
-
-  function findCourse(slug) {
-    if (!slug || !Array.isArray(window.LILY_COURSES)) return null;
-    return window.LILY_COURSES.find(function (c) { return c.slug === slug; }) || null;
-  }
-
-  function isPurchasable(course) {
-    return !!(course && course.published &&
-      (paymentUrl(course.paymentUrlRub) || paymentUrl(course.paymentUrlIntl)));
-  }
-
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  function detectLocale() {
-    var lang = (document.documentElement.lang || '').toLowerCase();
-    if (lang.indexOf('en') === 0) return 'en';
-    if (lang.indexOf('ru') === 0) return 'ru';
-    if (window.location.pathname.indexOf('/en/') === 0) return 'en';
-    return 'ru';
+  function catalogPrice(p) {
+    if (!p) return '';
+    var v = p.amount / 100;
+    var sym = { eur: '€', usd: '$' }[(p.currency || '').toLowerCase()];
+    return (sym || '') + (v % 1 === 0 ? v : v.toFixed(2));
   }
 
-  function renderCoursesCatalog() {
-    var grids = document.querySelectorAll('[data-courses-grid]');
-    if (!grids.length) return;
-    if (!Array.isArray(window.LILY_COURSES)) return;
-
-    grids.forEach(function (grid) {
-      var locale = (grid.getAttribute('data-locale') || detectLocale()).toLowerCase();
-      var labels = locale === 'en'
-        ? { more: 'Learn more', soon: 'Coming soon', from: 'from' }
-        : { more: 'Подробнее',    soon: 'Скоро',         from: 'от' };
-      var basePath = locale === 'en' ? '../' : '';
-      // For EN: course landing lives at en/workouts/<slug>/, so href is `workouts/<slug>/`.
-      // Cover path is assets/images/courses/... → prefix with `../` for EN since current dir is /en.
-
-      var html = window.LILY_COURSES.map(function (course, idx) {
-        var title = (course.title || {})[locale] || course.title.ru;
-        var subtitle = (course.subtitle || {})[locale] || course.subtitle.ru;
-        var duration = (course.duration || {})[locale] || course.duration.ru;
-        var level = (course.level || {})[locale] || course.level.ru;
-        var includes = ((course.includes || {})[locale] || course.includes.ru) || [];
-        var hasPrice = course.priceRub || course.priceEur;
-        var priceMain = course.priceEur ? formatPrice(course.priceEur, 'EUR') : formatPrice(course.priceRub, 'RUB');
-        var priceAlt  = course.priceEur && course.priceRub ? formatPrice(course.priceRub, 'RUB') : '';
-        var coverHref = course.cover ? (basePath + course.cover) : '';
-        var landingHref = (locale === 'en' ? 'workouts/' : 'workouts/') + course.slug + '/';
-        var isPublished = isPurchasable(course);
-        var delayClass = ['reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'][idx % 3];
-
-        var badge = !isPublished
-          ? '<span class="course-card-badge">' + labels.soon + '</span>'
-          : '';
-
-        var coverInner = coverHref
-          ? '<img src="' + escapeHtml(coverHref) + '" alt="' + escapeHtml(title) + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-            '<span class="course-card-cover-placeholder" aria-hidden="true">L</span>'
-          : '<span class="course-card-cover-placeholder" aria-hidden="true">L</span>';
-
-        var includesHtml = includes.slice(0, 3).map(function (i) {
-          return '<li>' + escapeHtml(i) + '</li>';
-        }).join('');
-
-        var ctaHtml = isPublished
-          ? '<a href="' + escapeHtml(landingHref) + '" class="btn-primary course-card-cta" data-analytics="course_card_click" data-analytics-slug="' + escapeHtml(course.slug) + '">' + labels.more + '</a>'
-          : '<span class="btn-ghost course-card-cta" style="opacity:.5;pointer-events:none">' + labels.soon + '</span>';
-
-        return '' +
-          '<article class="course-card reveal ' + delayClass + (isPublished ? '' : ' course-card--soon') + '">' +
-            '<div class="course-card-cover">' + badge + coverInner + '</div>' +
-            '<div class="course-card-body">' +
-              '<div class="course-card-meta"><span>' + escapeHtml(duration) + '</span><span>' + escapeHtml(level) + '</span></div>' +
-              '<h3 class="course-card-title">' + escapeHtml(title) + '</h3>' +
-              '<p class="course-card-subtitle">' + escapeHtml(subtitle) + '</p>' +
-              (includesHtml ? '<ul class="course-card-includes">' + includesHtml + '</ul>' : '') +
-              '<div class="course-card-footer">' +
-                '<div class="course-card-price">' +
-                  (hasPrice ? '<span class="course-card-price-main">' + escapeHtml(priceMain) + '</span>' : '') +
-                  (priceAlt ? '<span class="course-card-price-alt">' + escapeHtml(priceAlt) + '</span>' : '') +
-                '</div>' +
-                ctaHtml +
-              '</div>' +
-            '</div>' +
-          '</article>';
-      }).join('');
-
-      grid.innerHTML = html;
-
-      // Подключить новые .reveal к observer (если он есть)
-      if (typeof revealObserver !== 'undefined' && revealObserver) {
-        grid.querySelectorAll('.reveal').forEach(function (el) {
-          revealObserver.observe(el);
-        });
-      } else {
-        // на лендингах без observer — просто покажем
-        grid.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible'); });
-      }
-    });
+  function plural(n, forms) {
+    var m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return forms[0];
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return forms[1];
+    return forms[2];
   }
 
-  renderCoursesCatalog();
-
-  /* -----------------------------------------
-     11b. Success-page — название курса в заголовке
-     -----------------------------------------
-     Контейнер: [data-success-slug="<slug>"][data-locale="ru|en"]
-     Ссылку доступа страница не показывает: success-адрес открыт всем.
-     Доступ выдаёт платёжка письмом после оплаты.
-  */
-  (function renderSuccess() {
-    var card = document.querySelector('[data-success-slug]');
-    if (!card) return;
-
-    var course = findCourse(card.getAttribute('data-success-slug'));
-    if (!course) return;
-
-    var locale = (card.getAttribute('data-locale') || document.documentElement.lang || 'ru').toLowerCase();
-    var titleEl = card.querySelector('[data-success-title]');
-    if (!titleEl) return;
-
-    titleEl.textContent = locale === 'en'
-      ? 'Thank you! “' + (course.title.en || course.title.ru) + '” is yours.'
-      : 'Спасибо! Курс «' + (course.title.ru || course.title.en) + '» теперь твой.';
-  })();
-
-  /* -----------------------------------------
-     12. Pay modal — выбор контура оплаты (РФ / зарубеж)
-     -----------------------------------------
-     Триггер: любая кнопка/ссылка с
-       data-pay-trigger
-       data-pay-slug="<slug>"
-     Ссылки оплаты берутся только из courses.js (paymentUrlRub /
-     paymentUrlIntl), принимаются только https://.
-     Сам HTML модалки берётся из элемента #pay-modal
-     (см. workouts/<slug>/index.html — там лежит разметка).
-  */
-  var payModal = document.getElementById('pay-modal');
-  var payModalReturnFocus = null;
-  var payModalFoot = payModal ? payModal.querySelector('.pay-modal-foot') : null;
-  var payModalFootDefault = payModalFoot ? payModalFoot.innerHTML : '';
-
-  function openPayModal(opts) {
-    if (!payModal) return;
-    var isEn = (document.documentElement.lang || 'ru').toLowerCase() === 'en';
-    var labels = isEn
-      ? {
-          rubLabel: 'Russian card / SBP',
-          rubMeta:  'RUB · ZSP · installments',
-          intlLabel: 'International card',
-          intlMeta:  'EUR / USD',
-          soon: 'Payment opens soon. Message Lily in the meantime: '
-        }
-      : {
-          rubLabel: 'Карта РФ / СБП',
-          rubMeta:  'RUB · рассрочка',
-          intlLabel: 'Зарубежная карта',
-          intlMeta:  'EUR / USD',
-          soon: 'Оплата скоро откроется. Пока можно написать Лиле: '
-        };
-
-      var rubBtn  = payModal.querySelector('[data-pay-option="rub"]');
-      var intlBtn = payModal.querySelector('[data-pay-option="intl"]');
-
-      if (payModalFoot) {
-        if (opts.rub || opts.intl) {
-          payModalFoot.innerHTML = payModalFootDefault;
-        } else {
-          payModalFoot.textContent = labels.soon;
-          var tg = document.createElement('a');
-          tg.href = 'https://t.me/LilyLesik';
-          tg.target = '_blank';
-          tg.rel = 'noopener';
-          tg.textContent = '@LilyLesik';
-          tg.style.textDecoration = 'underline';
-          payModalFoot.appendChild(tg);
-        }
-      }
-
-      if (rubBtn) {
-        rubBtn.setAttribute('href', opts.rub || '#');
-        rubBtn.setAttribute('aria-disabled', opts.rub ? 'false' : 'true');
-        rubBtn.tabIndex = opts.rub ? 0 : -1;
-        rubBtn.setAttribute('data-analytics', 'pay_option_select');
-        rubBtn.setAttribute('data-analytics-option', 'rub');
-        rubBtn.setAttribute('data-analytics-slug', opts.slug || '');
-        var rubLabelEl = rubBtn.querySelector('.pay-modal-option-label');
-        var rubMetaEl  = rubBtn.querySelector('.pay-modal-option-meta');
-        if (rubLabelEl) rubLabelEl.textContent = labels.rubLabel;
-        if (rubMetaEl)  rubMetaEl.textContent  = labels.rubMeta;
-      }
-
-      if (intlBtn) {
-        intlBtn.setAttribute('href', opts.intl || '#');
-        intlBtn.setAttribute('aria-disabled', opts.intl ? 'false' : 'true');
-        intlBtn.tabIndex = opts.intl ? 0 : -1;
-        intlBtn.setAttribute('data-analytics', 'pay_option_select');
-        intlBtn.setAttribute('data-analytics-option', 'intl');
-        intlBtn.setAttribute('data-analytics-slug', opts.slug || '');
-        var intlLabelEl = intlBtn.querySelector('.pay-modal-option-label');
-        var intlMetaEl  = intlBtn.querySelector('.pay-modal-option-meta');
-        if (intlLabelEl) intlLabelEl.textContent = labels.intlLabel;
-        if (intlMetaEl)  intlMetaEl.textContent  = labels.intlMeta;
-      }
-
-      payModalReturnFocus = document.activeElement;
-      payModal.classList.add('open');
-      document.body.classList.add('pay-modal-open');
-      var firstFocus = payModal.querySelector('[data-pay-option][aria-disabled="false"]') ||
-        payModal.querySelector('[data-pay-close]');
-      if (firstFocus) firstFocus.focus();
-      window.track('pay_modal_open', { slug: opts.slug || '' });
-  }
-
-  function closePayModal() {
-    if (!payModal) return;
-    payModal.classList.remove('open');
-    document.body.classList.remove('pay-modal-open');
-    if (payModalReturnFocus && typeof payModalReturnFocus.focus === 'function') {
-      payModalReturnFocus.focus();
+  function catalogCard(item, locale, isBundle) {
+    var L = function (o) { return o ? (o[locale] || o.ru || '') : ''; };
+    var en = locale === 'en';
+    var title = L(item.title);
+    var mains = isBundle ? [] : item.videos.filter(function (v) { return !v.preview; });
+    var minutes = Math.max(1, Math.round(mains.reduce(function (s, v) { return s + v.durationSec; }, 0) / 60));
+    var meta = isBundle
+      ? (en ? 'All programs, including new ones' : 'Все программы, включая новые')
+      : (en
+          ? mains.length + ' ' + (mains.length === 1 ? 'workout' : 'workouts') + ' · ' + minutes + ' min'
+          : mains.length + ' ' + plural(mains.length, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + minutes + ' мин');
+    var subtitle = isBundle
+      ? (en ? 'One payment, lifetime access.' : 'Одна оплата, доступ навсегда.')
+      : L(item.subtitle);
+    var cover = item.cover || '';
+    var coverHtml = cover
+      ? '<picture><source srcset="' + escapeHtml(cover.replace(/\.jpg$/, '.webp')) + '" type="image/webp">' +
+        '<img src="' + escapeHtml(cover) + '" alt="" width="480" height="600" loading="lazy" decoding="async"></picture>'
+      : '';
+    var cta;
+    if (item.free) {
+      var next = encodeURIComponent('/account/#/c/' + item.slug);
+      cta = '<a class="btn-ghost course-card-cta" href="/login/?next=' + next + '">' + (en ? 'Get it free' : 'Получить бесплатно') + '</a>';
+    } else {
+      var price = catalogPrice(item.price);
+      cta = '<a class="btn-primary course-card-cta" href="#workouts" data-buy="' + escapeHtml(item.slug) + '"' +
+        ' data-buy-title="' + escapeHtml(title) + '" data-buy-price="' + escapeHtml(price) + '"' +
+        ' data-analytics="course_buy_click" data-analytics-slug="' + escapeHtml(item.slug) + '">' +
+        (en ? 'Buy' : 'Купить') + '</a>';
     }
-    payModalReturnFocus = null;
+    return '' +
+      '<article class="course-card reveal">' +
+        (coverHtml ? '<div class="course-card-cover">' + coverHtml + '</div>' : '') +
+        '<div class="course-card-body">' +
+          '<p class="course-card-meta">' + escapeHtml(meta) + '</p>' +
+          '<h3 class="course-card-title">' + escapeHtml(title) + '</h3>' +
+          (subtitle ? '<p class="course-card-subtitle">' + escapeHtml(subtitle) + '</p>' : '') +
+          '<div class="course-card-footer">' +
+            '<span class="course-card-price">' + escapeHtml(item.free ? (en ? 'Free' : 'Бесплатно') : catalogPrice(item.price)) + '</span>' +
+            cta +
+          '</div>' +
+        '</div>' +
+      '</article>';
   }
 
-  if (payModal) {
-    // Закрытие по фону / по кнопке × / по Esc
-    payModal.addEventListener('click', function (e) {
-      if (e.target === payModal || e.target.closest('[data-pay-close]')) {
-        closePayModal();
-        return;
-      }
-      var option = e.target.closest('[data-pay-option]');
-      if (option && option.getAttribute('aria-disabled') === 'true') {
-        e.preventDefault();
-      }
-    });
-    document.addEventListener('keydown', function (e) {
-      if (!payModal.classList.contains('open')) return;
-      if (e.key === 'Escape') {
-        closePayModal();
-        return;
-      }
-      if (e.key !== 'Tab') return;
-      var focusable = Array.prototype.filter.call(
-        payModal.querySelectorAll('a[href], button'),
-        function (el) { return el.tabIndex !== -1 && el.offsetParent !== null; }
-      );
-      if (!focusable.length) return;
-      var first = focusable[0];
-      var last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
+  function renderCatalog(cat) {
+    document.querySelectorAll('[data-courses-grid]').forEach(function (grid) {
+      var locale = (grid.getAttribute('data-locale') || document.documentElement.lang || 'ru').toLowerCase().indexOf('en') === 0 ? 'en' : 'ru';
+      var paid = cat.categories.filter(function (c) { return !c.free; });
+      var free = cat.categories.filter(function (c) { return c.free; });
+      var html = paid.map(function (c) { return catalogCard(c, locale, false); }).join('') +
+        (paid.length > 1 ? cat.bundles.map(function (b) { return catalogCard(b, locale, true); }).join('') : '') +
+        free.map(function (c) { return catalogCard(c, locale, false); }).join('');
+      grid.innerHTML = html;
+      grid.querySelectorAll('.reveal').forEach(function (el) {
+        if (typeof revealObserver !== 'undefined' && revealObserver) revealObserver.observe(el);
+        else el.classList.add('visible');
+      });
     });
   }
 
-  document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('[data-pay-trigger]');
-    if (!trigger) return;
-    e.preventDefault();
-    var slug = trigger.getAttribute('data-pay-slug') || '';
-    var course = findCourse(slug);
-    var ready = !course || course.published;
-    openPayModal({
-      rub:  ready ? paymentUrl(course ? course.paymentUrlRub : trigger.getAttribute('data-pay-rub')) : '',
-      intl: ready ? paymentUrl(course ? course.paymentUrlIntl : trigger.getAttribute('data-pay-intl')) : '',
-      slug: slug
-    });
-  });
+  if (document.querySelector('[data-courses-grid]') && window.fetch) {
+    fetch('/api/catalog')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (cat) { if (cat) renderCatalog(cat); })
+      .catch(function () { /* витрина просто не появится */ });
+  }
 
   /* -----------------------------------------
      Event Listeners

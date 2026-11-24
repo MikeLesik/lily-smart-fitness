@@ -18,7 +18,6 @@
         "amount": 3900,
         "currency": "eur"
       },
-      "stripePriceId": null,
       "videos": [
         {
           "id": "yagodicy-preview",
@@ -69,7 +68,6 @@
         "amount": 2500,
         "currency": "eur"
       },
-      "stripePriceId": null,
       "videos": [
         {
           "id": "zaryadka-preview",
@@ -117,7 +115,6 @@
       "free": true,
       "published": true,
       "price": null,
-      "stripePriceId": null,
       "videos": [
         {
           "id": "free-01",
@@ -149,8 +146,7 @@
       "price": {
         "amount": 4900,
         "currency": "eur"
-      },
-      "stripePriceId": null
+      }
     }
   ]
 }
