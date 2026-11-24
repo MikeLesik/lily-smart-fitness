@@ -8,9 +8,10 @@
         "en": "Strong glutes"
       },
       "subtitle": {
-        "ru": "Полная тренировка под музыку, 22 минуты",
-        "en": "Full workout with music, 22 minutes"
+        "ru": "Полная тренировка под музыку",
+        "en": "Full workout with music"
       },
+      "cover": "/assets/images/programs/yagodicy.jpg",
       "free": false,
       "published": true,
       "price": {
@@ -58,9 +59,10 @@
         "en": "Morning routine"
       },
       "subtitle": {
-        "ru": "Лимфа и диафрагма, 11 минут",
-        "en": "Lymph and diaphragm, 11 minutes"
+        "ru": "Лимфа и диафрагма, мягкое пробуждение",
+        "en": "Lymph and diaphragm, a gentle wake-up"
       },
+      "cover": "/assets/images/programs/zaryadka.jpg",
       "free": false,
       "published": true,
       "price": {
@@ -108,9 +110,10 @@
         "en": "Free lesson"
       },
       "subtitle": {
-        "ru": "Открывается после входа",
-        "en": "Opens after you sign in"
+        "ru": "Почему живот не уходит после родов",
+        "en": "Why the belly stays after giving birth"
       },
+      "cover": "/assets/images/programs/free.jpg",
       "free": true,
       "published": true,
       "price": null,
@@ -141,6 +144,7 @@
         "ru": "Все программы",
         "en": "All programs"
       },
+      "cover": "/assets/images/programs/all.jpg",
       "categories": "*",
       "price": {
         "amount": 4900,

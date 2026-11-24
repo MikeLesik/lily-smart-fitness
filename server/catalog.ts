@@ -24,6 +24,8 @@ export interface CatalogCategory {
   slug: string;
   title: Localized;
   subtitle?: Localized;
+  /** Обложка 4:5 из кадра видео, путь от корня сайта (/assets/images/programs/<slug>.jpg). */
+  cover?: string;
   free: boolean;
   published: boolean;
   price: Price | null;
@@ -34,6 +36,7 @@ export interface CatalogCategory {
 export interface CatalogBundle {
   slug: string;
   title: Localized;
+  cover?: string;
   categories: '*' | string[];
   price: Price;
   stripePriceId: string | null;
@@ -66,6 +69,7 @@ export function publicCatalog() {
       slug: c.slug,
       title: c.title,
       subtitle: c.subtitle ?? null,
+      cover: c.cover ?? null,
       free: c.free,
       price: c.price,
       videos: c.videos.map((v) => ({
@@ -76,6 +80,12 @@ export function publicCatalog() {
         preview: v.preview,
       })),
     })),
-    bundles: catalog.bundles.map((b) => ({ slug: b.slug, title: b.title, categories: b.categories, price: b.price })),
+    bundles: catalog.bundles.map((b) => ({
+      slug: b.slug,
+      title: b.title,
+      cover: b.cover ?? null,
+      categories: b.categories,
+      price: b.price,
+    })),
   };
 }
