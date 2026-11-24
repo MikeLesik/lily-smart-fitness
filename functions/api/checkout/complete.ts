@@ -1,10 +1,9 @@
 import type { Env } from '../../../server/env';
-import { findSellable } from '../../../server/catalog';
 import { nowSec } from '../../../server/db';
 import { createSession } from '../../../server/session';
 import { retrieveCheckoutSession } from '../../../server/stripe';
 import { claimCheckoutLogin, fulfillCheckoutSession } from '../../../server/orders';
-import { sendPurchaseEmail } from '../../../server/email';
+import { onNewPurchase } from '../../../server/purchase';
 
 /** Ссылка возврата даёт вход без кода только один раз и только в первый час после оплаты. */
 const LOGIN_WINDOW_SEC = 60 * 60;
@@ -37,14 +36,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   if (r.result === 'unpaid') return redirect(`${prefix}/checkout/success/?pending=1`);
   if (r.result === 'skipped') return redirect(`${prefix}/checkout/cancel/`);
 
-  if (r.result === 'created') {
-    try {
-      const title = findSellable(r.scope)!.title;
-      await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, url.origin, locale);
-    } catch (err) {
-      console.error('[checkout] purchase email failed', String(err));
-    }
-  }
+  if (r.result === 'created') await onNewPurchase(env, r, session, url.origin);
 
   const target = r.scope === 'all' ? `${prefix}/account/?paid=all#/` : `${prefix}/account/?paid=${r.scope}#/c/${r.scope}`;
   const fresh = nowSec() - r.order.created_at < LOGIN_WINDOW_SEC;

@@ -210,6 +210,7 @@
     setBusy(true);
     checkout(current.scope, email).then(function (res) {
       if (res.ok && res.data.url) {
+        if (window.track) window.track('checkout_start', { slug: current.scope });
         window.location.assign(res.data.url);
         return;
       }
@@ -227,6 +228,7 @@
       if (me && me.user) {
         checkout(scope).then(function (res) {
           if (res.ok && res.data.url) {
+            if (window.track) window.track('checkout_start', { slug: scope });
             window.location.assign(res.data.url);
             return;
           }

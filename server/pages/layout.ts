@@ -9,8 +9,9 @@ export const ASSET_VERSIONS = {
   cabinet: 6,
   buyCss: 2,
   programsCss: 2,
-  buyJs: 3,
-  programJs: 1,
+  buyJs: 4,
+  programJs: 2,
+  analyticsJs: 1,
 };
 
 export interface DocumentOptions {
@@ -116,6 +117,7 @@ ${o.head ?? ''}
 <link rel="stylesheet" href="/css/buy.css?v=${v.buyCss}">
 <link rel="stylesheet" href="/css/programs.css?v=${v.programsCss}">
 <script type="application/ld+json">${jsonLd(o.structuredData)}</script>
+<script src="/js/analytics.js?v=${v.analyticsJs}" defer></script>
 </head>
 <body class="cab-body prg-body">
 ${header(o.lang, o.current)}

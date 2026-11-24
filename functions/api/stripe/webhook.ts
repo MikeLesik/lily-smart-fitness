@@ -1,10 +1,9 @@
 import type { Env } from '../../../server/env';
 import { json } from '../../../server/http';
 import { nowSec } from '../../../server/db';
-import { findSellable } from '../../../server/catalog';
 import { BRAND, retrieveCheckoutSession, verifyStripeSignature, type CheckoutSession } from '../../../server/stripe';
 import { fulfillCheckoutSession, revokeByPaymentIntent } from '../../../server/orders';
-import { sendPurchaseEmail } from '../../../server/email';
+import { onNewPurchase } from '../../../server/purchase';
 
 /**
  * Вебхук Stripe. Аккаунт общий с Restore Lab: всё без metadata.brand = "lily" отвечаем 200 и пропускаем.
@@ -43,13 +42,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         } catch (err) {
           console.warn('[stripe] receipt lookup failed', String(err));
         }
-        try {
-          const locale = session.metadata?.locale === 'en' ? 'en' : 'ru';
-          const title = findSellable(r.scope)!.title;
-          await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, origin, locale);
-        } catch (err) {
-          console.error('[stripe] purchase email failed', String(err));
-        }
+        await onNewPurchase(env, r, session, origin);
       }
     }
   } else if (event.type === 'charge.refunded') {

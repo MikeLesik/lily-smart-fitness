@@ -19,6 +19,7 @@ export default defineConfig(async () => {
             EMAIL_FROM: 'Lily <hello@lily.coach>',
             STRIPE_SECRET_KEY: 'rk_test_dummy',
             STRIPE_WEBHOOK_SECRET: 'whsec_test_secret',
+            ADMIN_EMAILS: 'boss@example.com, Lily.Admin@Example.com',
           },
         },
       }),

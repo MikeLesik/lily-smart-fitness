@@ -58,6 +58,7 @@
           iframe.allowFullscreen = true;
           box.innerHTML = '';
           box.appendChild(iframe);
+          if (window.track) window.track('preview_play', { video_id: box.getAttribute('data-preview') });
           box.classList.remove('is-loading');
           state = 'playing';
           try { iframe.focus({ preventScroll: true }); } catch (err) { /* ignore */ }

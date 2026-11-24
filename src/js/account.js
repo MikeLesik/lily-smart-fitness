@@ -570,6 +570,15 @@
   }
 
   function attachProgress(iframe, video, onEnded) {
+    var found = findVideo(video.id);
+    var meta = { slug: found ? found.category.slug : undefined, video_id: video.id };
+    var started = false;
+    var completed = false;
+    function complete() {
+      if (completed) return;
+      completed = true;
+      if (window.track) window.track('video_complete', meta);
+    }
     var lastSaved = 0;
     var current = 0;
     var listeners = [];
@@ -586,8 +595,14 @@
       if (!Stream || !iframe.isConnected) return;
       stream = Stream(iframe);
       function on(ev, fn) { stream.addEventListener(ev, fn); listeners.push([ev, fn]); }
+      on('play', function () {
+        if (started) return;
+        started = true;
+        if (window.track) window.track(video.preview && !(found && hasCategory(found.category)) ? 'preview_play' : 'video_start', meta);
+      });
       on('timeupdate', function () {
         current = stream.currentTime || 0;
+        if (current >= video.durationSec * 0.9) complete();
         if (Date.now() - lastSaved > SAVE_EVERY_MS) {
           lastSaved = Date.now();
           flush(false);
@@ -595,6 +610,7 @@
       });
       on('pause', function () { flush(false); });
       on('ended', function () {
+        complete();
         current = video.durationSec;
         flush(false, true);
         if (onEnded) onEnded();

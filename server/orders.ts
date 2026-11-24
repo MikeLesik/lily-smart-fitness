@@ -59,6 +59,17 @@ export async function fulfillCheckoutSession(env: Env, s: CheckoutSession): Prom
   if (!email) return { result: 'skipped', reason: 'no_email' };
 
   const user = await getOrCreateUser(env, email);
+  // UTM первого касания у пользователя: из метаданных оплаты, если раньше не было.
+  const meta = s.metadata ?? {};
+  if (meta.utm_source || meta.utm_medium || meta.utm_campaign) {
+    await env.DB.prepare(
+      `UPDATE users SET utm_source = COALESCE(utm_source, ?2), utm_medium = COALESCE(utm_medium, ?3),
+         utm_campaign = COALESCE(utm_campaign, ?4)
+       WHERE id = ?1 AND utm_source IS NULL AND utm_medium IS NULL AND utm_campaign IS NULL`,
+    )
+      .bind(user.id, meta.utm_source ?? null, meta.utm_medium ?? null, meta.utm_campaign ?? null)
+      .run();
+  }
   const now = nowSec();
   const inserted = await env.DB.prepare(
     `INSERT INTO orders (id, user_id, email, stripe_session_id, stripe_payment_intent, amount, currency, items, status, receipt_url, utm, created_at)

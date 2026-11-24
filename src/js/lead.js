@@ -364,6 +364,10 @@
   }
 
   function codeSent(email, consent) {
+    if (window.track) {
+      window.track('lead_submit', { slug: 'free' });
+      window.track('login_code_sent');
+    }
     state = { email: email, consent: consent, sentAt: Date.now() };
     save();
     codeInput.value = '';
@@ -407,6 +411,7 @@
       if (res.ok) {
         state = { email: '', consent: false, sentAt: 0 };
         save();
+        if (window.track) window.track('login_success', { slug: 'free' });
         window.location.assign(lessonUrl());
         return;
       }

@@ -13,6 +13,9 @@ declare namespace Cloudflare {
     STREAM_SIGNING_JWK?: string;
     STRIPE_SECRET_KEY?: string;
     STRIPE_WEBHOOK_SECRET?: string;
+    ADMIN_EMAILS?: string;
+    POSTHOG_KEY?: string;
+    POSTHOG_HOST?: string;
     TEST_MIGRATIONS: import('@cloudflare/vitest-plugin').D1Migration[];
   }
 }

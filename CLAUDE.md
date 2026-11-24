@@ -12,7 +12,7 @@
 - Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
 - wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
-- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview заданы все, в Production пока только `RESEND_API_KEY`.
+- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview заданы все, в Production пока только `RESEND_API_KEY`.
 - Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`. Боевую базу мигрировать только на этапе 7.
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
@@ -44,11 +44,14 @@ functions/api/           маршруты: _middleware.ts (Origin, no-store, JSO
                          stripe/webhook.ts, [[path]].ts (JSON 404)
 functions/programs/, functions/en/programs/   /programs/ и /programs/<slug>/: HTML с сервера из catalog.json
 functions/sitemap.xml.ts sitemap из каталога
+functions/api/admin/     users, grant, revoke, export (CSV): только для ADMIN_EMAILS
+functions/api/events.ts  события браузера → PostHog (без cookie и без скрипта PostHog)
 server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile,
                          catalog, access (правило доступа), video-provider/ (интерфейс + stream.ts),
                          stripe (API, цены, подпись вебхука), orders (заказы, права, возвраты),
                          login-flow (общий путь «прислать код» для входа и лида),
-                         pages/ (шаблоны страниц программ: layout, program, programs-index, i18n, html)
+                         pages/ (шаблоны страниц программ: layout, program, programs-index, i18n, html),
+                         admin (проверка админа, CSV), analytics (capture в PostHog), purchase (письмо + событие покупки)
 tests/                   тесты API (vitest)
 src/
   index.html             главная RU: оффер программ → обо мне → #programs → как это работает → отзывы →
@@ -59,6 +62,7 @@ src/
   free/                  бесплатный урок за email (js/lead.js → /api/leads → код → кабинет)
   links/                 страница для шапки Instagram: 4 кнопки, передаёт utm_* дальше
   legal/terms|privacy|refunds/   заглушки до текстов юриста (noindex)
+  admin/                 админка: пользователи, выдача и отзыв доступа, CSV лидов и покупателей (js/admin.js, css/admin.css)
   en/...                 EN-зеркала всех страниц, включая login, account, checkout, free, links, legal
   404.html               страница 404 RU (абсолютные пути к CSS)
   robots.txt             sitemap.xml отдаёт функция (из каталога)
@@ -76,6 +80,7 @@ src/
     buy.js               покупка: любой [data-buy="<scope>"] открывает оплату (вошедшая сразу в Stripe, гость вводит email);
                          UTM первого касания в localStorage.lily_utm; «Войти» [data-nav-login] → «Кабинет»
     lead.js, program.js  форма бесплатного урока; превью-плеер на странице программы
+    analytics.js         на всех страницах: window.track(event, props) → /api/events; UTM первого касания
     login.js, account.js тексты в словаре I18N ru/en, язык по <html lang>
   assets/images/         фавиконки, og-image.jpg (1200×630); foto.psd в .gitignore
   assets/videos/hero.mp4
@@ -128,6 +133,13 @@ src/
 - Права выдаются только из вебхука, из `/api/checkout/complete` после проверки сессии в Stripe или вручную. Полный возврат закрывает доступ, частичный нет.
 - Тестовый режим: песочница restoreLab, ключ `lily-coach-preview` (ограниченный). Вебхук предпросмотра: `https://cabinet.lily-smart-fitness.pages.dev/api/stripe/webhook`.
 - Локально: в одном терминале `npm run dev`, в другом `stripe listen --forward-to http://localhost:8788/api/stripe/webhook --events checkout.session.completed,checkout.session.async_payment_succeeded,charge.refunded`; секрет из `stripe listen --print-secret` в `.dev.vars`. Тестовая карта 4242 4242 4242 4242.
+
+## Аналитика и админка
+
+- PostHog, регион EU. Ключ проекта `POSTHOG_KEY` (публичный) и `POSTHOG_HOST` в `wrangler.toml`; без ключа события молча не отправляются.
+- Браузер шлёт события на `/api/events` (sendBeacon). Гость = `anon_` + хеш IP и браузера с солью дня (на устройстве ничего не хранится, баннер cookie не нужен); вошедшая = id пользователя. `page_view` уходит как `$pageview`. События из плана 5.5: page_view, lead_submit, login_code_sent, login_success, preview_play, checkout_start, video_start, video_complete; `purchase` отправляет сервер при первой выдаче доступа по оплате (`server/purchase.ts`). Email в PostHog не уходит.
+- UTM первого касания: `localStorage.lily_utm` (analytics.js, buy.js, lead.js) → лид (`users.utm_*`), заказ (`orders.utm`), метаданные Stripe; покупателю без UTM записываются UTM покупки.
+- Админка `/admin/`: вход обычным кодом, доступ только для email из секрета `ADMIN_EMAILS` (через запятую). Выдать доступ по email (создаёт пользователя), отозвать любое право, CSV покупателей (с UTM из Stripe) и лидов бесплатного урока.
 
 ## Безопасность
 

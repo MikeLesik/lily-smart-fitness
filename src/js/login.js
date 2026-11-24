@@ -270,6 +270,7 @@
   }
 
   function codeSent(email) {
+    if (window.track) window.track('login_code_sent');
     state.email = email;
     state.sentAt = Date.now();
     save();
@@ -280,6 +281,7 @@
   }
 
   function loggedIn() {
+    if (window.track) window.track('login_success');
     state = { email: '', sentAt: 0 };
     save();
     window.location.assign(nextUrl());

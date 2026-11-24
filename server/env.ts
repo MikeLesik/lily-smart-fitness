@@ -22,4 +22,10 @@ export interface Env {
   STRIPE_SECRET_KEY?: string;
   /** Секрет подписи вебхука (whsec_...). Секрет. */
   STRIPE_WEBHOOK_SECRET?: string;
+  /** Email админов через запятую (регистр не важен). Секрет. */
+  ADMIN_EMAILS?: string;
+  /** Публичный ключ проекта PostHog (phc_...). Без него события не отправляются. */
+  POSTHOG_KEY?: string;
+  /** https://eu.i.posthog.com */
+  POSTHOG_HOST?: string;
 }
