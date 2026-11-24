@@ -1,0 +1,6 @@
+# Скопируй в .dev.vars (он в .gitignore). Без RESEND_API_KEY письма не шлются, код входа пишется в консоль.
+AUTH_SECRET=local-dev-secret-change-me
+APP_ENV=local
+# Тестовые ключи Turnstile от Cloudflare: всегда проходят.
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA

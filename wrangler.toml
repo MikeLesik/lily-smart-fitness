@@ -1,0 +1,35 @@
+# Cloudflare Pages: lily-smart-fitness.
+# Этот файл источник правды для привязок и переменных: настройки в дашборде для них не действуют.
+# Секреты (AUTH_SECRET, RESEND_API_KEY, TURNSTILE_SECRET_KEY) задаются через
+#   npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview|production
+# Локально они берутся из .dev.vars (см. .dev.vars.example).
+
+name = "lily-smart-fitness"
+pages_build_output_dir = "./src"
+compatibility_date = "2026-11-01"
+
+# Верхний уровень = предпросмотр (все ветки, кроме main) и локальная разработка.
+[[d1_databases]]
+binding = "DB"
+database_name = "lily-coach-preview"
+database_id = "2e287cc3-d791-4d04-8477-fc6b24d368bc"
+migrations_dir = "migrations"
+
+[vars]
+APP_ENV = "preview"
+EMAIL_FROM = "Lily <hello@lily.coach>"
+TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"
+
+# Боевой сайт lily.coach (ветка main). Миграции и секреты для него ставятся на этапе 7.
+[env.production]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "lily-coach"
+database_id = "df64e374-3c9a-40a6-ac2e-b569498ec658"
+migrations_dir = "migrations"
+
+[env.production.vars]
+APP_ENV = "production"
+EMAIL_FROM = "Lily <hello@lily.coach>"
+TURNSTILE_SITE_KEY = "0x4AAAAAAGQgZUiRz8xYKB1O"

@@ -1,0 +1,246 @@
+/* ============================================
+   CABINET — вход и личный кабинет
+   Только токены из variables.css.
+   ============================================ */
+
+.cab-body {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem var(--container-padding);
+}
+
+.cab-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 0.15em;
+  color: var(--warm-black);
+}
+
+.cab-logo img {
+  width: 28px;
+  height: 28px;
+  filter: brightness(0);
+}
+
+.cab-help {
+  font-size: var(--text-xs);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.cab-help:hover {
+  color: var(--olive);
+}
+
+.cab-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem var(--container-padding) 3rem;
+}
+
+.cab-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2rem 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.cab-card[hidden] {
+  display: none;
+}
+
+.cab-title {
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  margin-bottom: var(--space-sm);
+}
+
+.cab-text {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+}
+
+.cab-text strong {
+  color: var(--warm-black);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cab-email {
+  display: block;
+  margin: 0.2rem 0;
+}
+
+.cab-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cab-label {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.cab-input {
+  width: 100%;
+  /* 16px и больше: iOS не зумит поле при фокусе */
+  font: 400 1rem/1.4 var(--font-body);
+  color: var(--warm-black);
+  background: var(--cream);
+  border: 1px solid rgba(26, 23, 20, 0.15);
+  border-radius: 2px;
+  padding: 0.85rem 1rem;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.cab-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+.cab-input[aria-invalid="true"] {
+  border-color: #A4553F;
+}
+
+/* Manrope, а не Cormorant: у Cormorant единица похожа на I */
+.cab-input--code {
+  font-size: 1.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.35em;
+  text-align: center;
+  padding: 0.6rem 0 0.6rem 0.35em;
+}
+
+.cab-turnstile:empty {
+  display: none;
+}
+
+.cab-submit {
+  width: 100%;
+  padding-top: 0.95rem;
+  padding-bottom: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.cab-submit[disabled] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.cab-error {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+  color: #A4553F;
+}
+
+.cab-error--ok {
+  color: var(--olive);
+}
+
+.cab-error[hidden] {
+  display: none;
+}
+
+.cab-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin-top: var(--space-md);
+}
+
+.cab-link {
+  font-size: var(--text-sm);
+  color: var(--olive);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 0.25rem 0;
+}
+
+.cab-link[disabled] {
+  color: var(--taupe);
+  text-decoration: none;
+  cursor: default;
+}
+
+.cab-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cab-actions .btn-primary {
+  width: 100%;
+  padding-top: 0.95rem;
+  padding-bottom: 0.95rem;
+}
+
+.cab-secondary {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--warm-black);
+  border: 1px solid rgba(26, 23, 20, 0.2);
+  border-radius: 2px;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.cab-secondary:hover {
+  border-color: var(--gold);
+  color: var(--olive);
+}
+
+.cab-note {
+  margin-top: var(--space-md);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.cab-note a {
+  color: var(--olive);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .cab-main {
+    align-items: center;
+    padding-bottom: 6rem;
+  }
+
+  .cab-card {
+    padding: 2.75rem 2.5rem;
+  }
+}

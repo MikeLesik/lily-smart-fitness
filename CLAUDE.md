@@ -6,21 +6,25 @@
 
 ## Ветки и выкладка
 
-- Хостинг: Cloudflare Pages, проект `lily-smart-fitness`, подключён к GitHub-репозиторию MikeLesik/lily-smart-fitness. Каталог сборки `src`, команды сборки нет.
+- Хостинг: Cloudflare Pages, проект `lily-smart-fitness`, подключён к GitHub-репозиторию MikeLesik/lily-smart-fitness. Каталог сборки `src`, команды сборки нет, функции из `functions/` Pages собирает сам.
+- `wrangler.toml` источник правды для привязок (D1) и переменных: верхний уровень = предпросмотр и локальная разработка (база `lily-coach-preview`), `[env.production]` = lily.coach (база `lily-coach`).
 - Пуш в `main` сразу выкладывает живой сайт lily.coach. **В `main` ничего не пушить и не сливать без явного OK Михаила.**
 - Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
-- wrangler глобально не установлен: `npx wrangler@4 ...`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
+- wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
+- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview все три заданы, в Production пока только `RESEND_API_KEY`.
+- Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`. Боевую базу мигрировать только на этапе 7.
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
 ## Стек
 
-- Чистые HTML, CSS и ванильный JS. Без фреймворков, без сборки, без npm-зависимостей на фронте.
+- Фронт: чистые HTML, CSS и ванильный JS. Без фреймворков, без сборки, без npm-зависимостей на фронте.
+- Сервер: Cloudflare Pages Functions на TypeScript (`functions/` = маршруты, `server/` = модули), база D1, письма через Resend, защита формы Turnstile. Без npm-зависимостей в рантайме: только Web API.
+- Тесты: vitest + `@cloudflare/vitest-plugin` (D1 в памяти, миграции из `migrations/`). `npm test`, `npm run typecheck`.
 - RU в корне `src/`, EN-зеркало в `src/en/`. Тексты живут прямо в HTML.
 - Шрифты Google Fonts: Cormorant Garamond (заголовки) и Manrope (текст).
 - Анимации на CSS, появление блоков через IntersectionObserver в `main.js`.
 - Версии файлов в ссылках (`?v=2`, `main.js?v=4`) служат сбросом кеша: при правке CSS или JS увеличь номер в обеих страницах.
-- Серверная часть кабинета (этап 2 и дальше) будет на Cloudflare Pages Functions + D1 в этом же проекте, см. раздел 5 плана.
 
 ## Структура
 
@@ -30,8 +34,16 @@ docs/
   PLAN-CABINET.md        план работ по кабинету (главный документ)
   WORKOUTS.md            описание июньского раздела «Видеотренировки» (модель заменяется кабинетом)
   AUDIT.md, REDESIGN-PLAN.md, lily-coach-project-brief.md   старые аудит, план редизайна и бриф
+wrangler.toml            Pages: привязки D1 и переменные по средам
+package.json             wrangler, vitest, typescript (только для разработки)
+.dev.vars.example        локальные секреты; скопировать в .dev.vars
+migrations/              схема D1 (0001_auth.sql: users, login_codes, sessions, entitlements, rate_limits)
+functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, [[path]].ts (JSON 404)
+server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile
+tests/                   тесты API (vitest)
 src/
   index.html             главная RU
+  login/index.html       вход по email и коду (js/login.js, css/cabinet.css)
   404.html               страница 404 RU (абсолютные пути к CSS)
   robots.txt, sitemap.xml   sitemap содержит только / и /en/
   en/index.html, en/404.html
@@ -87,9 +99,12 @@ src/
 ## Локальный запуск
 
 ```bash
-cd src && python3 -m http.server 8000
+npm install
+cp .dev.vars.example .dev.vars
+npm run db:migrate:local
+npm run dev
 ```
 
-Открыть http://localhost:8000/ и http://localhost:8000/en/. Локальный сервер не умеет отдавать `404.html`, проверять 404 на предпросмотре.
+Сайт и API на http://localhost:8788/. Письма локально не уходят: код входа печатается в лог wrangler. Только статика без API: `cd src && python3 -m http.server 8000`.
 
 Перед пушем проверь на 375 px: меню (открытие, `aria-expanded`, Esc, переход к разделам), липкую кнопку, отсутствие горизонтальной прокрутки и ошибок в консоли.

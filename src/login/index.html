@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Вход · Lily</title>
+  <meta name="robots" content="noindex">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/css/variables.css?v=2">
+  <link rel="stylesheet" href="/css/reset.css?v=2">
+  <link rel="stylesheet" href="/css/layout.css?v=2">
+  <link rel="stylesheet" href="/css/components.css?v=2">
+  <link rel="stylesheet" href="/css/cabinet.css?v=2">
+</head>
+<body class="cab-body">
+  <header class="cab-header">
+    <a href="/" class="cab-logo">
+      <img src="/assets/images/favicon.png" alt="">
+      <span>LILY</span>
+    </a>
+    <a href="https://t.me/LilyLesik" target="_blank" rel="noopener" class="cab-help" data-i18n="help">Помощь</a>
+  </header>
+
+  <main class="cab-main">
+    <!-- Шаг 1: email -->
+    <section class="cab-card" data-step="email" aria-labelledby="email-title">
+      <p class="section-eyebrow" data-i18n="eyebrow">Личный кабинет</p>
+      <h1 class="cab-title" id="email-title" data-i18n="emailTitle">Вход</h1>
+      <p class="cab-text" data-i18n="emailText">Введи email, и мы пришлём код для входа. Пароль не нужен.</p>
+
+      <form class="cab-form" id="email-form" novalidate>
+        <label class="cab-label" for="email" data-i18n="emailLabel">Email</label>
+        <input class="cab-input" id="email" name="email" type="email" inputmode="email"
+               autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" required>
+        <div class="cab-turnstile" id="turnstile"></div>
+        <button type="submit" class="btn-primary cab-submit" data-i18n="emailSubmit">Получить код</button>
+        <p class="cab-error" role="alert" hidden></p>
+      </form>
+    </section>
+
+    <!-- Шаг 2: код -->
+    <section class="cab-card" data-step="code" aria-labelledby="code-title" hidden>
+      <p class="section-eyebrow" data-i18n="eyebrow">Личный кабинет</p>
+      <h1 class="cab-title" id="code-title" data-i18n="codeTitle">Код из письма</h1>
+      <p class="cab-text"><span data-i18n="codeSentTo">Мы отправили код на</span> <strong class="cab-email" data-email></strong> <span data-i18n="codeSpam">Если письма нет, загляни в «Спам».</span></p>
+
+      <form class="cab-form" id="code-form" novalidate>
+        <label class="cab-label" for="code" data-i18n="codeLabel">6 цифр</label>
+        <input class="cab-input cab-input--code" id="code" name="code" type="text" inputmode="numeric"
+               autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required>
+        <button type="submit" class="btn-primary cab-submit" data-i18n="codeSubmit">Войти</button>
+        <p class="cab-error" role="alert" hidden></p>
+      </form>
+
+      <div class="cab-links">
+        <button type="button" class="cab-link" data-action="resend" disabled></button>
+        <button type="button" class="cab-link" data-action="change-email" data-i18n="changeEmail">Другой email</button>
+      </div>
+    </section>
+
+    <!-- Вошла -->
+    <section class="cab-card" data-step="done" aria-labelledby="done-title" hidden>
+      <p class="section-eyebrow" data-i18n="eyebrow">Личный кабинет</p>
+      <h1 class="cab-title" id="done-title" data-i18n="doneTitle">Ты вошла</h1>
+      <p class="cab-text"><span data-i18n="doneAccount">Аккаунт:</span> <strong data-email></strong></p>
+      <p class="cab-text" data-i18n="doneSoon">Скоро здесь появятся твои программы.</p>
+      <div class="cab-actions">
+        <a href="/" class="btn-primary" data-i18n="doneHome">На главную</a>
+        <button type="button" class="cab-secondary" data-action="logout" data-i18n="logout">Выйти</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/login.js?v=2"></script>
+</body>
+</html>
