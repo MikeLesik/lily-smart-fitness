@@ -1,7 +1,7 @@
 /* ============================================
    LOGIN — вход по email и коду из письма
    API: /api/auth/config, /api/auth/request-code,
-        /api/auth/verify-code, /api/auth/logout, /api/me
+        /api/auth/verify-code, /api/me. Выход живёт в кабинете.
    ============================================ */
 
 (function () {
@@ -27,11 +27,6 @@
       resendIn: 'Новый код через {s} с',
       resent: 'Новый код отправлен.',
       changeEmail: 'Другой email',
-      doneTitle: 'Ты вошла',
-      doneAccount: 'Аккаунт:',
-      doneSoon: 'Скоро здесь появятся твои программы.',
-      doneHome: 'На главную',
-      logout: 'Выйти',
       errors: {
         invalid_email: 'Проверь email: кажется, в нём опечатка.',
         captcha_failed: 'Не получилось пройти проверку. Обнови страницу и попробуй ещё раз.',
@@ -55,8 +50,7 @@
 
   var steps = {
     email: document.querySelector('[data-step="email"]'),
-    code: document.querySelector('[data-step="code"]'),
-    done: document.querySelector('[data-step="done"]')
+    code: document.querySelector('[data-step="code"]')
   };
   var emailForm = document.getElementById('email-form');
   var codeForm = document.getElementById('code-form');
@@ -148,10 +142,10 @@
     });
   }
 
-  /** Адрес для перехода после входа: только пути этого сайта. */
+  /** Куда вести после входа: ?next= (только пути этого сайта) или кабинет. */
   function nextUrl() {
     var next = new URLSearchParams(window.location.search).get('next');
-    return next && /^\/(?!\/)/.test(next) ? next : null;
+    return next && /^\/(?!\/)/.test(next) ? next : '/account/';
   }
 
   /* ---------- Turnstile ---------- */
@@ -242,15 +236,10 @@
     startResendCountdown();
   }
 
-  function loggedIn(email) {
-    state = { email: email, sentAt: 0 };
+  function loggedIn() {
+    state = { email: '', sentAt: 0 };
     save();
-    var next = nextUrl();
-    if (next) {
-      window.location.assign(next);
-      return;
-    }
-    show('done');
+    window.location.assign(nextUrl());
   }
 
   emailForm.addEventListener('submit', function (e) {
@@ -284,7 +273,7 @@
     api('/api/auth/verify-code', { email: state.email, code: code }).then(function (res) {
       setBusy(codeForm, false);
       if (res.ok) {
-        loggedIn(res.data.user.email);
+        loggedIn();
         return;
       }
       showError(codeForm, errorText(res.data));
@@ -333,15 +322,6 @@
     show('email');
   });
 
-  document.querySelector('[data-action="logout"]').addEventListener('click', function () {
-    api('/api/auth/logout', {}).then(function () {
-      state = { email: '', sentAt: 0 };
-      save();
-      emailInput.value = '';
-      show('email');
-    });
-  });
-
   /* ---------- init ---------- */
 
   applyI18n();
@@ -352,13 +332,7 @@
 
   api('/api/me').then(function (res) {
     if (res.ok && res.data.user) {
-      state.email = res.data.user.email;
-      var next = nextUrl();
-      if (next) {
-        window.location.replace(next);
-        return;
-      }
-      show('done');
+      window.location.replace(nextUrl());
       return;
     }
     var saved = restore();

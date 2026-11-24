@@ -12,4 +12,10 @@ export interface Env {
   TURNSTILE_SITE_KEY?: string;
   /** Без секрета проверка Turnstile пропускается (локально и в тестах). Секрет. */
   TURNSTILE_SECRET_KEY?: string;
+  /** Код из адреса customer-<код>.cloudflarestream.com. Не секрет. */
+  STREAM_CUSTOMER_CODE?: string;
+  /** id ключа подписи Stream. */
+  STREAM_SIGNING_KEY_ID?: string;
+  /** Ключ подписи Stream: base64 от JSON JWK, как его отдаёт API Stream. Секрет. */
+  STREAM_SIGNING_JWK?: string;
 }

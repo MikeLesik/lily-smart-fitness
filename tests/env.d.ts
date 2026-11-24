@@ -8,6 +8,9 @@ declare namespace Cloudflare {
     RESEND_API_KEY?: string;
     TURNSTILE_SITE_KEY?: string;
     TURNSTILE_SECRET_KEY?: string;
+    STREAM_CUSTOMER_CODE?: string;
+    STREAM_SIGNING_KEY_ID?: string;
+    STREAM_SIGNING_JWK?: string;
     TEST_MIGRATIONS: import('@cloudflare/vitest-plugin').D1Migration[];
   }
 }

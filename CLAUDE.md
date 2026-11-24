@@ -12,14 +12,14 @@
 - Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
 - wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
-- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview все три заданы, в Production пока только `RESEND_API_KEY`.
+- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). В Preview заданы все, в Production пока только `RESEND_API_KEY`.
 - Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`. Боевую базу мигрировать только на этапе 7.
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
 ## Стек
 
 - Фронт: чистые HTML, CSS и ванильный JS. Без фреймворков, без сборки, без npm-зависимостей на фронте.
-- Сервер: Cloudflare Pages Functions на TypeScript (`functions/` = маршруты, `server/` = модули), база D1, письма через Resend, защита формы Turnstile. Без npm-зависимостей в рантайме: только Web API.
+- Сервер: Cloudflare Pages Functions на TypeScript (`functions/` = маршруты, `server/` = модули), база D1, письма через Resend, защита формы Turnstile, видео в Cloudflare Stream с подписанными ссылками. Без npm-зависимостей в рантайме: только Web API.
 - Тесты: vitest + `@cloudflare/vitest-plugin` (D1 в памяти, миграции из `migrations/`). `npm test`, `npm run typecheck`.
 - RU в корне `src/`, EN-зеркало в `src/en/`. Тексты живут прямо в HTML.
 - Шрифты Google Fonts: Cormorant Garamond (заголовки) и Manrope (текст).
@@ -37,13 +37,17 @@ docs/
 wrangler.toml            Pages: привязки D1 и переменные по средам
 package.json             wrangler, vitest, typescript (только для разработки)
 .dev.vars.example        локальные секреты; скопировать в .dev.vars
-migrations/              схема D1 (0001_auth.sql: users, login_codes, sessions, entitlements, rate_limits)
-functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, [[path]].ts (JSON 404)
-server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile
+content/catalog.json     категории, видео, цены (источник правды; UID видео в браузер не уходят)
+migrations/              схема D1 (0001_auth: users, login_codes, sessions, entitlements, rate_limits; 0002_progress)
+functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, catalog.ts,
+                         videos/[id]/playback.ts, progress.ts, [[path]].ts (JSON 404)
+server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile,
+                         catalog, access (правило доступа), video-provider/ (интерфейс + stream.ts)
 tests/                   тесты API (vitest)
 src/
   index.html             главная RU
-  login/index.html       вход по email и коду (js/login.js, css/cabinet.css)
+  login/index.html       вход по email и коду (js/login.js, css/cabinet.css), после входа ведёт в /account/
+  account/index.html     кабинет: программы, категория, плеер, профиль (js/account.js, hash-маршруты #/c/, #/v/, #/profile)
   404.html               страница 404 RU (абсолютные пути к CSS)
   robots.txt, sitemap.xml   sitemap содержит только / и /en/
   en/index.html, en/404.html
@@ -90,6 +94,13 @@ src/
 - Без Лили не трогать: отзывы (Анна К., Мария Л., Елена Р. похожи на образцы), состав и цены тарифов сопровождения, цитату Лили.
 - Кнопки связи ведут в личку Лили `https://t.me/LilyLesik` (с готовым текстом приветствия), `target="_blank" rel="noopener"`.
 - Канал: https://t.me/Lily_Smart_Fitness. Instagram: https://www.instagram.com/kpmvl.
+
+## Видео
+
+- Хостинг: Cloudflare Stream. У каждого видео включено Require Signed URLs: без подписанного токена не играет.
+- Новое видео: загрузить в дашборде Stream, включить Require Signed URLs, вписать его UID в `providerVideoId` нужного видео в `content/catalog.json`, указать `durationSec`, закоммитить.
+- Токен подписываем сами ключом подписи Stream (RS256, 2 часа): `STREAM_SIGNING_KEY_ID` и `STREAM_CUSTOMER_CODE` в `wrangler.toml`, `STREAM_SIGNING_JWK` секретом.
+- Доступ решает только сервер (`server/access.ts`): превью всем; бесплатная категория после входа; право на категорию или `all`. Права выдаются вставкой в `entitlements` (этап 6 даст админку).
 
 ## Безопасность
 
