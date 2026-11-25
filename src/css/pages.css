@@ -325,7 +325,7 @@
 }
 
 /* ============================================
-   /legal/* — заглушки до текстов юриста
+   /legal/*: оферта (проект) и заглушка политики данных
    ============================================ */
 
 .legal {
@@ -350,6 +350,28 @@
 
 .legal .cab-list {
   max-width: 34rem;
+}
+
+/* Длинный юридический текст (оферта) */
+.legal-doc {
+  max-width: 40rem;
+}
+
+.legal-h2 {
+  margin: 1.75rem 0 0.625rem;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--warm-black);
+}
+
+.legal-doc p:not(.legal-status) {
+  margin-bottom: 0.625rem;
+  font-size: var(--text-sm);
+  line-height: 1.65;
+  color: var(--warm-black);
+  overflow-wrap: anywhere;
 }
 
 .legal .cab-list .cab-link {

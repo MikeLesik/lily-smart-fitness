@@ -61,7 +61,8 @@ src/
   checkout/success/, checkout/cancel/   возврат из Stripe: оплата ещё обрабатывается / не завершена
   free/                  бесплатный урок за email (js/lead.js → /api/leads → код → кабинет)
   links/                 страница для шапки Instagram: 4 кнопки, передаёт utm_* дальше
-  legal/terms|privacy/   заглушки до текстов юриста (noindex)
+  legal/terms/           проект оферты (25.11, на согласовании у юриста, места в [скобках] заполняет юрист; EN пока заглушка)
+  legal/privacy/         заглушка до текста юриста (noindex)
   admin/                 админка: пользователи, выдача и отзыв доступа, CSV лидов и покупателей (js/admin.js, css/admin.css)
   en/...                 EN-зеркала всех страниц, включая login, account, checkout, free, links, legal
   404.html               страница 404 RU (абсолютные пути к CSS)
