@@ -104,7 +104,7 @@
     }).join('') || '<span class="adm-user-meta">доступов нет</span>';
     var orders = u.orders.map(function (o) {
       return '<div class="adm-chip"><span>' + esc(scopeTitle(o.scope)) + ' · ' + esc(money(o.amount, o.currency)) + ' · ' +
-        esc(o.status === 'refunded' ? 'возврат' : 'оплачено') + ' · ' + esc(date(o.createdAt)) + '</span>' +
+        esc(o.status === 'refunded' ? 'отменён' : 'оплачено') + ' · ' + esc(date(o.createdAt)) + '</span>' +
         (o.receiptUrl ? '<a class="adm-revoke" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">Чек</a>' : '') + '</div>';
     }).join('') || '<span class="adm-user-meta">заказов нет</span>';
     return '<article class="adm-user">' +

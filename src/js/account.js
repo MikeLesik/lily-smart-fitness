@@ -73,8 +73,7 @@
       paid: 'Оплата прошла. «{title}» уже открыта, письмо со входом отправили на почту.',
       paidAll: 'Оплата прошла. Все программы открыты, письмо со входом отправили на почту.',
       orders: 'Покупки',
-      receipt: 'Чек',
-      refunded: 'Возврат'
+      receipt: 'Чек'
     },
     en: {
       dateLocale: 'en-GB',
@@ -137,8 +136,7 @@
       paid: 'Payment received. “{title}” is already open, and we have emailed you a sign-in link.',
       paidAll: 'Payment received. All programs are open, and we have emailed you a sign-in link.',
       orders: 'Purchases',
-      receipt: 'Receipt',
-      refunded: 'Refunded'
+      receipt: 'Receipt'
     }
   };
 
@@ -754,12 +752,10 @@
         : '<p class="cab-text">' + esc(free ? t.noPurchasesFree : t.noPurchases) + '</p>' +
         (free ? '<div class="cab-actions cab-empty-actions"><a class="cab-secondary" href="#/c/' + esc(free.slug) + '">' + esc(L(free.title)) + '</a></div>' : '');
 
-    var orders = (state.orders || []).map(function (o) {
+    var orders = (state.orders || []).filter(function (o) { return o.status !== 'refunded'; }).map(function (o) {
       var name = o.scope === 'all' ? t.allPrograms : (titles[o.scope] || o.scope);
       var note = price({ amount: o.amount, currency: o.currency }) + SEP + date(o.createdAt);
-      var link = o.status === 'refunded'
-        ? SEP + esc(t.refunded)
-        : (o.receiptUrl ? SEP + '<a class="cab-inline-link" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">' + esc(t.receipt) + '</a>' : '');
+      var link = (o.receiptUrl ? SEP + '<a class="cab-inline-link" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">' + esc(t.receipt) + '</a>' : '');
       return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(note) + link + '</span></li>';
     });
 
