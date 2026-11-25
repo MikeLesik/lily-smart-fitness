@@ -51,6 +51,12 @@ const ru = {
   previewLoading: 'Загружаем видео…',
   previewUnavailable: 'Превью сейчас недоступно. Попробуй позже.',
   previewNetwork: 'Нет связи. Проверь интернет и нажми ещё раз.',
+  // Превью у каждой тренировки (обложки и превью из каталога, схема 26.11)
+  previewTitleEach: 'Посмотри превью',
+  previewTextEach: 'Превью тренировок бесплатно, без регистрации.',
+  epPreview: 'Превью · {d}',
+  epPreviewAria: 'Смотреть превью: {title}, {d}',
+  epAlt: '{title}, {d}',
 
   // Для кого, что внутри
   forWhomTitle: 'Для кого',
@@ -185,6 +191,11 @@ const en: Strings = {
   previewLoading: 'Loading video…',
   previewUnavailable: 'The preview is not available right now. Please try again later.',
   previewNetwork: 'No connection. Check your internet and tap again.',
+  previewTitleEach: 'Watch a preview',
+  previewTextEach: 'Workout previews are free, no sign-up needed.',
+  epPreview: 'Preview · {d}',
+  epPreviewAria: 'Watch preview: {title}, {d}',
+  epAlt: '{title}, {d}',
 
   forWhomTitle: 'Who it is for',
   insideTitle: 'What is inside',

@@ -88,7 +88,7 @@ describe('GET /api/catalog', () => {
       if (v.providerVideoId && v.providerVideoId.length > 8) expect(text).not.toContain(v.providerVideoId);
     }
     const lesson = body.categories.find((c: { slug: string }) => c.slug === paid.slug).videos[0];
-    expect(Object.keys(lesson).sort()).toEqual(['description', 'durationSec', 'equipment', 'id', 'preview', 'ready', 'title']);
+    expect(Object.keys(lesson).sort()).toEqual(['cover', 'description', 'durationSec', 'equipment', 'id', 'preview', 'previewOf', 'ready', 'title']);
   });
 });
 

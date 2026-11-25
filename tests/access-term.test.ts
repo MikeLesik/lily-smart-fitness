@@ -24,6 +24,7 @@ import {
 } from '../server/catalog';
 import type { Env } from '../server/env';
 import { formatDate } from '../server/email';
+import { esc } from '../server/pages/html';
 import { call, freshEmail, grant, loginAs, sessionCookie, streamTestKey } from './helpers';
 import { checkoutSession, mockStripe, stripeEvent, stripeSignature } from './stripe-mock';
 
@@ -62,7 +63,8 @@ function stripeWithPrice() {
 }
 
 const pp = () => catalog.categories.find((c) => c.slug === 'postpartum')!;
-const ppVideo = () => pp().videos[0];
+// Основное видео программы (превью в фикстуре стоят и перед основными, и после)
+const ppVideo = () => pp().videos.find((v) => !v.preview)!;
 
 describe('срок доступа: выдача', () => {
   it('вебхук: у программы с accessDays право до «сейчас + 30 дней», письмо со сроком', async () => {
@@ -201,7 +203,7 @@ describe('неготовые видео (без providerVideoId)', () => {
 
   it('одно неготовое видео: программа «скоро», в /api/catalog ready: false, UID не уходят', async () => {
     withUnready(['postpartum-03']);
-    expect(isVideoReady(pp().videos[2])).toBe(false);
+    expect(isVideoReady(pp().videos.find((v) => v.id === 'postpartum-03')!)).toBe(false);
     expect(isComingSoon(pp())).toBe(true);
     const raw = await (await call(getCatalog)).text();
     const body = JSON.parse(raw) as { categories: Array<{ slug: string; comingSoon: boolean; accessDays: number | null; videos: Array<{ id: string; ready: boolean; equipment: unknown }> }> };
@@ -233,16 +235,21 @@ describe('неготовые видео (без providerVideoId)', () => {
     expect(findSellable('postpartum')).toMatchObject({ comingSoon: false, accessDays: 30, price: { amount: 5900 } });
   });
 
-  it('настоящий каталог: postpartum «скоро», 7 неготовых видео с «что понадобится»', async () => {
+  it('настоящий каталог: postpartum из 7 тренировок с «что понадобится», превью ссылаются на свои тренировки', async () => {
     setCatalogForTests(real);
     const c = catalog.categories.find((x) => x.slug === 'postpartum')!;
     expect(catalog.categories[0].slug).toBe('postpartum');
     expect(c).toMatchObject({ published: true, free: false, price: { amount: 5900, currency: 'eur' }, accessDays: 30 });
-    expect(c.videos.map((v) => v.id)).toEqual([1, 2, 3, 4, 5, 6, 7].map((n) => `postpartum-0${n}`));
-    expect(c.videos.every((v) => !isVideoReady(v) && v.equipment?.ru && v.equipment?.en)).toBe(true);
-    expect(isComingSoon(c)).toBe(true);
+    const mains = c.videos.filter((v) => !v.preview);
+    expect(mains.map((v) => v.id)).toEqual([1, 2, 3, 4, 5, 6, 7].map((n) => `postpartum-0${n}`));
+    expect(mains.every((v) => v.equipment?.ru && v.equipment?.en)).toBe(true);
+    // Превью у каждой тренировки (схема 26.11): previewOf указывает на основное видео этой же программы
+    for (const p of c.videos.filter((v) => v.preview)) expect(mains.map((v) => v.id), p.id).toContain(p.previewOf);
+    // «Скоро», пока не готово хотя бы одно основное видео; неготовое не играет
+    expect(isComingSoon(c)).toBe(!mains.every(isVideoReady));
     const key = await streamTestKey();
-    expect((await call(playback, { params: { id: 'postpartum-01' }, env: key.env })).status).toBe(404);
+    const first = mains[0];
+    if (!isVideoReady(first)) expect((await call(playback, { params: { id: first.id }, env: key.env })).status).toBe(404);
     // Старые программы и набор сняты с сайта, записи остались
     for (const slug of ['yagodicy', 'zaryadka']) expect(catalog.categories.find((x) => x.slug === slug)!.published).toBe(false);
     expect(catalog.bundles.find((b) => b.slug === 'all')!.published).toBe(false);
@@ -295,9 +302,13 @@ describe('/programs/postpartum/', () => {
   const page = async (handler: typeof programRu, path: string) =>
     (await (await call(handler, { path, params: { slug: 'postpartum' }, env: env404 })).text()).replace(/ /g, ' ');
 
+  /** Как текст попадает в HTML страницы, но с обычными пробелами (page() убирает неразрывные). */
+  const plain = (value: string) => esc(value).replace(/\u00a0/g, ' ');
+
   function insideItems(html: string): string[] {
-    const section = html.match(/<section class="prg-section prg-inside"[\s\S]*?<\/section>/)![0];
-    return section.match(/<li>[\s\S]*?<\/li>/g) ?? [];
+    const section = html.match(/<section class="prg-section prg-inside[^"]*"[\s\S]*?<\/section>/)![0];
+    // Строки списка (<li>) или карточки ленты с обложками (<li class="prg-ep">)
+    return section.match(/<li[^>]*>[\s\S]*?<\/li>/g) ?? [];
   }
 
   it('RU, программа продаётся: название, €59, срок 30 дней везде, без «навсегда»', async () => {
@@ -310,8 +321,9 @@ describe('/programs/postpartum/', () => {
     expect(html).not.toMatch(/навсегда/i);
     const items = insideItems(html);
     expect(items).toHaveLength(7);
-    expect(items[0]).toContain('<span class="prg-item-equip">Что понадобится: коврик и подушка</span>');
-    for (const item of items.slice(1, 6)) expect(item).toContain('Что понадобится: коврик</span>');
+    // У карточки с обложкой «что понадобится» в alt (текст вшит в картинку), у остальных строкой
+    expect(items[0]).toContain('Что понадобится: коврик и подушка');
+    for (const item of items.slice(1, 6)) expect(item).toMatch(/Что понадобится: коврик[<"]/);
     // Пустое equipment: строки нет
     expect(items[6]).not.toContain('Что понадобится');
     expect(html).toContain('data-buy="postpartum"');
@@ -326,7 +338,7 @@ describe('/programs/postpartum/', () => {
     expect(html).not.toMatch(/forever|lifetime|for good/i);
     const items = insideItems(html);
     expect(items).toHaveLength(7);
-    expect(items[1]).toContain('What you need: a mat</span>');
+    expect(items[1]).toMatch(/What you need: a mat[<"]/);
   });
 
   it('бессрочная программа: прежние тексты про доступ', async () => {
@@ -336,28 +348,33 @@ describe('/programs/postpartum/', () => {
     expect(html).not.toContain('доступ 30 дней');
   });
 
-  it('настоящий каталог (RU и EN): «Скоро · доступ 30 дней», 7 тренировок с «что понадобится», без покупки', async () => {
+  it('настоящий каталог (RU и EN): 7 тренировок с «что понадобится», срок 30 дней; пока не всё готово, «Скоро» без покупки', async () => {
     setCatalogForTests(real);
+    const cat = catalog.categories.find((x) => x.slug === 'postpartum')!;
+    const mains = cat.videos.filter((v) => !v.preview);
+    const soon = isComingSoon(cat);
     const ru = await page(programRu, '/programs/postpartum/');
     expect(ru).toContain('>Послеродовое восстановление</h1>');
     expect(ru).toContain('€59');
-    expect(ru).toContain('<p class="prg-meta">Скоро · доступ 30 дней</p>');
+    expect(ru).toMatch(soon ? /<p class="prg-meta">Скоро · доступ 30 дней<\/p>/ : /<p class="prg-meta">7 тренировок · \d+ мин · доступ 30 дней<\/p>/);
     expect(ru).not.toMatch(/навсегда/i);
-    expect(ru).not.toContain('data-buy=');
+    if (soon) expect(ru).not.toContain('data-buy=');
     const items = insideItems(ru);
     expect(items).toHaveLength(7);
     items.forEach((item, i) => {
-      expect(item).toContain(`>Тренировка ${i + 1}</span>`);
-      expect(item).toContain('Что понадобится: коврик</span>');
+      const v = mains[i];
+      // «Скоро»: строка списка с названием; продаётся: название в тексте или в alt обложки
+      expect(item).toContain(plain(v.title.ru));
+      expect(item).toContain(plain(`Что понадобится: ${v.equipment!.ru}`));
     });
     expect(ru).not.toContain('—');
 
     const en = await page(programEn, '/en/programs/postpartum/');
     expect(en).toContain('>Postpartum recovery</h1>');
-    expect(en).toContain('<p class="prg-meta">Coming soon · 30 days of access</p>');
+    if (soon) expect(en).toContain('<p class="prg-meta">Coming soon · 30 days of access</p>');
     expect(en).not.toMatch(/forever|lifetime/i);
     expect(insideItems(en)).toHaveLength(7);
-    expect(en).toContain('What you need: a mat</span>');
+    expect(en).toContain(plain(`What you need: ${mains[0].equipment!.en}`));
   });
 
   it('настоящий каталог: старые программы отдают 404', async () => {

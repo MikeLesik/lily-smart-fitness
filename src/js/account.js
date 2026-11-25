@@ -1,7 +1,7 @@
 /* ============================================
    ACCOUNT — личный кабинет /account/
    Маршруты (hash): #/ программы, #/c/<slug> категория,
-   #/v/<id> просмотр, #/profile профиль.
+   #/v/<id> просмотр, #/profile профиль, #/receipt/<id> чек.
    Данные: /api/me, /api/catalog, /api/progress,
    /api/videos/<id>/playback. Доступ решает сервер,
    здесь только отображение.
@@ -17,6 +17,9 @@
       decimal: ',',
       programsTitle: 'Мои программы',
       moreSection: 'Ещё программы',
+      recipesSection: 'Рецепты',
+      recipesSoon: 'Бесплатный раздел с рецептами Лили скоро заполнится.',
+      recipesLink: 'Открыть раздел',
       workoutForms: ['тренировка', 'тренировки', 'тренировок'],
       programForms: ['программа', 'программы', 'программ'],
       minutes: '{n}\u00a0мин',
@@ -76,6 +79,16 @@
       paidAll: 'Оплата прошла. Все программы открыты, письмо со входом отправили на почту.',
       orders: 'Покупки',
       receipt: 'Чек',
+      receiptNo: '№ {number}',
+      receiptTotal: 'Итого оплачено',
+      receiptBuyer: 'Покупательница: {email}',
+      receiptSeller: 'Продавец: Михаил Лесик, индивидуальный предприниматель (autónomo), Испания',
+      receiptHelp: 'Вопросы по оплате:',
+      receiptHelpLink: 'написать Лиле в Telegram',
+      receiptHelpText: 'Привет, Лиля! Вопрос по оплате, чек № {number}.',
+      receiptPrint: 'Сохранить или распечатать',
+      receiptMissingTitle: 'Чек не найден',
+      receiptMissingText: 'Такой покупки в этом кабинете нет.',
       soon: 'Скоро',
       soonVideos: 'Видео появятся скоро.',
       accessUntil: 'Доступ до\u00a0{date}',
@@ -85,6 +98,9 @@
       endedShort: 'Закончился {date}',
       buyAgain: 'Купить снова · {price}',
       equipment: 'Что понадобится: {list}',
+      previewOf: 'Превью\u00a0· {d}',
+      previewEach: 'Превью тренировок можно посмотреть бесплатно.',
+      fullWorkout: 'Смотреть тренировку целиком',
       fullscreen: 'На весь экран',
       exitFullscreen: 'Свернуть'
     },
@@ -93,6 +109,9 @@
       decimal: '.',
       programsTitle: 'My programs',
       moreSection: 'More programs',
+      recipesSection: 'Recipes',
+      recipesSoon: 'A free section with Lily\u2019s recipes is coming soon.',
+      recipesLink: 'Open the section',
       workoutForms: ['workout', 'workouts'],
       programForms: ['program', 'programs'],
       minutes: '{n}\u00a0min',
@@ -152,6 +171,16 @@
       paidAll: 'Payment received. All programs are open, and we have emailed you a sign-in link.',
       orders: 'Purchases',
       receipt: 'Receipt',
+      receiptNo: 'No. {number}',
+      receiptTotal: 'Total paid',
+      receiptBuyer: 'Customer: {email}',
+      receiptSeller: 'Seller: Mikhail Lesik, sole trader (autónomo), Spain',
+      receiptHelp: 'Questions about your payment:',
+      receiptHelpLink: 'message Lily on Telegram',
+      receiptHelpText: 'Hi Lily! I have a question about my payment, receipt No. {number}.',
+      receiptPrint: 'Save or print',
+      receiptMissingTitle: 'Receipt not found',
+      receiptMissingText: 'There is no such purchase in this account.',
       soon: 'Coming soon',
       soonVideos: 'The videos are coming soon.',
       accessUntil: 'Access until {date}',
@@ -161,6 +190,9 @@
       endedShort: 'Ended on {date}',
       buyAgain: 'Buy again · {price}',
       equipment: 'What you need: {list}',
+      previewOf: 'Preview\u00a0· {d}',
+      previewEach: 'You can watch the workout previews for free.',
+      fullWorkout: 'Watch the full workout',
       fullscreen: 'Full screen',
       exitFullscreen: 'Exit full screen'
     }
@@ -353,8 +385,35 @@
     return !!cat.comingSoon || !mainVideos(cat).length;
   }
 
+  /** Готовое превью тренировки (previewOf = её id), иначе null. */
+  function previewFor(cat, v) {
+    return cat.videos.find(function (p) { return p.preview && p.previewOf === v.id && p.ready !== false; }) || null;
+  }
+
+  /** У программы превью у каждой тренировки (схема с previewOf), а не одно общее. */
+  function hasWorkoutPreviews(cat) {
+    return cat.videos.some(function (v) { return v.preview && v.previewOf; });
+  }
+
+  /** Превью программы: первой по порядку тренировки, у которой оно готово; иначе любое готовое. */
   function firstPreview(cat) {
-    return cat.videos.find(function (v) { return v.preview; }) || null;
+    var mains = mainVideos(cat);
+    for (var i = 0; i < mains.length; i++) {
+      var own = previewFor(cat, mains[i]);
+      if (own) return own;
+    }
+    return cat.videos.find(function (v) { return v.preview && v.ready !== false; }) || null;
+  }
+
+  /** Основное видео, к которому относится превью. */
+  function mainOf(cat, preview) {
+    if (!preview.previewOf) return null;
+    return cat.videos.find(function (v) { return v.id === preview.previewOf && !v.preview; }) || null;
+  }
+
+  /** Строка про превью над кнопками: «Превью тренировок…» или «Первую минуту можно посмотреть бесплатно.» */
+  function previewText(cat, preview) {
+    return hasWorkoutPreviews(cat) ? t.previewEach : previewSentence(preview.durationSec);
   }
 
   function isDone(v) {
@@ -473,6 +532,13 @@
     return '<a class="cab-back" href="' + esc(href) + '"><span class="cab-back-label">' + esc(label) + '</span></a>';
   }
 
+  /** Миниатюра обложки тренировки 9:16 (копия -480). Название рядом текстом, поэтому alt пустой. */
+  function videoThumb(v) {
+    if (!v.cover) return '';
+    var small = v.cover.replace(/(\.[a-z0-9]+)$/i, '-480$1');
+    return '<img class="cab-video-cover" src="' + esc(small) + '" alt="" width="480" height="854" loading="lazy" decoding="async">';
+  }
+
   function cover(src, eager) {
     if (!src) return '<span class="cab-thumb" aria-hidden="true"><span class="cab-cover"></span></span>';
     var webp = /\.jpe?g$/i.test(src) ? src.replace(/\.jpe?g$/i, '.webp') : null;
@@ -556,19 +622,24 @@
         (bundle && !bundle.comingSoon && !hasAll && lockedPaid > 1 ? bundleRow(bundle) : '') +
         '</ul>';
     }
+    // Бесплатный раздел рецептов: отдельная страница /recipes/, пока с заглушкой
+    html += '<h2 class="cab-section-title">' + esc(t.recipesSection) + '</h2>' +
+      '<p class="cab-text">' + esc(t.recipesSoon) + ' <a class="cab-inline-link" href="' + BASE + '/recipes/">' + esc(t.recipesLink) + '</a></p>';
     app.innerHTML = html;
   }
 
   /* ---------- программа ---------- */
 
-  function videoItem(v, open) {
+  function videoItem(v, open, cat) {
     var p = state.progress[v.id];
     var res = open && resumable(v);
+    // Закрытая программа (не купленная, срок не заканчивался): строка с готовым превью ведёт на него
+    var preview = !open && !endedAt(cat) ? previewFor(cat, v) : null;
     var meta = res
       ? fmt(t.stoppedAt, { time: clock(p.seconds), total: duration(v.durationSec) })
       : duration(v.durationSec);
     var stateHtml = '';
-    if (!open) {
+    if (!open && !preview) {
       stateHtml = '<span class="cab-video-state">' + ICON_LOCK + '<span class="visually-hidden">' + esc(t.lockedLabel) + '</span></span>';
     } else if (isDone(v)) {
       stateHtml = '<span class="cab-video-state cab-video-state--done">' + ICON_CHECK + '<span class="visually-hidden">' + esc(t.doneLabel) + '</span></span>';
@@ -576,13 +647,19 @@
     var bar = res
       ? '<span class="cab-video-bar" style="width:' + Math.round(Math.min(p.seconds / v.durationSec, 1) * 100) + '%" aria-hidden="true"></span>'
       : '';
-    var inner = '<span class="cab-video-body"><span class="cab-video-title">' + esc(L(v.title)) + '</span>' +
+    var about = L(v.description).trim();
+    var inner = videoThumb(v) +
+      '<span class="cab-video-body"><span class="cab-video-title">' + esc(L(v.title)) + '</span>' +
       equipmentLine(v, 'cab-video-equip') +
-      '<span class="cab-video-meta">' + esc(meta) + '</span></span>' +
+      '<span class="cab-video-meta">' + esc(meta) + '</span>' +
+      (preview ? '<span class="cab-video-preview">' + esc(fmt(t.previewOf, { d: duration(preview.durationSec) })) + '</span>' : '') +
+      (about ? '<span class="cab-video-about">' + esc(about) + '</span>' : '') +
+      '</span>' +
       stateHtml + bar;
-    return open
-      ? '<li><a class="cab-video" href="#/v/' + esc(v.id) + '">' + inner + '</a></li>'
-      : '<li><div class="cab-video cab-video--locked">' + inner + '</div></li>';
+    var cls = 'cab-video' + (v.cover ? ' cab-video--cover' : '');
+    if (open) return '<li><a class="' + cls + '" href="#/v/' + esc(v.id) + '">' + inner + '</a></li>';
+    if (preview) return '<li><a class="' + cls + '" href="#/v/' + esc(preview.id) + '">' + inner + '</a></li>';
+    return '<li><div class="' + cls + ' cab-video--locked">' + inner + '</div></li>';
   }
 
   function renderCategory(slug) {
@@ -618,12 +695,12 @@
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price, true) + '</div>';
     } else {
       var preview = firstPreview(cat);
-      html += '<p class="cab-text">' + esc((preview ? previewSentence(preview.durationSec) + ' ' : '') + t.lockedProgram) + '</p>' +
+      html += '<p class="cab-text">' + esc((preview ? previewText(cat, preview) + ' ' : '') + t.lockedProgram) + '</p>' +
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div>';
     }
 
     // В списке только основные видео: в купленной превью не нужно, в закрытой оно на кнопке.
-    html += '<ol class="cab-videos">' + mains.map(function (v) { return videoItem(v, open); }).join('') + '</ol>';
+    html += '<ol class="cab-videos">' + mains.map(function (v) { return videoItem(v, open, cat); }).join('') + '</ol>';
     app.innerHTML = html;
   }
 
@@ -719,6 +796,16 @@
   }
 
   function afterLink(v, cat) {
+    // Превью тренировки: дальше сама тренировка (программа открыта) или покупка и возврат к программе
+    if (v.preview && v.previewOf) {
+      var main = mainOf(cat, v);
+      var toProgram = '<a class="cab-secondary" href="#/c/' + esc(cat.slug) + '">' + esc(t.toProgram) + '</a>';
+      if (hasCategory(cat)) {
+        return (main ? '<a class="btn-primary" href="#/v/' + esc(main.id) + '">' + esc(t.fullWorkout) + '</a>' : '') + toProgram;
+      }
+      var canBuy = !isSoon(cat) && !cat.free && cat.price;
+      return (canBuy ? buyButton(cat.slug, L(cat.title), cat.price, !!endedAt(cat)) : '') + toProgram;
+    }
     var next = nextVideo(v, cat);
     if (next) {
       return '<a class="cab-secondary" href="#/v/' + esc(next.id) + '">' + esc(fmt(t.next, { title: L(next.title) })) + '</a>';
@@ -746,7 +833,9 @@
       box = '<section class="cab-locked"><p class="cab-text">' + esc(fmt(t.accessEndedText, { date: dateLong(ended) })) + '</p>' +
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price, true) + '</div></section>';
     } else if (kind === 'locked') {
-      var text = fmt(t.lockedVideo, { title: L(cat.title) }) + (preview ? ' ' + previewSentence(preview.durationSec) : '');
+      // Своё превью этой тренировки, если оно есть, иначе общее
+      preview = previewFor(cat, v) || preview;
+      var text = fmt(t.lockedVideo, { title: L(cat.title) }) + (preview ? ' ' + previewText(cat, preview) : '');
       box = '<section class="cab-locked"><p class="cab-text">' + esc(text) + '</p>' +
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div></section>';
     } else if (kind === 'elsewhere') {
@@ -889,6 +978,9 @@
           equipmentLine(v, 'cab-watch-equip') +
           '<p class="cab-meta">' + esc(videoMeta(v, cat)) + '</p>' +
           (L(v.description) ? '<p class="cab-video-desc">' + esc(L(v.description)) + '</p>' : '') +
+          (v.preview && v.previewOf && !hasCategory(cat) && !isSoon(cat) && !endedAt(cat)
+            ? '<p class="cab-text cab-watch-note">' + esc(t.lockedProgram) + '</p>'
+            : '') +
           (paid ? '<div class="cab-actions cab-fs-actions" id="fs" hidden><button type="button" class="cab-secondary" data-action="fullscreen">' + esc(t.fullscreen) + '</button></div>' : '') +
           '<div class="cab-actions" id="after">' + afterLink(v, cat) + '</div>' +
         '</div>' +
@@ -906,10 +998,12 @@
         return;
       }
       var url = res.data.url;
+      var params = [];
       // Продолжить с места остановки, если видео не досмотрено.
-      if (resumable(v)) {
-        url += (url.indexOf('?') === -1 ? '?' : '&') + 'startTime=' + state.progress[v.id].seconds + 's';
-      }
+      if (resumable(v)) params.push('startTime=' + state.progress[v.id].seconds + 's');
+      // Обложка тренировки как постер плеера (полная, 1080)
+      if (v.cover) params.push('poster=' + encodeURIComponent(location.origin + v.cover));
+      if (params.length) url += (url.indexOf('?') === -1 ? '?' : '&') + params.join('&');
       var iframe = document.createElement('iframe');
       iframe.src = url;
       iframe.title = L(v.title);
@@ -973,10 +1067,9 @@
         (free ? '<div class="cab-actions cab-empty-actions"><a class="cab-secondary" href="#/c/' + esc(free.slug) + '">' + esc(L(free.title)) + '</a></div>' : '');
 
     var orders = (state.orders || []).filter(function (o) { return o.status !== 'refunded'; }).map(function (o) {
-      var name = o.scope === 'all' ? t.allPrograms : (titles[o.scope] || o.scope);
       var note = price({ amount: o.amount, currency: o.currency }) + SEP + date(o.createdAt);
-      var link = (o.receiptUrl ? SEP + '<a class="cab-inline-link" href="' + esc(o.receiptUrl) + '" target="_blank" rel="noopener">' + esc(t.receipt) + '</a>' : '');
-      return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(note) + link + '</span></li>';
+      var link = SEP + '<a class="cab-inline-link" href="#/receipt/' + esc(o.id) + '">' + esc(t.receipt) + '</a>';
+      return '<li><span class="cab-list-value">' + esc(orderName(o)) + '</span><span class="cab-list-note">' + esc(note) + link + '</span></li>';
     });
 
     app.innerHTML =
@@ -990,6 +1083,50 @@
         '<a class="btn-primary" href="' + esc(telegram(t.writeLilyText)) + '" target="_blank" rel="noopener">' + esc(t.writeLily) + '</a>' +
       '</div>' +
       '<div class="cab-logout"><button type="button" class="cab-link" data-action="logout">' + esc(t.logout) + '</button></div>';
+  }
+
+  /* ---------- чек ---------- */
+
+  /** Название покупки: из заказа (сервер помнит и снятые с сайта программы), иначе из каталога. */
+  function orderName(o) {
+    if (o.title) return L(o.title);
+    if (o.scope === 'all') return t.allPrograms;
+    var cat = findCategory(o.scope);
+    return cat ? L(cat.title) : o.scope;
+  }
+
+  /**
+   * Свой чек вместо страницы Stripe: там реквизиты общего аккаунта и чужая вёрстка.
+   * Это подтверждение оплаты, не налоговый документ. Возвращённые заказы не показываем.
+   */
+  function renderReceipt(id) {
+    var o = (state.orders || []).find(function (x) { return x.id === id && x.status !== 'refunded'; });
+    if (!o) {
+      app.innerHTML = back('#/profile', t.profileTitle) +
+        '<h1 class="cab-title">' + esc(t.receiptMissingTitle) + '</h1>' +
+        '<p class="cab-text">' + esc(t.receiptMissingText) + '</p>';
+      return;
+    }
+    var sum = price({ amount: o.amount, currency: o.currency });
+    var paid = new Date(o.createdAt * 1000).toLocaleDateString(t.dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
+    document.title = t.receipt + ' ' + o.number + ' · Lily';
+    app.innerHTML = back('#/profile', t.profileTitle) +
+      '<article class="cab-receipt">' +
+        '<p class="cab-receipt-brand" aria-hidden="true">LILY</p>' +
+        '<h1 class="cab-title cab-receipt-title">' + esc(t.receipt) + '</h1>' +
+        '<p class="cab-receipt-meta">' + esc(fmt(t.receiptNo, { number: o.number }) + SEP + paid) + '</p>' +
+        '<dl class="cab-receipt-lines">' +
+          '<div class="cab-receipt-line"><dt>' + esc(orderName(o)) + '</dt><dd>' + esc(sum) + '</dd></div>' +
+          '<div class="cab-receipt-line cab-receipt-total"><dt>' + esc(t.receiptTotal) + '</dt><dd>' + esc(sum) + '</dd></div>' +
+        '</dl>' +
+        '<p class="cab-receipt-note">' + esc(fmt(t.receiptBuyer, { email: state.user.email })) + '</p>' +
+        '<p class="cab-receipt-note">' + esc(t.receiptSeller) + '</p>' +
+        '<p class="cab-receipt-note cab-receipt-help">' + esc(t.receiptHelp) + ' <a class="cab-inline-link" href="' +
+          esc(telegram(fmt(t.receiptHelpText, { number: o.number }))) + '" target="_blank" rel="noopener">' + esc(t.receiptHelpLink) + '</a></p>' +
+      '</article>' +
+      '<div class="cab-actions cab-receipt-actions">' +
+        '<button type="button" class="cab-secondary" data-action="print">' + esc(t.receiptPrint) + '</button>' +
+      '</div>';
   }
 
   function renderNetworkError() {
@@ -1020,6 +1157,7 @@
     if ((m = h.match(/^\/c\/([\w-]+)$/))) renderCategory(m[1]);
     else if ((m = h.match(/^\/v\/([\w-]+)$/))) renderVideo(m[1]);
     else if (h === '/profile') { renderProfile(); nav = 'profile'; }
+    else if ((m = h.match(/^\/receipt\/([\w-]+)$/))) { renderReceipt(m[1]); nav = 'profile'; }
     else renderPrograms();
 
     document.querySelectorAll('[data-nav]').forEach(function (a) {
@@ -1035,6 +1173,7 @@
     if (!el) return;
     var action = el.getAttribute('data-action');
     if (action === 'reload') location.reload();
+    if (action === 'print') window.print();
     if (action === 'fullscreen') toggleFullscreen();
     if (action === 'logout') {
       el.disabled = true;

@@ -558,3 +558,21 @@
     transition: none;
   }
 }
+
+/* --- Рецепты (/recipes/): бесплатный раздел, пока заглушка «скоро» --- */
+.rcp-hero {
+  padding: var(--space-sm) 0 var(--space-lg);
+}
+
+.rcp-hero .lead-promise {
+  margin: 0 0 var(--space-sm);
+}
+
+.rcp-hero .lead-soon {
+  margin-bottom: var(--space-md);
+  color: var(--text-muted);
+}
+
+.rcp-actions {
+  max-width: 24rem;
+}

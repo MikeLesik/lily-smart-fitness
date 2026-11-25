@@ -22,6 +22,11 @@ export interface CatalogVideo {
   providerVideoId: string | null;
   /** «Что понадобится для тренировки», строчными: «коврик и полотенце». */
   equipment?: Localized;
+  /** Обложка 9:16, путь от корня сайта: /assets/images/programs/<slug>/01.jpg (1080×1920).
+   *  Рядом всегда лежит уменьшенная копия 480×853 с суффиксом -480: 01-480.jpg. */
+  cover?: string;
+  /** Только у превью: id основного видео, к которому оно относится. */
+  previewOf?: string;
 }
 
 export interface LocalizedList {
@@ -84,6 +89,11 @@ export function setCatalogForTests(next: Catalog): void {
   const copy = structuredClone(next);
   catalog.categories = copy.categories;
   catalog.bundles = copy.bundles;
+}
+
+/** Название программы или набора по области заказа. Ищет и среди снятых с сайта: чек должен называть покупку. */
+export function scopeTitle(scope: string): Localized | null {
+  return catalog.categories.find((c) => c.slug === scope)?.title ?? catalog.bundles.find((b) => b.slug === scope)?.title ?? null;
 }
 
 export function publishedCategories(): CatalogCategory[] {
@@ -153,6 +163,16 @@ export function findVideo(id: string): { video: CatalogVideo & { providerVideoId
   return null;
 }
 
+/** Уменьшенная копия обложки тренировки (480 px по ширине): 01.jpg → 01-480.jpg. */
+export function coverSmall(cover: string): string {
+  return cover.replace(/(\.[a-z0-9]+)$/i, '-480$1');
+}
+
+/** Готовое превью тренировки (previewOf = её id), иначе null. */
+export function previewOfVideo(category: CatalogCategory, videoId: string): CatalogVideo | null {
+  return category.videos.find((v) => v.preview && v.previewOf === videoId && isVideoReady(v)) ?? null;
+}
+
 /** Каталог для браузера: без provider и providerVideoId. */
 export function publicCatalog() {
   return {
@@ -172,6 +192,8 @@ export function publicCatalog() {
         equipment: v.equipment ?? null,
         durationSec: v.durationSec ?? null,
         preview: v.preview,
+        previewOf: v.previewOf ?? null,
+        cover: v.cover ?? null,
         ready: isVideoReady(v),
       })),
     })),

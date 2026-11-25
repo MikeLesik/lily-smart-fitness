@@ -319,10 +319,15 @@ describe('GET /api/checkout/complete', () => {
     const cookie = sessionCookie(res);
     expect(cookie).toMatch(/^lily_session=/);
 
-    const body = await (await call(me, { cookie })).json<{ user: { email: string }; entitlements: Array<{ scope: string }>; orders: Array<{ scope: string; receiptUrl: string | null; status: string }> }>();
+    const body = await (await call(me, { cookie })).json<{ user: { email: string }; entitlements: Array<{ scope: string }>; orders: Array<{ id: string; number: string; scope: string; title: { ru: string } | null; status: string }> }>();
     expect(body.user.email).toBe(s.customer_email);
     expect(body.entitlements.map((e) => e.scope)).toEqual(['zaryadka']);
-    expect(body.orders).toEqual([expect.objectContaining({ scope: 'zaryadka', status: 'paid', receiptUrl: 'https://pay.stripe.com/receipts/test' })]);
+    // Свой чек в кабинете: номер и название программы; ссылка на чек Stripe в браузер не уходит
+    expect(body.orders).toEqual([
+      expect.objectContaining({ scope: 'zaryadka', status: 'paid', number: expect.stringMatching(/^[0-9A-F]{4}-[0-9A-F]{4}$/) }),
+    ]);
+    expect(body.orders[0].title?.ru).toBeTruthy();
+    expect(body.orders[0]).not.toHaveProperty('receiptUrl');
   });
 
   it('cookie по ссылке возврата ставится один раз', async () => {

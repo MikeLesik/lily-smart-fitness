@@ -422,6 +422,8 @@
     document.querySelectorAll('[data-programs]').forEach(function (list) {
       list.innerHTML = cards.join('');
     });
+    // Программа одна: ссылка «Все программы» ведёт к той же единственной карточке, прячем её
+    document.querySelectorAll('.programs-all').forEach(function (a) { a.hidden = paid.length < 2; });
     peekUpdaters.forEach(function (fn) { fn(); });
   }
 

@@ -1,5 +1,5 @@
 import type { Env } from './env';
-import { accessExpiresAt, findSellable } from './catalog';
+import { accessExpiresAt, findSellable, scopeTitle } from './catalog';
 import { getOrCreateUser, nowSec, type User } from './db';
 import { BRAND, type CheckoutSession } from './stripe';
 
@@ -133,18 +133,33 @@ export async function claimCheckoutLogin(env: Env, orderId: string): Promise<boo
   return res.meta.changes > 0;
 }
 
+/** Номер чека: первые 8 шестнадцатеричных знаков id заказа двумя четвёрками, «1A2B-3C4D». */
+export function receiptNumber(orderId: string): string {
+  const hex = orderId.replace(/[^0-9a-f]/gi, '').slice(0, 8).toUpperCase();
+  return `${hex.slice(0, 4)}-${hex.slice(4)}`;
+}
+
+/**
+ * Заказы для кабинета: из них кабинет рисует свой чек (#/receipt/<id>).
+ * Ссылка на чек Stripe (receipt_url) в браузер не уходит: там реквизиты общего аккаунта.
+ */
 export async function getUserOrders(env: Env, userId: string) {
   const { results } = await env.DB.prepare(
-    'SELECT items, amount, currency, status, receipt_url, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC',
+    'SELECT id, items, amount, currency, status, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC',
   )
     .bind(userId)
-    .all<{ items: string; amount: number; currency: string; status: string; receipt_url: string | null; created_at: number }>();
-  return results.map((o) => ({
-    scope: (JSON.parse(o.items) as string[])[0],
-    amount: o.amount,
-    currency: o.currency,
-    status: o.status,
-    receiptUrl: o.receipt_url,
-    createdAt: o.created_at,
-  }));
+    .all<{ id: string; items: string; amount: number; currency: string; status: string; created_at: number }>();
+  return results.map((o) => {
+    const scope = (JSON.parse(o.items) as string[])[0];
+    return {
+      id: o.id,
+      number: receiptNumber(o.id),
+      scope,
+      title: scopeTitle(scope),
+      amount: o.amount,
+      currency: o.currency,
+      status: o.status,
+      createdAt: o.created_at,
+    };
+  });
 }

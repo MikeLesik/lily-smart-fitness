@@ -6,11 +6,11 @@ export const ASSET_VERSIONS = {
   variables: 4,
   reset: 3,
   components: 8,
-  cabinet: 9,
+  cabinet: 11,
   buyCss: 3,
-  programsCss: 6,
+  programsCss: 7,
   buyJs: 5,
-  programJs: 3,
+  programJs: 4,
   analyticsJs: 1,
 };
 

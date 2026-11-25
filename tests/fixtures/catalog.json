@@ -1,5 +1,5 @@
 {
-  "_note": "Фикстура для тестов: каталог с видео (как до 25.11.2026). UID выдуманные, в Stream их нет. Рантайм берёт content/catalog.json, тесты подменяют его этим файлом (tests/setup-catalog.ts). postpartum: программа со сроком доступа (accessDays 30), 7 готовых видео; у последнего пустое equipment.",
+  "_note": "Фикстура для тестов: каталог с видео (как до 25.11.2026). UID выдуманные, в Stream их нет. Рантайм берёт content/catalog.json, тесты подменяют его этим файлом (tests/setup-catalog.ts). postpartum: программа со сроком доступа (accessDays 30), 7 готовых видео; у последнего пустое equipment. У postpartum обложки 9:16 у тренировок 1–3 (cover), описание у 1 и 2, превью у 1 и 2 (previewOf); превью 2 стоит в массиве первым, превью 1 последним: на порядок в массиве не опираемся.",
   "categories": [
     {
       "slug": "yagodicy",
@@ -231,14 +231,27 @@
       ],
       "videos": [
         {
+          "id": "postpartum-02-preview",
+          "title": {
+            "ru": "Тренировка 2: превью",
+            "en": "Workout 2: preview"
+          },
+          "durationSec": 31,
+          "preview": true,
+          "previewOf": "postpartum-02",
+          "cover": "/assets/images/programs/postpartum/02.jpg",
+          "provider": "stream",
+          "providerVideoId": "3864d7d8ba9c333426065143381fb3bd"
+        },
+        {
           "id": "postpartum-01",
           "title": {
             "ru": "Тренировка 1",
             "en": "Workout 1"
           },
           "description": {
-            "ru": "",
-            "en": ""
+            "ru": "Мягко будим стопы: с них начинается опора и осанка.",
+            "en": "A gentle wake-up for your feet, where support and posture begin."
           },
           "equipment": {
             "ru": "коврик и подушка",
@@ -247,7 +260,8 @@
           "durationSec": 630,
           "preview": false,
           "provider": "stream",
-          "providerVideoId": "c241371824446ef3264bea6b6cc78c64"
+          "providerVideoId": "c241371824446ef3264bea6b6cc78c64",
+          "cover": "/assets/images/programs/postpartum/01.jpg"
         },
         {
           "id": "postpartum-02",
@@ -256,8 +270,8 @@
             "en": "Workout 2"
           },
           "description": {
-            "ru": "",
-            "en": ""
+            "ru": "Дыхание и глубокие мышцы живота.",
+            "en": "Breathing and the deep core muscles."
           },
           "equipment": {
             "ru": "коврик",
@@ -266,7 +280,8 @@
           "durationSec": 660,
           "preview": false,
           "provider": "stream",
-          "providerVideoId": "38012298e954dde2bb99d899f4f5beaa"
+          "providerVideoId": "38012298e954dde2bb99d899f4f5beaa",
+          "cover": "/assets/images/programs/postpartum/02.jpg"
         },
         {
           "id": "postpartum-03",
@@ -285,7 +300,8 @@
           "durationSec": 690,
           "preview": false,
           "provider": "stream",
-          "providerVideoId": "011b284b28572a69e60e3a4bfee96375"
+          "providerVideoId": "011b284b28572a69e60e3a4bfee96375",
+          "cover": "/assets/images/programs/postpartum/03.jpg"
         },
         {
           "id": "postpartum-04",
@@ -362,6 +378,19 @@
           "preview": false,
           "provider": "stream",
           "providerVideoId": "95b7823f5cd8e7e2cffb2e608445a4fd"
+        },
+        {
+          "id": "postpartum-01-preview",
+          "title": {
+            "ru": "Тренировка 1: превью",
+            "en": "Workout 1: preview"
+          },
+          "durationSec": 31,
+          "preview": true,
+          "previewOf": "postpartum-01",
+          "cover": "/assets/images/programs/postpartum/01.jpg",
+          "provider": "stream",
+          "providerVideoId": "5a0e80cba97d261f733ebfa4f67f52f4"
         }
       ]
     },
