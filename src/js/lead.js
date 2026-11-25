@@ -316,6 +316,8 @@
     save();
     show('member');
     updateLessonLinks();
+    // Уже вошла: объяснять, как получить урок, не нужно
+    document.querySelectorAll('[data-lead-guest]').forEach(function (el) { el.hidden = true; });
     // «Войти» в шапке ведёт в кабинет
     var login = document.querySelector('[data-nav-login]');
     if (login) {
