@@ -12,14 +12,14 @@ import type { User } from './db';
  */
 export async function onNewPurchase(
   env: Env,
-  r: { order: Order; user: User; scope: string },
+  r: { order: Order; user: User; scope: string; expiresAt: number | null },
   session: CheckoutSession,
   origin: string,
 ): Promise<void> {
   const locale = session.metadata?.locale === 'en' ? 'en' : 'ru';
   const title = findSellable(r.scope)!.title;
   try {
-    await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, origin, locale);
+    await sendPurchaseEmail(env, r.user.email, (locale === 'en' && title.en) || title.ru, origin, locale, r.expiresAt);
   } catch (err) {
     console.error('[purchase] email failed', String(err));
   }

@@ -96,9 +96,11 @@
   function renderUser(u) {
     var utm = [u.utm.utm_source, u.utm.utm_medium, u.utm.utm_campaign].filter(Boolean).join(' / ');
     var ents = u.entitlements.map(function (e) {
-      var active = e.status === 'active';
+      var expired = !!e.expiresAt && e.expiresAt * 1000 <= Date.now();
+      var active = e.status === 'active' && !expired;
+      var term = e.expiresAt ? (expired ? ' · закончился ' : ' · до ') + date(e.expiresAt) : '';
       return '<div class="adm-chip' + (active ? '' : ' adm-chip--off') + '">' +
-        '<span>' + esc(scopeTitle(e.scope)) + ' · ' + esc(SOURCE[e.source] || e.source) + (active ? '' : ' · отозван') + '</span>' +
+        '<span>' + esc(scopeTitle(e.scope)) + ' · ' + esc(SOURCE[e.source] || e.source) + esc(term) + (e.status === 'active' ? '' : ' · отозван') + '</span>' +
         (active ? '<button type="button" class="adm-revoke" data-revoke="' + esc(e.id) + '" data-label="' + esc(scopeTitle(e.scope) + ' для ' + u.email) + '">Отозвать</button>' : '') +
       '</div>';
     }).join('') || '<span class="adm-user-meta">доступов нет</span>';
@@ -144,7 +146,7 @@
       if (res.ok) {
         msg.textContent = res.data.existing
           ? 'У ' + email + ' уже есть доступ к «' + scopeTitle(scope) + '».'
-          : 'Готово: доступ к «' + scopeTitle(scope) + '» открыт для ' + email + '.';
+          : 'Готово: доступ к «' + scopeTitle(scope) + '» открыт для ' + email + (res.data.expiresAt ? ' до ' + date(res.data.expiresAt) : '') + '.';
         form.email.value = '';
         document.getElementById('search').value = email;
         loadUsers();

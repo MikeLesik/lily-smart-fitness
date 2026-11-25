@@ -85,10 +85,10 @@ describe('GET /api/catalog', () => {
     expect(text).not.toContain('providerVideoId');
     expect(text).not.toContain('"provider"');
     for (const v of categories.flatMap((c) => c.videos)) {
-      if (v.providerVideoId.length > 8) expect(text).not.toContain(v.providerVideoId);
+      if (v.providerVideoId && v.providerVideoId.length > 8) expect(text).not.toContain(v.providerVideoId);
     }
     const lesson = body.categories.find((c: { slug: string }) => c.slug === paid.slug).videos[0];
-    expect(Object.keys(lesson).sort()).toEqual(['description', 'durationSec', 'id', 'preview', 'title']);
+    expect(Object.keys(lesson).sort()).toEqual(['description', 'durationSec', 'equipment', 'id', 'preview', 'ready', 'title']);
   });
 });
 
@@ -208,7 +208,7 @@ describe('/api/progress', () => {
 
   it('90% длительности считается досмотренным', async () => {
     const { cookie } = await loginAs();
-    await call(postProgress, { cookie, body: { videoId: freeVideo.id, seconds: Math.ceil(freeVideo.durationSec * 0.9) } });
+    await call(postProgress, { cookie, body: { videoId: freeVideo.id, seconds: Math.ceil(freeVideo.durationSec! * 0.9) } });
     const body = await (await call(getProgress, { cookie })).json<{ progress: Array<{ completed: boolean }> }>();
     expect(body.progress[0].completed).toBe(true);
   });

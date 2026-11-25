@@ -75,7 +75,16 @@
       orders: 'Покупки',
       receipt: 'Чек',
       soon: 'Скоро',
-      soonVideos: 'Видео появятся скоро.'
+      soonVideos: 'Видео появятся скоро.',
+      accessUntil: 'Доступ до\u00a0{date}',
+      accessUntilShort: 'доступ до\u00a0{date}',
+      accessEnded: 'Доступ закончился {date}',
+      accessEndedText: 'Доступ к программе закончился {date}. Её можно купить снова, и все тренировки откроются сразу после оплаты.',
+      endedShort: 'Закончился {date}',
+      buyAgain: 'Купить снова · {price}',
+      equipment: 'Что понадобится: {list}',
+      fullscreen: 'На весь экран',
+      exitFullscreen: 'Свернуть'
     },
     en: {
       dateLocale: 'en-GB',
@@ -140,7 +149,16 @@
       orders: 'Purchases',
       receipt: 'Receipt',
       soon: 'Coming soon',
-      soonVideos: 'The videos are coming soon.'
+      soonVideos: 'The videos are coming soon.',
+      accessUntil: 'Access until {date}',
+      accessUntilShort: 'access until {date}',
+      accessEnded: 'Access ended on {date}',
+      accessEndedText: 'Your access to this program ended on {date}. You can buy it again, and every workout opens right after payment.',
+      endedShort: 'Ended on {date}',
+      buyAgain: 'Buy again · {price}',
+      equipment: 'What you need: {list}',
+      fullscreen: 'Full screen',
+      exitFullscreen: 'Exit full screen'
     }
   };
 
@@ -155,7 +173,7 @@
 
   var app = document.getElementById('app');
   // recent: id видео с записью прогресса, свежие первыми (сервер отдаёт по updated_at DESC)
-  var state = { user: null, entitlements: [], catalog: { categories: [], bundles: [] }, progress: {}, recent: [] };
+  var state = { user: null, entitlements: [], expired: [], catalog: { categories: [], bundles: [] }, progress: {}, recent: [] };
   var player = null; // { cleanup: fn }
   // ?paid=<scope> после возврата из Stripe: показываем подтверждение один раз
   var paidScope = new URLSearchParams(location.search).get('paid');
@@ -233,6 +251,14 @@
     return new Date(sec * 1000).toLocaleDateString(t.dateLocale, opts);
   }
 
+  /** Дата срока доступа: RU «25 декабря», EN «25 December»; другой год дописывается. */
+  function dateLong(sec) {
+    var d = new Date(sec * 1000);
+    var opts = { day: 'numeric', month: 'long' };
+    if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+    return d.toLocaleDateString(t.dateLocale, opts);
+  }
+
   function telegram(text) {
     return TELEGRAM + '?text=' + encodeURIComponent(text);
   }
@@ -267,6 +293,36 @@
 
   function canWatch(video, cat) {
     return video.preview || hasCategory(cat);
+  }
+
+  /** Действующее право на саму программу (не набор): у него может быть срок. */
+  function ownEntitlement(cat) {
+    return state.entitlements.find(function (e) { return e.scope === cat.slug; }) || null;
+  }
+
+  /** Срок, до которого открыта программа (секунды), или null (бессрочно или закрыта). */
+  function accessUntil(cat) {
+    if (cat.free || state.entitlements.some(function (e) { return e.scope === 'all' && !e.expiresAt; })) return null;
+    var e = ownEntitlement(cat);
+    return e && e.expiresAt ? e.expiresAt : null;
+  }
+
+  /** Когда закончился доступ (секунды), если программа сейчас закрыта, а раньше была куплена. */
+  function endedAt(cat) {
+    if (hasCategory(cat)) return null;
+    var e = state.expired.find(function (x) { return x.scope === cat.slug; });
+    return e ? e.expiresAt : null;
+  }
+
+  /** «Что понадобится: коврик» под названием видео; пусто, если поле не заполнено. */
+  function equipmentLine(v, className) {
+    var eq = L(v.equipment).trim();
+    return eq ? '<span class="' + className + '">' + esc(fmt(t.equipment, { list: eq })) + '</span>' : '';
+  }
+
+  /** Платное видео: не превью и не из бесплатной категории. На нём водяной знак со своей кнопкой «На весь экран». */
+  function isPaidVideo(v, cat) {
+    return !v.preview && !cat.free;
   }
 
   function findCategory(slug) {
@@ -368,7 +424,7 @@
 
   /** Программа для блока «Продолжить»: начатая, иначе купленная, иначе бесплатный урок. */
   function continueProgram() {
-    var cats = state.catalog.categories.filter(function (c) { return hasCategory(c) && mainVideos(c).length; });
+    var cats = state.catalog.categories.filter(function (c) { return hasCategory(c) && !isSoon(c); });
     if (!cats.length) return null;
     var started = [];
     state.recent.forEach(function (id) {
@@ -385,9 +441,9 @@
   }
 
   /** Покупка через Stripe Checkout: data-buy подхватывает js/buy.js. */
-  function buyButton(scope, title, p) {
+  function buyButton(scope, title, p, again) {
     return '<a class="btn-primary" href="#" data-buy="' + esc(scope) + '" data-buy-title="' + esc(title) + '"' +
-      ' data-buy-price="' + esc(price(p)) + '">' + esc(fmt(t.buy, { price: price(p) })) + '</a>';
+      ' data-buy-price="' + esc(price(p)) + '">' + esc(fmt(again ? t.buyAgain : t.buy, { price: price(p) })) + '</a>';
   }
 
   /** «Первую минуту можно посмотреть бесплатно.» */
@@ -444,7 +500,12 @@
 
   function programRow(cat) {
     var open = hasCategory(cat);
-    var meta = isSoon(cat) ? t.soon : open ? progressMeta(cat) : countMeta(cat) + (firstPreview(cat) ? SEP + t.previewFree : '');
+    var until = open ? accessUntil(cat) : null;
+    var ended = endedAt(cat);
+    var meta = isSoon(cat) ? t.soon
+      : ended ? fmt(t.accessEnded, { date: dateLong(ended) })
+      : open ? progressMeta(cat) + (until ? SEP + fmt(t.accessUntilShort, { date: dateLong(until) }) : '')
+      : countMeta(cat) + (firstPreview(cat) ? SEP + t.previewFree : '');
     var end = open
       ? '<span class="cab-row-arrow" aria-hidden="true">→</span>'
       : '<span class="cab-row-price">' + esc(price(cat.price)) + '</span>';
@@ -512,6 +573,7 @@
       ? '<span class="cab-video-bar" style="width:' + Math.round(Math.min(p.seconds / v.durationSec, 1) * 100) + '%" aria-hidden="true"></span>'
       : '';
     var inner = '<span class="cab-video-body"><span class="cab-video-title">' + esc(L(v.title)) + '</span>' +
+      equipmentLine(v, 'cab-video-equip') +
       '<span class="cab-video-meta">' + esc(meta) + '</span></span>' +
       stateHtml + bar;
     return open
@@ -531,6 +593,7 @@
         '<h1 class="cab-title">' + esc(L(cat.title)) + '</h1>' +
         (cat.subtitle ? '<p class="cab-sub">' + esc(L(cat.subtitle)) + '</p>' : '') +
         (soon ? '' : '<p class="cab-meta">' + esc(countMeta(cat)) + '</p>') +
+        (open && accessUntil(cat) ? '<p class="cab-meta cab-access">' + esc(fmt(t.accessUntil, { date: dateLong(accessUntil(cat)) })) + '</p>' : '') +
       '</div>' + paidNotice();
 
     // «Скоро»: видео ещё нет, ни покупки, ни превью, ни пустого списка
@@ -545,6 +608,10 @@
         var label = resumable(v) ? fmt(t.continueFrom, { time: clock(state.progress[v.id].seconds) }) : actionLabel(cat);
         html += '<div class="cab-actions"><a class="btn-primary" href="#/v/' + esc(v.id) + '">' + esc(label) + '</a></div>';
       }
+    } else if (endedAt(cat)) {
+      // Срок закончился: видео закрыты, программу можно купить снова
+      html += '<p class="cab-text">' + esc(fmt(t.accessEndedText, { date: dateLong(endedAt(cat)) })) + '</p>' +
+        '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price, true) + '</div>';
     } else {
       var preview = firstPreview(cat);
       html += '<p class="cab-text">' + esc((preview ? previewSentence(preview.durationSec) + ' ' : '') + t.lockedProgram) + '</p>' +
@@ -669,8 +736,12 @@
   function renderVideoBlocked(v, cat, kind) {
     document.body.classList.remove('cab-wide');
     var preview = firstPreview(cat);
+    var ended = endedAt(cat);
     var box;
-    if (kind === 'locked') {
+    if (kind === 'locked' && ended) {
+      box = '<section class="cab-locked"><p class="cab-text">' + esc(fmt(t.accessEndedText, { date: dateLong(ended) })) + '</p>' +
+        '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price, true) + '</div></section>';
+    } else if (kind === 'locked') {
       var text = fmt(t.lockedVideo, { title: L(cat.title) }) + (preview ? ' ' + previewSentence(preview.durationSec) : '');
       box = '<section class="cab-locked"><p class="cab-text">' + esc(text) + '</p>' +
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div></section>';
@@ -681,10 +752,11 @@
     app.innerHTML = back('#/c/' + cat.slug, L(cat.title)) +
       '<div class="cab-head">' +
         '<h1 class="cab-title cab-watch-title">' + esc(L(v.title)) + '</h1>' +
+        equipmentLine(v, 'cab-watch-equip') +
         '<p class="cab-meta">' + esc(duration(v.durationSec)) + '</p>' +
       '</div>' +
       box +
-      (v.description ? '<p class="cab-video-desc">' + esc(L(v.description)) + '</p>' : '');
+      (L(v.description) ? '<p class="cab-video-desc">' + esc(L(v.description)) + '</p>' : '');
   }
 
   function renderUnknownVideo() {
@@ -693,11 +765,87 @@
       '<div class="cab-actions"><a class="btn-primary" href="#/">' + esc(t.back) + '</a></div>';
   }
 
+  /* ---------- водяной знак и полный экран ---------- */
+
+  /**
+   * Email зрителя поверх платного видео: полупрозрачный, раз в 15–25 секунд плавно переезжает.
+   * left/top в процентах и такой же сдвиг transform держат надпись внутри кадра при любой ширине.
+   */
+  function startWatermark(box, email) {
+    var mark = document.createElement('div');
+    mark.className = 'cab-watermark';
+    mark.setAttribute('aria-hidden', 'true');
+    mark.textContent = email;
+    box.appendChild(mark);
+    var timer = null;
+    function place() {
+      var x = Math.round(Math.random() * 100);
+      var y = Math.round(5 + Math.random() * 80);
+      mark.style.left = x + '%';
+      mark.style.top = y + '%';
+      mark.style.transform = 'translate(-' + x + '%, -' + y + '%)';
+    }
+    function loop() {
+      timer = setTimeout(function () {
+        place();
+        loop();
+      }, 15000 + Math.random() * 10000);
+    }
+    place();
+    loop();
+    return function stop() {
+      clearTimeout(timer);
+      if (mark.parentNode) mark.parentNode.removeChild(mark);
+    };
+  }
+
+  function fullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function exitFullscreen() {
+    var fn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (fn) {
+      try {
+        var p = fn.call(document);
+        if (p && p.catch) p.catch(function () { /* ignore */ });
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  /** Своя кнопка «На весь экран» для контейнера плеера. Где Fullscreen API для элементов нет (iPhone), кнопки нет. */
+  function setupFullscreen(box) {
+    var wrap = document.getElementById('fs');
+    var request = box.requestFullscreen || box.webkitRequestFullscreen;
+    var enabled = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+    if (!wrap || !request || !enabled) return;
+    var exit = document.createElement('button');
+    exit.type = 'button';
+    exit.className = 'cab-fs-exit';
+    exit.setAttribute('data-action', 'fullscreen');
+    exit.textContent = t.exitFullscreen;
+    box.appendChild(exit);
+    wrap.hidden = false;
+  }
+
+  function toggleFullscreen() {
+    var box = document.getElementById('player');
+    if (!box) return;
+    if (fullscreenElement()) return exitFullscreen();
+    var request = box.requestFullscreen || box.webkitRequestFullscreen;
+    try {
+      var p = request.call(box);
+      if (p && p.catch) p.catch(function () { /* ignore */ });
+    } catch (e) { /* ignore */ }
+  }
+
   function renderVideo(id) {
     var found = findVideo(id);
-    if (!found) return renderUnknownVideo();
+    // Видео ещё не загружено (ready: false): как будто его нет, сервер ответит 404
+    if (!found || found.video.ready === false) return renderUnknownVideo();
     var v = found.video;
     var cat = found.category;
+    var paid = isPaidVideo(v, cat);
 
     // Доступ решает сервер; если и так ясно, что закрыто, плеер не рисуем и API не зовём.
     if (!canWatch(v, cat)) return renderVideoBlocked(v, cat, 'locked');
@@ -709,8 +857,10 @@
         '<div class="cab-player" id="player"><p class="cab-player-msg" role="status">' + esc(t.loadingVideo) + '</p></div>' +
         '<div class="cab-watch-info">' +
           '<h1 class="cab-title cab-watch-title">' + esc(L(v.title)) + '</h1>' +
+          equipmentLine(v, 'cab-watch-equip') +
           '<p class="cab-meta">' + esc(videoMeta(v, cat)) + '</p>' +
-          (v.description ? '<p class="cab-video-desc">' + esc(L(v.description)) + '</p>' : '') +
+          (L(v.description) ? '<p class="cab-video-desc">' + esc(L(v.description)) + '</p>' : '') +
+          (paid ? '<div class="cab-actions cab-fs-actions" id="fs" hidden><button type="button" class="cab-secondary" data-action="fullscreen">' + esc(t.fullscreen) + '</button></div>' : '') +
           '<div class="cab-actions" id="after">' + afterLink(v, cat) + '</div>' +
         '</div>' +
       '</div>';
@@ -734,19 +884,28 @@
       var iframe = document.createElement('iframe');
       iframe.src = url;
       iframe.title = L(v.title);
-      iframe.allow = 'accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen';
-      iframe.allowFullscreen = true;
+      // Платное видео: без встроенного полноэкранного режима плеера, иначе водяной знак пропадёт.
+      // Вместо него своя кнопка разворачивает контейнер вместе со знаком.
+      iframe.allow = 'accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture' + (paid ? '' : '; fullscreen');
+      iframe.allowFullscreen = !paid;
       box.innerHTML = '';
       box.appendChild(iframe);
-      if (state.user) {
-        player = {
-          cleanup: attachProgress(iframe, v, function () {
-            // Досмотрела последнее: «К программе» меняется на «Ко всем программам».
-            var after = document.getElementById('after');
-            if (after) after.innerHTML = afterLink(v, cat);
-          })
-        };
-      }
+      var stopMark = paid && state.user ? startWatermark(box, state.user.email) : null;
+      if (paid) setupFullscreen(box);
+      var stopProgress = state.user
+        ? attachProgress(iframe, v, function () {
+          // Досмотрела последнее: «К программе» меняется на «Ко всем программам».
+          var after = document.getElementById('after');
+          if (after) after.innerHTML = afterLink(v, cat);
+        })
+        : null;
+      player = {
+        cleanup: function () {
+          if (stopProgress) stopProgress();
+          if (stopMark) stopMark();
+          if (fullscreenElement() === box) exitFullscreen();
+        }
+      };
     });
   }
 
@@ -759,7 +918,10 @@
       var name = e.scope === 'all' ? t.allPrograms : (titles[e.scope] || e.scope);
       var until = e.expiresAt ? fmt(t.until, { date: date(e.expiresAt) }) : t.forever;
       return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(until) + '</span></li>';
-    });
+    }).concat(state.expired.map(function (e) {
+      return '<li><span class="cab-list-value">' + esc(titles[e.scope] || e.scope) + '</span><span class="cab-list-note">' +
+        esc(fmt(t.endedShort, { date: date(e.expiresAt) })) + '</span></li>';
+    }));
     // Бесплатного урока пока нет (нет видео): не зовём к нему
     var free = state.catalog.categories.find(function (c) { return c.free && !isSoon(c); });
 
@@ -833,6 +995,7 @@
     if (!el) return;
     var action = el.getAttribute('data-action');
     if (action === 'reload') location.reload();
+    if (action === 'fullscreen') toggleFullscreen();
     if (action === 'logout') {
       el.disabled = true;
       api('/api/auth/logout', {}).then(function () { location.replace(BASE + '/login/'); });
@@ -851,6 +1014,7 @@
     }
     state.user = me.data.user;
     state.entitlements = me.data.entitlements || [];
+    state.expired = me.data.expired || [];
     state.orders = me.data.orders || [];
     state.catalog = cat.data;
     (prog.ok && prog.data.progress || []).forEach(function (p) {

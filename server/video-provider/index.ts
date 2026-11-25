@@ -26,6 +26,6 @@ export const PLAYBACK_TTL_SEC = 2 * 60 * 60;
 
 export async function getPlayback(env: Env, video: CatalogVideo): Promise<Playback | null> {
   const make = providers[video.provider];
-  if (!make) return null;
+  if (!make || !video.providerVideoId) return null;
   return make(env).playback(video.providerVideoId, PLAYBACK_TTL_SEC);
 }

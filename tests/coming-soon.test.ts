@@ -69,7 +69,7 @@ describe('правило «скоро» (server/catalog.ts)', () => {
     withoutVideos(['yagodicy']);
     expect(isBundleComingSoon(bundle())).toBe(false);
     expect(findSellable('all')!.comingSoon).toBe(false);
-    withoutVideos(['yagodicy', 'zaryadka']);
+    withoutVideos(['yagodicy', 'zaryadka', 'postpartum']);
     expect(isBundleComingSoon(bundle())).toBe(true);
     expect(findSellable('all')!.comingSoon).toBe(true);
   });
@@ -237,7 +237,7 @@ describe('/programs/ «скоро»', () => {
     const html = await text(call(indexRu, { path: '/programs/', env: env404 }));
     expect(html).not.toContain('data-buy=');
     expect(html).not.toContain('Купить');
-    expect(html.match(/<p class="prg-soon[^"]*">Скоро<\/p>/g)).toHaveLength(3); // две программы и набор
+    expect(html.match(/<p class="prg-soon[^"]*">Скоро<\/p>/g)).toHaveLength(4); // три программы и набор
     for (const c of ['yagodicy', 'zaryadka']) expect(html).toContain(`href="/programs/${c}/"`);
     expect(html).toContain('€39');
     expect(html).toContain('€25');
@@ -270,7 +270,12 @@ describe('content/catalog.json (настоящий каталог)', () => {
     for (const b of real.bundles) expect(b.price.amount, b.slug).toBeGreaterThan(0);
     const videos = real.categories.flatMap((c) => c.videos);
     expect(new Set(videos.map((v) => v.id)).size).toBe(videos.length);
+    // Неготовое видео (ещё не загружено): оба поля null. Готовое: длительность и UID в формате Stream.
     for (const v of videos) {
+      if (v.providerVideoId === null) {
+        expect(v.durationSec, v.id).toBeNull();
+        continue;
+      }
       expect(v.durationSec, v.id).toBeGreaterThan(0);
       expect(v.providerVideoId, v.id).toMatch(/^[a-f0-9]{32}$/);
     }
@@ -284,6 +289,6 @@ describe('content/catalog.json (настоящий каталог)', () => {
     const body = JSON.parse(raw) as { categories: Array<{ slug: string; comingSoon: boolean }> };
     for (const c of body.categories) expect(c.comingSoon, c.slug).toBe(isComingSoon(real.categories.find((x) => x.slug === c.slug)!));
     expect(raw).not.toContain('providerVideoId');
-    for (const v of real.categories.flatMap((c) => c.videos)) expect(raw).not.toContain(v.providerVideoId);
+    for (const v of real.categories.flatMap((c) => c.videos)) if (v.providerVideoId) expect(raw).not.toContain(v.providerVideoId);
   });
 });

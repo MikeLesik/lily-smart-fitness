@@ -1,5 +1,5 @@
 import type { Env } from './env';
-import { findSellable } from './catalog';
+import { accessExpiresAt, findSellable } from './catalog';
 import { getOrCreateUser, nowSec, type User } from './db';
 import { BRAND, type CheckoutSession } from './stripe';
 
@@ -21,7 +21,7 @@ export interface Order {
 export type FulfillResult =
   | { result: 'skipped'; reason: string }
   | { result: 'unpaid' }
-  | { result: 'created' | 'exists'; order: Order; user: User; scope: string };
+  | { result: 'created' | 'exists'; order: Order; user: User; scope: string; /** Срок права (секунды Unix), null = бессрочно. */ expiresAt: number | null };
 
 function paymentIntentId(s: CheckoutSession): string | null {
   if (!s.payment_intent) return null;
@@ -92,21 +92,26 @@ export async function fulfillCheckoutSession(env: Env, s: CheckoutSession): Prom
     .run();
 
   const order = (await getOrderBySession(env, s.id))!;
-  if (order.status !== 'paid') return { result: 'exists', order, user, scope };
+  if (order.status !== 'paid') return { result: 'exists', order, user, scope, expiresAt: null };
 
   const receipt = receiptUrl(s);
   if (receipt && !order.receipt_url) {
     await env.DB.prepare('UPDATE orders SET receipt_url = ? WHERE id = ?').bind(receipt, order.id).run();
     order.receipt_url = receipt;
   }
+  // Срок считается от выдачи права: у программы с accessDays expires_at = сейчас + accessDays дней.
+  // Повтор по той же сессии права не дублирует и срок не продлевает (уникальный индекс order_id + scope).
   await env.DB.prepare(
-    `INSERT OR IGNORE INTO entitlements (id, user_id, scope, source, order_id, status, created_at)
-     VALUES (?, ?, ?, 'stripe', ?, 'active', ?)`,
+    `INSERT OR IGNORE INTO entitlements (id, user_id, scope, source, order_id, status, expires_at, created_at)
+     VALUES (?, ?, ?, 'stripe', ?, 'active', ?, ?)`,
   )
-    .bind(crypto.randomUUID(), order.user_id, scope, order.id, now)
+    .bind(crypto.randomUUID(), order.user_id, scope, order.id, accessExpiresAt(scope, now), now)
     .run();
+  const ent = await env.DB.prepare('SELECT expires_at FROM entitlements WHERE order_id = ? AND scope = ?')
+    .bind(order.id, scope)
+    .first<{ expires_at: number | null }>();
 
-  return { result: inserted.meta.changes > 0 ? 'created' : 'exists', order, user, scope };
+  return { result: inserted.meta.changes > 0 ? 'created' : 'exists', order, user, scope, expiresAt: ent?.expires_at ?? null };
 }
 
 /** Полный возврат: заказ refunded, его права revoked. Чужой платёж (нет заказа) игнорируется. */

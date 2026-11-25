@@ -278,8 +278,9 @@
       freeSoon: 'Урок скоро появится.',
       freeChannel: 'Следить в Telegram-канале',
       bundleMeta: function (n) { return n + ' ' + plural(n, ['программа', 'программы', 'программ']) + ' и все новые'; },
-      bundleSubtitle: function (sum) { return 'Одна оплата вместо ' + sum + ', доступ навсегда'; },
-      meta: function (n, min) { return n + ' ' + plural(n, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + min + ' мин'; }
+      bundleSubtitle: function (sum) { return 'Одна оплата вместо ' + sum; },
+      meta: function (n, min) { return n + ' ' + plural(n, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + min + ' мин'; },
+      access: function (d) { return 'доступ ' + d + ' ' + plural(d, ['день', 'дня', 'дней']); }
     },
     en: {
       buy: 'Buy',
@@ -287,8 +288,9 @@
       freeSoon: 'The lesson is coming soon.',
       freeChannel: 'Follow on Telegram',
       bundleMeta: function (n) { return n + ' ' + (n === 1 ? 'program' : 'programs') + ' and all new ones'; },
-      bundleSubtitle: function (sum) { return 'One payment instead of ' + sum + ', lifetime access'; },
-      meta: function (n, min) { return n + ' ' + (n === 1 ? 'workout' : 'workouts') + ' · ' + min + ' min'; }
+      bundleSubtitle: function (sum) { return 'One payment instead of ' + sum; },
+      meta: function (n, min) { return n + ' ' + (n === 1 ? 'workout' : 'workouts') + ' · ' + min + ' min'; },
+      access: function (d) { return d + ' ' + (d === 1 ? 'day' : 'days') + ' of access'; }
     }
   }[locale];
 
@@ -338,13 +340,17 @@
     } else {
       var mains = (item.videos || []).filter(function (v) { return !v.preview; });
       var seconds = mains.reduce(function (s, v) { return s + (v.durationSec || 0); }, 0);
-      // «Скоро»: строки «0 тренировок» нет, «Скоро» стоит внизу на месте кнопки
+      // «Скоро»: строки «0 тренировок» нет, «Скоро» стоит внизу на месте кнопки, срок доступа под ним.
+      // Продаётся: срок доступа в мете после состава.
       meta = item.comingSoon ? '' : T.meta(mains.length, Math.max(1, Math.round(seconds / 60)));
+      if (item.accessDays && meta) meta += ' · ' + T.access(item.accessDays);
       subtitle = L(item.subtitle);
     }
 
     var action = item.comingSoon
-      ? '<span class="program-card-soon">' + escapeHtml(T.soon) + '</span>'
+      ? '<span class="program-card-soon">' + escapeHtml(T.soon) +
+          (item.accessDays ? '<span class="program-card-term">' + escapeHtml(T.access(item.accessDays)) + '</span>' : '') +
+        '</span>'
       : '<a class="btn-primary program-card-buy" href="' + escapeHtml(href) + '"' +
           ' data-buy="' + escapeHtml(item.slug) + '"' +
           ' data-buy-title="' + escapeHtml(title) + '"' +

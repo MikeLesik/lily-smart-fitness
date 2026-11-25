@@ -1,6 +1,200 @@
 {
-  "_note": "Каталог: категории, тексты и цены (условные, заменить реальными перед запуском). Видео сняты 25.11.2026: категория без видео показывается как «Скоро», купить нельзя. Чтобы открыть продажу, впиши видео в videos. providerVideoId (UID в Cloudflare Stream) никогда не отдаётся в браузер.",
+  "_note": "Каталог: категории, тексты и цены. Видео без providerVideoId (UID в Cloudflare Stream) или без durationSec не готово: проиграть нельзя, а программа с неготовым видео показывается как «Скоро» и не продаётся. Когда все основные видео готовы, продажа открывается сама. accessDays: срок доступа после покупки в днях (нет поля = бессрочно). Набор продаётся, только если опубликовано минимум две платные программы. providerVideoId никогда не отдаётся в браузер.",
   "categories": [
+    {
+      "slug": "postpartum",
+      "title": {
+        "ru": "Послеродовое восстановление",
+        "en": "Postpartum recovery"
+      },
+      "subtitle": {
+        "ru": "Живот, тазовое дно и осанка после родов",
+        "en": "Core, pelvic floor and posture after birth"
+      },
+      "cover": "/assets/images/programs/free.jpg",
+      "free": false,
+      "published": true,
+      "price": {
+        "amount": 5900,
+        "currency": "eur"
+      },
+      "accessDays": 30,
+      "description": {
+        "ru": "7 бережных тренировок с Лилей Лесик для восстановления после родов: живот, тазовое дно и осанка. Дома, на коврике. Доступ 30 дней.",
+        "en": "7 gentle workouts with Lily Lesik to help you recover after giving birth: core, pelvic floor and posture. At home, on a mat. 30 days of access."
+      },
+      "forWhom": {
+        "ru": [
+          "Ты родила, врач разрешил нагрузку, и хочется возвращаться к телу постепенно",
+          "Живот и спина пока не такие, как раньше, и нужно начать с основы",
+          "Удобнее заниматься дома, пока малыш спит",
+          "Хочешь понимать, что делаешь, и не перегружать тазовое дно"
+        ],
+        "en": [
+          "You have given birth, your doctor has cleared you to exercise, and you want to ease back into your body",
+          "Your belly and back do not feel the way they used to, and you want to start with the basics",
+          "It is easier to train at home while the baby sleeps",
+          "You want to know what you are doing and avoid overloading your pelvic floor"
+        ]
+      },
+      "faq": [
+        {
+          "q": {
+            "ru": "Когда можно начинать?",
+            "en": "When can I start?"
+          },
+          "a": {
+            "ru": "Когда врач разрешит физическую нагрузку. Обычно это осмотр через 6–8 недель после родов, после кесарева бывает позже. Если что-то болит или беспокоит, остановись и посоветуйся с врачом.",
+            "en": "Once your doctor clears you for exercise. That is usually the check-up 6–8 weeks after birth, and it can be later after a C-section. If anything hurts or worries you, stop and talk to your doctor."
+          }
+        },
+        {
+          "q": {
+            "ru": "Как часто заниматься?",
+            "en": "How often should I train?"
+          },
+          "a": {
+            "ru": "Одна тренировка в день или через день, по порядку. Пропустила день, просто продолжи со следующей.",
+            "en": "One workout a day or every other day, in order. If you miss a day, just carry on with the next one."
+          }
+        }
+      ],
+      "videos": [
+        {
+          "id": "postpartum-01",
+          "title": {
+            "ru": "Тренировка 1",
+            "en": "Workout 1"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-02",
+          "title": {
+            "ru": "Тренировка 2",
+            "en": "Workout 2"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-03",
+          "title": {
+            "ru": "Тренировка 3",
+            "en": "Workout 3"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-04",
+          "title": {
+            "ru": "Тренировка 4",
+            "en": "Workout 4"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-05",
+          "title": {
+            "ru": "Тренировка 5",
+            "en": "Workout 5"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-06",
+          "title": {
+            "ru": "Тренировка 6",
+            "en": "Workout 6"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        },
+        {
+          "id": "postpartum-07",
+          "title": {
+            "ru": "Тренировка 7",
+            "en": "Workout 7"
+          },
+          "description": {
+            "ru": "",
+            "en": ""
+          },
+          "equipment": {
+            "ru": "коврик",
+            "en": "a mat"
+          },
+          "durationSec": null,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": null
+        }
+      ]
+    },
     {
       "slug": "yagodicy",
       "title": {
@@ -13,14 +207,14 @@
       },
       "cover": "/assets/images/programs/yagodicy.jpg",
       "free": false,
-      "published": true,
+      "published": false,
       "price": {
         "amount": 3900,
         "currency": "eur"
       },
       "description": {
-        "ru": "Полная тренировка на ягодицы под музыку с Лилей Лесик: 22 минуты дома с гантелями и ступенькой. Разовая оплата, доступ навсегда, превью бесплатно.",
-        "en": "A full glute workout to music with Lily Lesik: 22 minutes at home with dumbbells and a step. One-time payment, lifetime access, free preview."
+        "ru": "Полная тренировка на ягодицы под музыку с Лилей Лесик: 22 минуты дома с гантелями и ступенькой. Разовая оплата, превью бесплатно.",
+        "en": "A full glute workout to music with Lily Lesik: 22 minutes at home with dumbbells and a step. One-time payment, free preview."
       },
       "previewPoster": "/assets/images/programs/yagodicy-preview.jpg",
       "equipment": {
@@ -67,14 +261,14 @@
       },
       "cover": "/assets/images/programs/zaryadka.jpg",
       "free": false,
-      "published": true,
+      "published": false,
       "price": {
         "amount": 2500,
         "currency": "eur"
       },
       "description": {
-        "ru": "Утренняя зарядка с Лилей Лесик: 11 минут на коврике для лимфы и диафрагмы, мягкое пробуждение тела. Разовая оплата, доступ навсегда, превью бесплатно.",
-        "en": "A morning routine with Lily Lesik: 11 minutes on a mat for lymph flow and the diaphragm, a gentle wake-up for the body. One-time payment, lifetime access, free preview."
+        "ru": "Утренняя зарядка с Лилей Лесик: 11 минут на коврике для лимфы и диафрагмы, мягкое пробуждение тела. Разовая оплата, превью бесплатно.",
+        "en": "A morning routine with Lily Lesik: 11 minutes on a mat for lymph flow and the diaphragm, a gentle wake-up for the body. One-time payment, free preview."
       },
       "previewPoster": "/assets/images/programs/zaryadka-preview.jpg",
       "equipment": {
@@ -133,6 +327,7 @@
         "ru": "Все программы",
         "en": "All programs"
       },
+      "published": false,
       "cover": "/assets/images/programs/all.jpg",
       "categories": "*",
       "price": {

@@ -1,8 +1,9 @@
 import {
+  availableBundles,
   bundleCategories,
-  catalog,
   isBundleComingSoon,
   isComingSoon,
+  isVideoReady,
   type CatalogBundle,
   type CatalogCategory,
   type CatalogVideo,
@@ -11,6 +12,8 @@ import { ICON_LOCK, ICON_PLAY, esc, picture } from './html';
 import {
   SITE,
   STRINGS,
+  accessText,
+  accessVars,
   duration,
   fmt,
   formatPrice,
@@ -30,8 +33,15 @@ export function mainVideos(cat: CatalogCategory): CatalogVideo[] {
   return cat.videos.filter((v) => !v.preview);
 }
 
-export function previewVideo(cat: CatalogCategory): CatalogVideo | null {
-  return cat.videos.find((v) => v.preview) ?? null;
+/** Превью, только если оно уже загружено. */
+export function previewVideo(cat: CatalogCategory): (CatalogVideo & { durationSec: number }) | null {
+  return (cat.videos.find((v) => v.preview && isVideoReady(v)) as (CatalogVideo & { durationSec: number }) | undefined) ?? null;
+}
+
+/** «Что понадобится: коврик» под названием видео; пусто, если поле не заполнено. */
+function videoEquipment(v: CatalogVideo, lang: Lang, className: string): string {
+  const eq = loc(v.equipment, lang).trim();
+  return eq ? `<span class="${className}">${esc(fmt(STRINGS[lang].videoEquipment, { list: eq }))}</span>` : '';
 }
 
 /** «1 тренировка · 22 мин» по основным видео (превью не считается). Видео ещё нет: «Скоро». */
@@ -39,7 +49,7 @@ export function countMeta(cat: CatalogCategory, lang: Lang): string {
   const t = STRINGS[lang];
   if (isComingSoon(cat)) return t.soon;
   const mains = mainVideos(cat);
-  const total = mains.reduce((s, v) => s + v.durationSec, 0);
+  const total = mains.reduce((s, v) => s + (v.durationSec ?? 0), 0);
   return `${mains.length} ${plural(mains.length, t.workoutForms, lang)}${SEP}${duration(total, lang)}`;
 }
 
@@ -65,7 +75,8 @@ export function buyButton(
 export function bundleDeal(
   lang: Lang,
 ): { bundle: CatalogBundle; count: number; price: string; sum: string | null; soon: boolean } | null {
-  const bundle = catalog.bundles.find((b) => b.slug === 'all') ?? catalog.bundles[0];
+  const bundles = availableBundles();
+  const bundle = bundles.find((b) => b.slug === 'all') ?? bundles[0];
   if (!bundle) return null;
   const cats = bundleCategories(bundle);
   if (cats.length < 2) return null;
@@ -77,6 +88,11 @@ export function bundleDeal(
     price: formatPrice(bundle.price, lang),
     sum: sum > bundle.price.amount ? formatPrice({ amount: sum, currency: bundle.price.currency }, lang) : null,
   };
+}
+
+/** Длина самого длинного слова: «Послеродовое восстановление» не влезает в узкую колонку без переносов. */
+function longestWord(text: string): number {
+  return Math.max(0, ...text.split(/\s+/).map((w) => w.length));
 }
 
 function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | null): string {
@@ -93,7 +109,7 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
   return (
     `<section class="prg-hero" aria-labelledby="prg-title">` +
     `<div class="prg-hero-head">` +
-    `<h1 class="prg-title" id="prg-title">${esc(title)}</h1>` +
+    `<h1 class="prg-title${longestWord(title) >= 12 ? ' prg-title--long' : ''}" id="prg-title">${esc(title)}</h1>` +
     (cat.subtitle ? `<p class="prg-sub">${esc(loc(cat.subtitle, lang))}</p>` : '') +
     `</div>` +
     picture({
@@ -106,7 +122,7 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
       eager: true,
     }) +
     `<div class="prg-hero-offer">` +
-    `<p class="prg-meta">${esc(countMeta(cat, lang) + SEP + t.forever)}</p>` +
+    `<p class="prg-meta">${esc(countMeta(cat, lang) + SEP + accessText(cat.accessDays, lang))}</p>` +
     `<p class="prg-price"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(t.oneTime)}</span></p>` +
     actions +
     `</div>` +
@@ -114,7 +130,7 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
   );
 }
 
-function previewSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo): string {
+function previewSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo & { durationSec: number }): string {
   const t = STRINGS[lang];
   const title = loc(cat.title, lang);
   const d = duration(preview.durationSec, lang);
@@ -157,10 +173,31 @@ function forWhomSection(cat: CatalogCategory, lang: Lang): string {
   );
 }
 
-function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | null): string {
+function insideSection(cat: CatalogCategory, lang: Lang, preview: (CatalogVideo & { durationSec: number }) | null): string {
   const t = STRINGS[lang];
   const equipment = loc(cat.equipment, lang);
   const equipmentNote = equipment ? `<p class="prg-note">${esc(fmt(t.equipment, { list: equipment }))}</p>` : '';
+  const mains = mainVideos(cat);
+  // «Скоро», но список тренировок уже есть: названия и «что понадобится», без длительности и замков
+  if (isComingSoon(cat) && mains.length) {
+    const items = mains
+      .map(
+        (v) =>
+          `<li><div class="prg-item prg-item--soon">` +
+          `<span class="prg-item-body"><span class="prg-item-title">${esc(loc(v.title, lang))}</span>` +
+          videoEquipment(v, lang, 'prg-item-equip') +
+          `</span></div></li>`,
+      )
+      .join('');
+    return (
+      `<section class="prg-section prg-inside" aria-labelledby="prg-inside-title">` +
+      `<h2 class="prg-h2" id="prg-inside-title">${esc(t.insideTitle)}</h2>` +
+      `<p class="prg-meta">${esc(`${mains.length} ${plural(mains.length, t.workoutForms, lang)}${SEP}${t.soon}`)}</p>` +
+      `<ul class="prg-items prg-items--compact">${items}</ul>` +
+      equipmentNote +
+      `</section>`
+    );
+  }
   if (isComingSoon(cat)) {
     return (
       `<section class="prg-section prg-inside" aria-labelledby="prg-inside-title">` +
@@ -180,12 +217,14 @@ function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo |
         `</a></li>`,
     );
   }
-  for (const v of mainVideos(cat)) {
-    const desc = v.description ? `<span class="prg-item-desc">${esc(loc(v.description, lang))}</span>` : '';
+  for (const v of mains) {
+    const descText = loc(v.description, lang).trim();
+    const desc = descText ? `<span class="prg-item-desc">${esc(descText)}</span>` : '';
     rows.push(
       `<li><div class="prg-item prg-item--locked">` +
         `<span class="prg-item-body"><span class="prg-item-title">${esc(loc(v.title, lang))}</span>` +
-        `<span class="prg-item-meta">${esc(duration(v.durationSec, lang))}</span>${desc}</span>` +
+        videoEquipment(v, lang, 'prg-item-equip') +
+        `<span class="prg-item-meta">${esc(duration(v.durationSec ?? 0, lang))}</span>${desc}</span>` +
         `<span class="prg-item-state">${ICON_LOCK}<span class="visually-hidden">${esc(t.lockedLabel)}</span></span>` +
         `</div></li>`,
     );
@@ -194,7 +233,7 @@ function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo |
     `<section class="prg-section prg-inside" aria-labelledby="prg-inside-title">` +
     `<h2 class="prg-h2" id="prg-inside-title">${esc(t.insideTitle)}</h2>` +
     `<p class="prg-meta">${esc(countMeta(cat, lang))}</p>` +
-    `<ul class="prg-items">${rows.join('')}</ul>` +
+    `<ul class="prg-items${mains.length > 4 ? ' prg-items--compact' : ''}">${rows.join('')}</ul>` +
     equipmentNote +
     `</section>`
   );
@@ -253,7 +292,7 @@ function buySection(cat: CatalogCategory, lang: Lang): string {
   return (
     `<section class="prg-section prg-buy" id="buy" aria-labelledby="prg-buy-title">` +
     `<div class="prg-buy-box">` +
-    `<h2 class="prg-h2" id="prg-buy-title">${esc(t.buyTitle)}</h2>` +
+    `<h2 class="prg-h2" id="prg-buy-title">${esc(cat.accessDays ? fmt(t.buyTitleTerm, accessVars(cat.accessDays, lang)) : t.buyTitle)}</h2>` +
     `<p class="prg-price prg-price--big"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(fmt(t.buyFor, { title }))}</span></p>` +
     `<ul class="prg-list prg-list--compact">${t.buyPoints.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` +
     `<div class="prg-actions" data-buy-main>${buyButton(cat.slug, title, price, fmt(t.buy, { price }))}${russia}</div>` +
@@ -285,7 +324,7 @@ function faqSection(cat: CatalogCategory, lang: Lang): string {
   const title = loc(cat.title, lang);
   const own = (cat.faq ?? []).map((f) => ({ q: loc(f.q, lang), a: esc(loc(f.a, lang)) }));
   const general = t.faq.map((f) => {
-    let a = esc(f.a);
+    let a = esc(cat.accessDays && f.aTerm ? fmt(f.aTerm, accessVars(cat.accessDays, lang)) : f.a);
     if (f.link === 'telegram-russia') {
       a += ` <a href="${esc(telegramLink(fmt(t.telegramRussia, { title })))}" target="_blank" rel="noopener">${esc(t.faqTelegramLink)}</a>`;
     }
@@ -314,7 +353,7 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
   const cover = coverOf(cat);
   const description =
     loc(cat.description, lang) ||
-    `${title}: ${loc(cat.subtitle, lang)}. ${countMeta(cat, lang).replace(/ /g, ' ')}, ${t.forever}.`;
+    `${title}: ${loc(cat.subtitle, lang)}. ${countMeta(cat, lang).replace(/ /g, ' ')}, ${accessText(cat.accessDays, lang)}.`;
   const price = cat.price!;
   const image = `${SITE}${cover}`;
 

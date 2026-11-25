@@ -31,6 +31,23 @@ export async function getOrCreateUser(env: Env, email: string, locale = 'ru'): P
   return user;
 }
 
+/**
+ * Истёкшие права (active, но срок прошёл) по областям, где действующего права нет: самый поздний срок.
+ * Кабинет показывает «Доступ закончился …» и «Купить снова».
+ */
+export async function getExpiredEntitlements(env: Env, userId: string): Promise<Array<{ scope: string; expires_at: number }>> {
+  const now = nowSec();
+  const { results } = await env.DB.prepare(
+    `SELECT scope, MAX(expires_at) AS expires_at FROM entitlements
+     WHERE user_id = ?1 AND status = 'active' AND expires_at IS NOT NULL AND expires_at <= ?2
+       AND scope NOT IN (SELECT scope FROM entitlements WHERE user_id = ?1 AND status = 'active' AND (expires_at IS NULL OR expires_at > ?2))
+     GROUP BY scope ORDER BY scope`,
+  )
+    .bind(userId, now)
+    .all<{ scope: string; expires_at: number }>();
+  return results;
+}
+
 /** Действующие права: active и не истёкшие. */
 export async function getActiveEntitlements(env: Env, userId: string): Promise<Entitlement[]> {
   const { results } = await env.DB.prepare(

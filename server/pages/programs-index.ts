@@ -1,6 +1,6 @@
 import { isComingSoon, paidCategories, publishedCategories, type CatalogCategory } from '../catalog';
 import { esc, picture } from './html';
-import { SITE, STRINGS, fmt, formatPrice, loc, plural, type Lang } from './i18n';
+import { SITE, STRINGS, accessText, fmt, formatPrice, loc, plural, type Lang } from './i18n';
 import { pageUrl, renderDocument } from './layout';
 import { buyButton, bundleDeal, countMeta, coverOf } from './program';
 
@@ -15,8 +15,10 @@ function card(cat: CatalogCategory, lang: Lang, index: number): string {
   const price = formatPrice(cat.price, lang);
   const href = `${t.prefix}/programs/${cat.slug}/`;
   const soon = isComingSoon(cat);
-  // «Скоро»: на месте «Купить» спокойная надпись, в мете только цена
-  const meta = soon ? '' : `<span>${esc(countMeta(cat, lang))}</span>`;
+  // «Скоро»: на месте «Купить» спокойная надпись, в мете цена и срок доступа (если он есть)
+  const meta =
+    (soon ? '' : `<span>${esc(countMeta(cat, lang))}</span>`) +
+    (cat.accessDays ? `<span>${esc(accessText(cat.accessDays, lang))}</span>` : '');
   const primary = soon
     ? `<p class="prg-soon">${esc(t.soon)}</p>`
     : `<a class="btn-primary" href="${href}#buy" data-buy="${esc(cat.slug)}" data-buy-title="${esc(title)}" data-buy-price="${esc(price)}">` +

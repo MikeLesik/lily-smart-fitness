@@ -1,11 +1,12 @@
 import type { Env } from '../../../server/env';
 import { json, normalizeEmail, readJson } from '../../../server/http';
 import { requireAdmin } from '../../../server/admin';
-import { catalog, publishedCategories } from '../../../server/catalog';
+import { accessExpiresAt, catalog, publishedCategories } from '../../../server/catalog';
 import { getOrCreateUser, nowSec } from '../../../server/db';
 
 /**
- * POST { email, scope } → { ok, existing? }. Ручная выдача доступа (например, оплата переводом из России).
+ * POST { email, scope } → { ok, existing?, expiresAt }. У программы с accessDays право со сроком (сейчас + accessDays дней).
+ * Пока действует прежнее право, новое не выдаётся (existing: true). Ручная выдача доступа (например, оплата переводом из России).
  * Пользователь создаётся, если его ещё нет. scope: slug категории или набора (all).
  */
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
@@ -26,11 +27,13 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     .first();
   if (existing) return json({ ok: true, existing: true });
 
+  const now = nowSec();
+  const expiresAt = accessExpiresAt(body.scope, now);
   await env.DB.prepare(
-    "INSERT INTO entitlements (id, user_id, scope, source, status, created_at) VALUES (?, ?, ?, 'manual', 'active', ?)",
+    "INSERT INTO entitlements (id, user_id, scope, source, status, expires_at, created_at) VALUES (?, ?, ?, 'manual', 'active', ?, ?)",
   )
-    .bind(crypto.randomUUID(), user.id, body.scope, nowSec())
+    .bind(crypto.randomUUID(), user.id, body.scope, expiresAt, now)
     .run();
-  console.log('[admin] grant', JSON.stringify({ by: admin.email, scope: body.scope, user: user.id }));
-  return json({ ok: true });
+  console.log('[admin] grant', JSON.stringify({ by: admin.email, scope: body.scope, user: user.id, expiresAt }));
+  return json({ ok: true, expiresAt });
 };

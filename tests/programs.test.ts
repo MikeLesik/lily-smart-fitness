@@ -47,14 +47,13 @@ describe('каталог для продающих страниц', () => {
     expect(freeCat).toBeDefined();
   });
 
-  it('у каждой платной программы 3–4 пункта «Для кого» на обоих языках, описание и превью', () => {
+  it('у каждой платной программы 3–4 пункта «Для кого» на обоих языках и описание (превью необязательно)', () => {
     for (const c of paid) {
       expect(c.forWhom?.ru.length, c.slug).toBeGreaterThanOrEqual(3);
       expect(c.forWhom?.ru.length, c.slug).toBeLessThanOrEqual(4);
       expect(c.forWhom?.en?.length, c.slug).toBe(c.forWhom?.ru.length);
       expect(c.description?.ru, c.slug).toBeTruthy();
       expect(c.description?.en, c.slug).toBeTruthy();
-      expect(c.videos.some((v) => v.preview), c.slug).toBe(true);
     }
   });
 

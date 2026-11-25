@@ -14,10 +14,14 @@ export interface CatalogVideo {
   id: string;
   title: Localized;
   description?: Localized;
-  durationSec: number;
+  /** null, пока видео не загружено: такое видео не готово. */
+  durationSec: number | null;
   preview: boolean;
   provider: string;
-  providerVideoId: string;
+  /** UID в Cloudflare Stream; null = видео ещё не загружено (не готово, проиграть нельзя). */
+  providerVideoId: string | null;
+  /** «Что понадобится для тренировки», строчными: «коврик и полотенце». */
+  equipment?: Localized;
 }
 
 export interface LocalizedList {
@@ -49,12 +53,16 @@ export interface CatalogCategory {
   forWhom?: LocalizedList;
   /** Вопросы этой программы, идут перед общими. */
   faq?: CatalogFaqItem[];
+  /** Срок доступа после покупки в днях. Нет поля = доступ бессрочный. */
+  accessDays?: number;
   videos: CatalogVideo[];
 }
 
 export interface CatalogBundle {
   slug: string;
   title: Localized;
+  /** false = набор снят с сайта. Нет поля = опубликован. */
+  published?: boolean;
   cover?: string;
   categories: '*' | string[];
   price: Price;
@@ -87,12 +95,32 @@ export function paidCategories(): CatalogCategory[] {
   return publishedCategories().filter((c) => !c.free && c.price !== null);
 }
 
+/** Видео готово: загружено в Stream (есть providerVideoId) и известна длительность. */
+export function isVideoReady(video: CatalogVideo): boolean {
+  return Boolean(video.providerVideoId) && typeof video.durationSec === 'number' && video.durationSec > 0;
+}
+
 /**
- * «Скоро»: в категории нет ни одного основного видео (превью не в счёт). Флагов в JSON нет,
- * правило одно на весь сайт: купить нельзя, бесплатный урок без формы. Видео в каталоге = продажа снова открыта.
+ * «Скоро»: в категории нет основных видео (превью не в счёт) или хотя бы одно основное ещё не готово.
+ * Флагов в JSON нет, правило одно на весь сайт: купить нельзя, бесплатный урок без формы.
+ * Когда все основные видео готовы, продажа открывается сама.
  */
 export function isComingSoon(category: CatalogCategory): boolean {
-  return !category.videos.some((v) => !v.preview);
+  const mains = category.videos.filter((v) => !v.preview);
+  return mains.length === 0 || !mains.every(isVideoReady);
+}
+
+/** Срок доступа в секундах от момента выдачи; null = бессрочно. */
+export function accessSeconds(scope: string): number | null {
+  const category = catalog.categories.find((c) => c.slug === scope);
+  const days = category?.accessDays;
+  return typeof days === 'number' && days > 0 ? Math.round(days * 86400) : null;
+}
+
+/** Когда закончится право, выданное сейчас (секунды Unix); null = бессрочно. */
+export function accessExpiresAt(scope: string, now: number): number | null {
+  const sec = accessSeconds(scope);
+  return sec === null ? null : now + sec;
 }
 
 /** Платные опубликованные категории, которые входят в набор. */
@@ -100,14 +128,26 @@ export function bundleCategories(bundle: CatalogBundle): CatalogCategory[] {
   return paidCategories().filter((c) => bundle.categories === '*' || bundle.categories.includes(c.slug));
 }
 
+/** Набор показывается и продаётся, только если он опубликован и в нём минимум две опубликованные платные программы. */
+export function isBundleAvailable(bundle: CatalogBundle): boolean {
+  return bundle.published !== false && bundleCategories(bundle).length >= 2;
+}
+
+export function availableBundles(): CatalogBundle[] {
+  return catalog.bundles.filter(isBundleAvailable);
+}
+
 /** Набор «скоро», пока ни в одной его платной категории нет видео. */
 export function isBundleComingSoon(bundle: CatalogBundle): boolean {
   return bundleCategories(bundle).every(isComingSoon);
 }
 
-export function findVideo(id: string): { video: CatalogVideo; category: CatalogCategory } | null {
+/** Готовое видео опубликованной категории. Неготовое (без UID в Stream) как будто не существует: playback и прогресс 404. */
+export function findVideo(id: string): { video: CatalogVideo & { providerVideoId: string; durationSec: number }; category: CatalogCategory } | null {
   for (const category of publishedCategories()) {
-    const video = category.videos.find((v) => v.id === id);
+    const video = category.videos.find((v) => v.id === id && isVideoReady(v)) as
+      | (CatalogVideo & { providerVideoId: string; durationSec: number })
+      | undefined;
     if (video) return { video, category };
   }
   return null;
@@ -123,16 +163,19 @@ export function publicCatalog() {
       cover: c.cover ?? null,
       free: c.free,
       price: c.price,
+      accessDays: c.accessDays ?? null,
       comingSoon: isComingSoon(c),
       videos: c.videos.map((v) => ({
         id: v.id,
         title: v.title,
         description: v.description ?? null,
-        durationSec: v.durationSec,
+        equipment: v.equipment ?? null,
+        durationSec: v.durationSec ?? null,
         preview: v.preview,
+        ready: isVideoReady(v),
       })),
     })),
-    bundles: catalog.bundles.map((b) => ({
+    bundles: availableBundles().map((b) => ({
       slug: b.slug,
       title: b.title,
       cover: b.cover ?? null,
@@ -151,17 +194,19 @@ export interface Sellable {
   price: Price;
   /** Видео ещё нет: оформить оплату нельзя (409 coming_soon). Уже оплаченное вебхук всё равно засчитает. */
   comingSoon: boolean;
+  /** Срок доступа в днях (только у категории с accessDays), иначе null. */
+  accessDays: number | null;
 }
 
 export function findSellable(scope: string): Sellable | null {
   const category = publishedCategories().find((c) => c.slug === scope);
   if (category) {
     return !category.free && category.price
-      ? { scope, kind: 'category', title: category.title, price: category.price, comingSoon: isComingSoon(category) }
+      ? { scope, kind: 'category', title: category.title, price: category.price, comingSoon: isComingSoon(category), accessDays: category.accessDays ?? null }
       : null;
   }
-  const bundle = catalog.bundles.find((b) => b.slug === scope);
+  const bundle = availableBundles().find((b) => b.slug === scope);
   return bundle
-    ? { scope, kind: 'bundle', title: bundle.title, price: bundle.price, comingSoon: isBundleComingSoon(bundle) }
+    ? { scope, kind: 'bundle', title: bundle.title, price: bundle.price, comingSoon: isBundleComingSoon(bundle), accessDays: null }
     : null;
 }

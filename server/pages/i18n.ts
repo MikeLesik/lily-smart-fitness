@@ -26,6 +26,9 @@ const ru = {
   seconds: '{n} с',
   decimal: ',',
   forever: 'доступ навсегда',
+  /** Срок доступа программы с accessDays: «доступ 30 дней». */
+  accessFor: 'доступ {n} {days}',
+  dayForms: ['день', 'дня', 'дней'],
   oneTime: 'разовая оплата',
 
   buy: 'Купить · {price}',
@@ -55,9 +58,11 @@ const ru = {
   freeMark: 'бесплатно',
   lockedLabel: 'Закрыто, откроется после покупки',
   equipment: 'Что понадобится: {list}.',
+  videoEquipment: 'Что понадобится: {list}',
 
   // Цена
   buyTitle: 'Одна оплата, доступ навсегда',
+  buyTitleTerm: 'Одна оплата, доступ на {n} {days}',
   buyFor: 'программа «{title}»',
   buyPoints: [
     'Смотри с телефона, планшета или компьютера',
@@ -92,6 +97,7 @@ const ru = {
     {
       q: 'На чём смотреть?',
       a: 'На телефоне, планшете или компьютере, в обычном браузере. Видео остаётся у тебя навсегда, смотри сколько угодно раз.',
+      aTerm: 'На телефоне, планшете или компьютере, в обычном браузере. Доступ открыт {n} {days} с момента оплаты, за это время смотри сколько угодно раз.',
     },
     {
       q: 'Я в России. Как оплатить?',
@@ -112,8 +118,8 @@ const ru = {
   // Каталог /programs/
   indexTitle: 'Видеопрограммы',
   indexDocTitle: 'Видеопрограммы Лили Лесик · Lily',
-  indexDescription: 'Видеотренировки Лили Лесик для дома: ягодицы, утренняя зарядка и другие программы. Разовая оплата, доступ навсегда, превью бесплатно.',
-  indexLead: 'Тренировки с Лилей дома, в своём темпе. Оплата один раз, доступ навсегда.',
+  indexDescription: 'Видеопрограммы Лили Лесик для дома, в своём темпе. Разовая оплата картой, вход по email без пароля. Срок доступа указан на странице программы.',
+  indexLead: 'Тренировки с Лилей дома, в своём темпе. Оплата один раз, срок доступа указан у каждой программы.',
   programsLabel: 'Программы',
   bundleTitle: 'Все программы',
   bundleBoth: 'Обе программы и все новые, которые появятся.',
@@ -136,7 +142,8 @@ const ru = {
   switchLangCode: 'en',
 };
 
-type FaqText = { q: string; a: string; link?: 'telegram-russia' };
+/** aTerm: ответ для программы со сроком доступа ({n} {days}); без срока берётся a. */
+type FaqText = { q: string; a: string; aTerm?: string; link?: 'telegram-russia' };
 export type Strings = typeof ru;
 
 const en: Strings = {
@@ -155,6 +162,8 @@ const en: Strings = {
   seconds: '{n} s',
   decimal: '.',
   forever: 'lifetime access',
+  accessFor: '{n} {days} of access',
+  dayForms: ['day', 'days', 'days'],
   oneTime: 'one-time payment',
 
   buy: 'Buy · {price}',
@@ -182,8 +191,10 @@ const en: Strings = {
   freeMark: 'free',
   lockedLabel: 'Locked, opens after purchase',
   equipment: 'What you need: {list}.',
+  videoEquipment: 'What you need: {list}',
 
   buyTitle: 'Pay once, keep it forever',
+  buyTitleTerm: 'Pay once, {n} {days} of access',
   buyFor: 'the “{title}” program',
   buyPoints: [
     'Watch on your phone, tablet or computer',
@@ -215,6 +226,7 @@ const en: Strings = {
     {
       q: 'Where can I watch?',
       a: 'On your phone, tablet or computer, in any browser. The videos stay yours for good, watch them as often as you like.',
+      aTerm: 'On your phone, tablet or computer, in any browser. Access lasts {n} {days} from payment, and you can watch as often as you like during that time.',
     },
     {
       q: 'I am in Russia. How can I pay?',
@@ -234,8 +246,8 @@ const en: Strings = {
 
   indexTitle: 'Video programs',
   indexDocTitle: 'Video programs by Lily Lesik · Lily',
-  indexDescription: 'Home workout videos by Lily Lesik: glutes, a morning routine and more. One-time payment, lifetime access, free previews.',
-  indexLead: 'Train at home with Lily, at your own pace. Pay once, keep access forever.',
+  indexDescription: 'Home workout programs by Lily Lesik, at your own pace. One-time card payment, sign in with your email, no password. Each program page shows how long access lasts.',
+  indexLead: 'Train at home with Lily, at your own pace. Pay once, each program shows how long access lasts.',
   programsLabel: 'Programs',
   bundleTitle: 'All programs',
   bundleBoth: 'Both programs and every new one that comes out.',
@@ -324,4 +336,16 @@ export function previewPart(sec: number, lang: Lang): string {
 
 export function telegramLink(text: string): string {
   return `${TELEGRAM}?text=${encodeURIComponent(text)}`;
+}
+
+/** «доступ 30 дней» (EN «30 days of access») для программы со сроком, иначе «доступ навсегда». */
+export function accessText(accessDays: number | null | undefined, lang: Lang): string {
+  const t = STRINGS[lang];
+  if (!accessDays) return t.forever;
+  return fmt(t.accessFor, { n: accessDays, days: plural(accessDays, t.dayForms, lang) });
+}
+
+/** Подстановки {n} {days} для текстов про срок. */
+export function accessVars(accessDays: number, lang: Lang): Record<string, string | number> {
+  return { n: accessDays, days: plural(accessDays, STRINGS[lang].dayForms, lang) };
 }
