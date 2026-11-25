@@ -75,8 +75,8 @@
 
 .hero-eyebrow {
   font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font-size: var(--text-caps);
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--gold);
@@ -94,10 +94,10 @@
 
 .hero-subtitle {
   font-family: var(--font-body);
-  font-size: var(--text-lg);
-  font-weight: 300;
+  font-size: var(--text-base);
+  font-weight: 500;
   color: rgba(253, 252, 250, 0.72);
-  line-height: 1.65;
+  line-height: 1.42;
   margin-bottom: var(--space-lg);
   max-width: 540px;
 }
@@ -203,12 +203,12 @@
 
 .hero--home .hero-subtitle {
   font-size: var(--text-sm);
-  line-height: 1.55;
+  line-height: 1.4;
   margin-bottom: 0;
   max-width: 34ch;
 }
 
-/* Цена: цифры в Manrope */
+/* Цена: ровные цифры */
 .hero-price {
   font-family: var(--font-body);
   font-size: var(--text-sm);
@@ -217,9 +217,9 @@
 }
 
 .hero-price-amount {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
   line-height: 1;
   color: var(--white);
   margin: 0 0.125rem;
@@ -305,7 +305,7 @@
   }
 
   .hero--home .hero-subtitle {
-    font-size: var(--text-lg);
+    font-size: 1.5rem;
   }
 
   .hero--home .hero-ctas {

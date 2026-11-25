@@ -28,8 +28,8 @@
 /* --- Section Headers --- */
 .section-eyebrow {
   font-family: var(--font-body);
-  font-size: var(--text-xs);
-  font-weight: 500;
+  font-size: var(--text-caps);
+  font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--olive);

@@ -3,12 +3,12 @@ import { SITE, STRINGS, telegramLink, type Lang } from './i18n';
 
 /** Версии статики в ссылках: сброс кеша при правке CSS и JS. */
 export const ASSET_VERSIONS = {
-  variables: 3,
-  reset: 2,
-  components: 5,
-  cabinet: 7,
-  buyCss: 2,
-  programsCss: 3,
+  variables: 4,
+  reset: 3,
+  components: 6,
+  cabinet: 8,
+  buyCss: 3,
+  programsCss: 4,
   buyJs: 4,
   programJs: 3,
   analyticsJs: 1,
@@ -108,7 +108,7 @@ ${o.head ?? ''}
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/variables.css?v=${v.variables}">
 <link rel="stylesheet" href="/css/reset.css?v=${v.reset}">
 <link rel="stylesheet" href="/css/components.css?v=${v.components}">

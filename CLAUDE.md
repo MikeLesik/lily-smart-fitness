@@ -22,7 +22,7 @@
 - Сервер: Cloudflare Pages Functions на TypeScript (`functions/` = маршруты, `server/` = модули), база D1, письма через Resend, защита формы Turnstile, видео в Cloudflare Stream с подписанными ссылками, оплата через Stripe Checkout (без SDK, fetch к REST API). Без npm-зависимостей в рантайме: только Web API.
 - Тесты: vitest + `@cloudflare/vitest-plugin` (D1 в памяти, миграции из `migrations/`). `npm test`, `npm run typecheck`.
 - RU в корне `src/`, EN-зеркало в `src/en/`. Тексты живут прямо в HTML.
-- Шрифты Google Fonts: Cormorant Garamond (заголовки) и Manrope (текст).
+- Шрифт один на всём сайте: Cormorant Garamond из Google Fonts (400, 500, 600, 700, курсив 400 и 500; 300 у крупных заголовков). Решение владельца от 25.11.2026, Manrope больше не подключается (письма в `server/email.ts` набраны системным шрифтом).
 - Анимации на CSS, появление блоков через IntersectionObserver в `main.js`.
 - Версии файлов в ссылках (`?v=2`, `main.js?v=4`) служат сбросом кеша: при правке CSS или JS увеличь номер в обеих страницах.
 
@@ -97,6 +97,11 @@ src/
 ## Дизайн-система
 
 Токены в `src/css/variables.css`, новые цвета и шрифты не вводить.
+
+- Шрифт: только Cormorant Garamond (решение владельца 25.11.2026). `--font-display` и `--font-body` указывают на него; второй шрифт не подключать.
+- У Cormorant низкие строчные, поэтому мелкие размеры крупнее, чем были под гротеск: `--text-xs` 17–18 px, `--text-sm` 19–20 px, `--text-base` 21–22 px, основной текст весом 500, межстрочный 1,3–1,45. Заголовки (`--text-lg` и выше) прежних размеров.
+- Прописные (надзаголовки, меню, кнопки): `--text-caps` 14–15 px и `--text-btn` 14 px, вес 600–700, разрядка 0,12–0,16em.
+- Цифры ровные: на `body` стоит `font-variant-numeric: lining-nums`; где нужен `tabular-nums`, писать `lining-nums tabular-nums`.
 
 | Токен | Значение | Где |
 |---|---|---|

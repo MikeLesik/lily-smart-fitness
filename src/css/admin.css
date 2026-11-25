@@ -23,7 +23,8 @@
 }
 
 .adm-form select {
-  font: 400 1rem/1.4 var(--font-body);
+  font: 500 1.3125rem/1.3 var(--font-body);
+  font-variant-numeric: lining-nums;
   color: var(--warm-black);
   background: var(--white);
   border: 1px solid var(--text-muted);

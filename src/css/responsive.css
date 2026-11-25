@@ -13,12 +13,12 @@
 
   .btn-primary,
   .btn-ghost {
-    font-size: 0.625rem;
-    letter-spacing: 0.16em;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
   }
 
   .about-stat-num {
-    font-size: 1.375rem;
+    font-size: 1.5625rem;
   }
 }
 
@@ -69,7 +69,7 @@
   }
 
   .about-stat-num {
-    font-size: 2rem;
+    font-size: 2.25rem;
   }
 
   /* Бесплатный урок: фото слева, текст справа */
