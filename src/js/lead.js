@@ -4,6 +4,8 @@
    Шаг 2: код из письма → POST /api/auth/verify-code → кабинет, бесплатная программа.
    Уже вошла: строка и кнопка сразу к уроку.
    Название урока и длительность берутся из GET /api/catalog (категория с free: true).
+   Пока каталог не пришёл, все шаги скрыты. Урока нет (comingSoon, нет видео) или каталог
+   не загрузился: вместо формы строка «Урок скоро появится» и ссылка на Telegram-канал.
    Язык из <html lang>. Тексты: черновик до согласования с Лилей.
    ============================================ */
 
@@ -98,7 +100,8 @@
   var steps = {
     email: document.querySelector('[data-lead-step="email"]'),
     code: document.querySelector('[data-lead-step="code"]'),
-    member: document.querySelector('[data-lead-step="member"]')
+    member: document.querySelector('[data-lead-step="member"]'),
+    soon: document.querySelector('[data-lead-step="soon"]')
   };
   var emailForm = document.getElementById('lead-form');
   var codeForm = document.getElementById('code-form');
@@ -110,6 +113,8 @@
 
   var state = { email: '', consent: false, sentAt: 0 };
   var current = 'email';
+  // Есть ли урок: pending (каталог грузится) | ready | soon. Форма видна только при ready.
+  var lesson = 'pending';
   var resendTimer = null;
 
   /* ---------- helpers ---------- */
@@ -140,16 +145,23 @@
     btn.textContent = busy ? busyLabel : btn.dataset.label;
   }
 
+  /** Видимый шаг: нужный (current), если урок есть; «скоро», если урока нет; пока каталог грузится, ничего. */
+  function paint() {
+    var visible = lesson === 'ready' ? current : lesson === 'soon' ? 'soon' : '';
+    hero.setAttribute('data-step', visible || 'pending');
+    Object.keys(steps).forEach(function (name) {
+      if (steps[name]) steps[name].hidden = name !== visible;
+    });
+    document.querySelectorAll('[data-lead-ready]').forEach(function (el) { el.hidden = lesson !== 'ready'; });
+  }
+
   function show(step, focus) {
     current = step;
-    hero.setAttribute('data-step', step);
-    Object.keys(steps).forEach(function (name) {
-      if (steps[name]) steps[name].hidden = name !== step;
-    });
+    paint();
     document.querySelectorAll('[data-email]').forEach(function (el) {
       el.textContent = state.email;
     });
-    if (focus) {
+    if (focus && lesson === 'ready') {
       var target = step === 'email' ? emailInput : step === 'code' ? codeInput : null;
       if (target) target.focus();
     }
@@ -278,16 +290,20 @@
     });
   }
 
+  function setLesson(value) {
+    lesson = value;
+    paint();
+  }
+
   function applyCatalog(data) {
     var cats = (data && data.categories) || [];
     var free = null;
     for (var i = 0; i < cats.length; i++) {
       if (cats[i].free) { free = cats[i]; break; }
     }
-    if (!free) return;
+    var videos = free ? (free.videos || []).filter(function (v) { return !v.preview; }) : [];
+    if (!free || free.comingSoon || !videos.length) return setLesson('soon');
     freeSlug = free.slug || freeSlug;
-    var videos = (free.videos || []).filter(function (v) { return !v.preview; });
-    if (!videos.length) return;
     var total = videos.reduce(function (s, v) { return s + (v.durationSec || 0); }, 0);
 
     if (free.title && free.title[locale]) setText('[data-free="title"]', free.title[locale]);
@@ -297,6 +313,7 @@
     setText('[data-free="time"]', minutes(total));
     renderVideos(videos);
     updateLessonLinks();
+    setLesson('ready');
   }
 
   /* ---------- уже вошла ---------- */
@@ -480,7 +497,9 @@
   });
 
   api('/api/catalog').then(function (res) {
+    // Каталог не пришёл: форму не показываем (урока может не быть), остаётся «скоро» и канал
     if (res.ok) applyCatalog(res.data);
+    else setLesson('soon');
   });
 
   var saved = restore();

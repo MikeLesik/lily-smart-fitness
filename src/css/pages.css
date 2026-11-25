@@ -217,8 +217,9 @@
   text-decoration-color: var(--warm-black);
 }
 
-/* Уже вошла: строка и кнопка к уроку */
-.lead-member {
+/* Уже вошла: строка и кнопка к уроку. Урока пока нет: строка и ссылка на канал */
+.lead-member,
+.lead-soon {
   margin-bottom: 1rem;
   font-size: var(--text-base);
   line-height: 1.4;

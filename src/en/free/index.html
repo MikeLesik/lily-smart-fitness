@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="/css/reset.css?v=3">
   <link rel="stylesheet" href="/css/components.css?v=8">
   <link rel="stylesheet" href="/css/cabinet.css?v=8">
-  <link rel="stylesheet" href="/css/pages.css?v=5">
+  <link rel="stylesheet" href="/css/pages.css?v=6">
   <script src="/js/analytics.js?v=1" defer></script>
 </head>
 <body class="cab-body">
@@ -54,7 +54,8 @@
     <section class="lead-hero" id="lead" aria-labelledby="lead-title">
       <div class="lead-intro">
         <h1 class="lead-title" id="lead-title" data-free="title">Free lesson</h1>
-        <p class="lead-lesson"><span data-free="video">Diastasis: 3 causes</span><span class="lead-lesson-time" data-free="time">1 min</span></p>
+        <!-- lead.js fills in the lesson title and length from the catalog; the line shows only if the lesson exists -->
+        <p class="lead-lesson" data-lead-ready hidden><span data-free="video"></span><span class="lead-lesson-time" data-free="time"></span></p>
       </div>
 
       <picture class="lead-photo">
@@ -65,8 +66,8 @@
       <p class="lead-promise">Lily explains why the belly stays after giving birth and what to do about it.</p>
 
       <div class="lead-action">
-        <!-- Step 1: email -->
-        <div class="lead-step" data-lead-step="email">
+        <!-- Step 1: email. All steps stay hidden until the catalog loads: the form shows only if the lesson exists -->
+        <div class="lead-step" data-lead-step="email" hidden>
           <form class="cab-form" id="lead-form" novalidate>
             <label class="cab-label" for="lead-email">Email</label>
             <input class="cab-input" id="lead-email" name="email" type="email" inputmode="email"
@@ -106,21 +107,19 @@
           <p class="lead-member">You are signed in as <strong data-email></strong>. The lesson is waiting in your account.</p>
           <a class="btn-primary cab-submit" href="/en/account/#/c/free" data-lesson-link>Watch the lesson</a>
         </div>
+
+        <!-- No lesson yet (no videos in the catalog) or the catalog did not load -->
+        <div class="lead-step" data-lead-step="soon" hidden>
+          <p class="lead-soon">The lesson is coming soon.</p>
+          <a class="cab-secondary" href="https://t.me/Lily_Smart_Fitness" target="_blank" rel="noopener">Follow on Telegram</a>
+        </div>
       </div>
     </section>
 
-    <!-- What's inside -->
-    <section class="pg-section lead-inside" aria-labelledby="inside-title">
+    <!-- What's inside: videos from the catalog; the section shows only if the lesson exists -->
+    <section class="pg-section lead-inside" aria-labelledby="inside-title" data-lead-ready hidden>
       <h2 class="pg-h2" id="inside-title">What’s inside</h2>
-      <ul class="cab-videos" data-free="videos">
-        <li class="cab-video">
-          <span class="cab-video-body">
-            <span class="cab-video-title">Diastasis: 3 causes</span>
-            <span class="cab-video-meta">1 min</span>
-            <span class="lead-video-desc">Why the belly stays after giving birth and what to do about it.</span>
-          </span>
-        </li>
-      </ul>
+      <ul class="cab-videos" data-free="videos"></ul>
 
       <h3 class="cab-section-title" data-lead-guest>How it works</h3>
       <p class="pg-text lead-how" data-lead-guest>Enter your email and type in the code we send you. The lesson opens in your account, on your phone or computer.</p>
@@ -143,6 +142,6 @@
     </nav>
   </footer>
 
-  <script src="/js/lead.js?v=4"></script>
+  <script src="/js/lead.js?v=5"></script>
 </body>
 </html>

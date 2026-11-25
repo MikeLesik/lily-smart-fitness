@@ -1,15 +1,15 @@
 import { env } from 'cloudflare:workers';
 import { describe, expect, it } from 'vitest';
-import catalogJson from '../content/catalog.json';
 import { onRequestGet as getCatalog } from '../functions/api/catalog';
 import { onRequestGet as playback } from '../functions/api/videos/[id]/playback';
 import { onRequestGet as getProgress, onRequestPost as postProgress } from '../functions/api/progress';
 import { canWatch } from '../server/access';
-import type { CatalogCategory, CatalogVideo } from '../server/catalog';
+import { catalog, type CatalogVideo } from '../server/catalog';
 import type { Entitlement, User } from '../server/db';
 import { call, decodeJwt, grant, loginAs, streamTestKey } from './helpers';
 
-const categories = catalogJson.categories as unknown as CatalogCategory[];
+// Каталог тестов: фикстура с видео (tests/setup-catalog.ts).
+const categories = catalog.categories;
 const paid = categories.find((c) => c.published && !c.free && c.videos.some((v) => v.preview) && c.videos.some((v) => !v.preview))!;
 const otherPaid = categories.find((c) => c.published && !c.free && c.slug !== paid.slug)!;
 const freeCat = categories.find((c) => c.published && c.free)!;
@@ -38,7 +38,7 @@ describe('каталог', () => {
 
   it('у платных категорий и наборов есть цена', () => {
     for (const c of categories.filter((c) => !c.free)) expect(c.price?.amount, c.slug).toBeGreaterThan(0);
-    for (const b of catalogJson.bundles) expect(b.price.amount).toBeGreaterThan(0);
+    for (const b of catalog.bundles) expect(b.price.amount).toBeGreaterThan(0);
   });
 });
 

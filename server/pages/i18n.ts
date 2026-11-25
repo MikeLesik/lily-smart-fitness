@@ -70,6 +70,12 @@ const ru = {
   stickyLabel: 'Покупка программы',
   bundleOffer: 'Или все программы за {price} вместо {sum}',
 
+  // «Скоро»: в программе ещё нет видео, купить нельзя
+  soon: 'Скоро',
+  soonTitle: 'Программа скоро появится',
+  soonInside: 'Видео появятся скоро.',
+  soonWrite: 'Написать Лиле',
+
   // О Лиле
   aboutTitle: 'О Лиле',
   aboutText: 'Лиля Лесик, персональный тренер (Gray Institute USA, FPA) и сертифицированный нутрициолог. 5+ лет практики, 360+ клиенток.',
@@ -189,6 +195,11 @@ const en: Strings = {
   russiaPayNote: 'Bank transfer in rubles. Lily will open your access manually.',
   stickyLabel: 'Buy the program',
   bundleOffer: 'Or get all programs for {price} instead of {sum}',
+
+  soon: 'Coming soon',
+  soonTitle: 'This program is coming soon',
+  soonInside: 'The videos are coming soon.',
+  soonWrite: 'Message Lily',
 
   aboutTitle: 'About Lily',
   aboutText: 'Lily Lesik is a personal trainer (Gray Institute USA, FPA) and a certified nutritionist. 5+ years of practice, 360+ clients.',

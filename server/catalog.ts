@@ -65,8 +65,18 @@ export interface Catalog {
   bundles: CatalogBundle[];
 }
 
-/** Источник правды: content/catalog.json (в бандл функций, не в публичные файлы). */
-export const catalog = raw as unknown as Catalog;
+/** Источник правды: content/catalog.json (в бандл функций, не в публичные файлы). Копия, чтобы подмена в тестах не трогала сам JSON. */
+export const catalog: Catalog = { ...(raw as unknown as Catalog) };
+
+/**
+ * Только для тестов: подменить каталог (tests/setup-catalog.ts ставит фикстуру с видео).
+ * Объект catalog остаётся тем же, меняется содержимое, поэтому импортёры видят новый каталог.
+ */
+export function setCatalogForTests(next: Catalog): void {
+  const copy = structuredClone(next);
+  catalog.categories = copy.categories;
+  catalog.bundles = copy.bundles;
+}
 
 export function publishedCategories(): CatalogCategory[] {
   return catalog.categories.filter((c) => c.published);
@@ -75,6 +85,24 @@ export function publishedCategories(): CatalogCategory[] {
 /** Платные опубликованные категории с ценой: то, что продают страницы /programs/. */
 export function paidCategories(): CatalogCategory[] {
   return publishedCategories().filter((c) => !c.free && c.price !== null);
+}
+
+/**
+ * «Скоро»: в категории нет ни одного основного видео (превью не в счёт). Флагов в JSON нет,
+ * правило одно на весь сайт: купить нельзя, бесплатный урок без формы. Видео в каталоге = продажа снова открыта.
+ */
+export function isComingSoon(category: CatalogCategory): boolean {
+  return !category.videos.some((v) => !v.preview);
+}
+
+/** Платные опубликованные категории, которые входят в набор. */
+export function bundleCategories(bundle: CatalogBundle): CatalogCategory[] {
+  return paidCategories().filter((c) => bundle.categories === '*' || bundle.categories.includes(c.slug));
+}
+
+/** Набор «скоро», пока ни в одной его платной категории нет видео. */
+export function isBundleComingSoon(bundle: CatalogBundle): boolean {
+  return bundleCategories(bundle).every(isComingSoon);
 }
 
 export function findVideo(id: string): { video: CatalogVideo; category: CatalogCategory } | null {
@@ -95,6 +123,7 @@ export function publicCatalog() {
       cover: c.cover ?? null,
       free: c.free,
       price: c.price,
+      comingSoon: isComingSoon(c),
       videos: c.videos.map((v) => ({
         id: v.id,
         title: v.title,
@@ -109,6 +138,7 @@ export function publicCatalog() {
       cover: b.cover ?? null,
       categories: b.categories,
       price: b.price,
+      comingSoon: isBundleComingSoon(b),
     })),
   };
 }
@@ -119,13 +149,19 @@ export interface Sellable {
   kind: 'category' | 'bundle';
   title: Localized;
   price: Price;
+  /** Видео ещё нет: оформить оплату нельзя (409 coming_soon). Уже оплаченное вебхук всё равно засчитает. */
+  comingSoon: boolean;
 }
 
 export function findSellable(scope: string): Sellable | null {
   const category = publishedCategories().find((c) => c.slug === scope);
   if (category) {
-    return !category.free && category.price ? { scope, kind: 'category', title: category.title, price: category.price } : null;
+    return !category.free && category.price
+      ? { scope, kind: 'category', title: category.title, price: category.price, comingSoon: isComingSoon(category) }
+      : null;
   }
   const bundle = catalog.bundles.find((b) => b.slug === scope);
-  return bundle ? { scope, kind: 'bundle', title: bundle.title, price: bundle.price } : null;
+  return bundle
+    ? { scope, kind: 'bundle', title: bundle.title, price: bundle.price, comingSoon: isBundleComingSoon(bundle) }
+    : null;
 }

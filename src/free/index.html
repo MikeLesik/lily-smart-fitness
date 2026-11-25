@@ -34,7 +34,7 @@
   <link rel="stylesheet" href="/css/reset.css?v=3">
   <link rel="stylesheet" href="/css/components.css?v=8">
   <link rel="stylesheet" href="/css/cabinet.css?v=8">
-  <link rel="stylesheet" href="/css/pages.css?v=5">
+  <link rel="stylesheet" href="/css/pages.css?v=6">
   <script src="/js/analytics.js?v=1" defer></script>
 </head>
 <body class="cab-body">
@@ -54,7 +54,8 @@
     <section class="lead-hero" id="lead" aria-labelledby="lead-title">
       <div class="lead-intro">
         <h1 class="lead-title" id="lead-title" data-free="title">Бесплатный урок</h1>
-        <p class="lead-lesson"><span data-free="video">Диастаз: 3 причины</span><span class="lead-lesson-time" data-free="time">1 мин</span></p>
+        <!-- Название и длительность урока ставит lead.js из каталога, строка видна, только если урок есть -->
+        <p class="lead-lesson" data-lead-ready hidden><span data-free="video"></span><span class="lead-lesson-time" data-free="time"></span></p>
       </div>
 
       <picture class="lead-photo">
@@ -65,8 +66,8 @@
       <p class="lead-promise">Лиля объясняет, почему живот не уходит после родов и что с этим делать.</p>
 
       <div class="lead-action">
-        <!-- Шаг 1: email -->
-        <div class="lead-step" data-lead-step="email">
+        <!-- Шаг 1: email. Все шаги скрыты, пока не пришёл каталог: форма только если урок есть -->
+        <div class="lead-step" data-lead-step="email" hidden>
           <form class="cab-form" id="lead-form" novalidate>
             <label class="cab-label" for="lead-email">Email</label>
             <input class="cab-input" id="lead-email" name="email" type="email" inputmode="email"
@@ -106,21 +107,19 @@
           <p class="lead-member">Ты уже вошла: <strong data-email></strong>. Урок ждёт в кабинете.</p>
           <a class="btn-primary cab-submit" href="/account/#/c/free" data-lesson-link>Смотреть урок</a>
         </div>
+
+        <!-- Урока пока нет (в каталоге нет видео) или каталог не загрузился -->
+        <div class="lead-step" data-lead-step="soon" hidden>
+          <p class="lead-soon">Урок скоро появится.</p>
+          <a class="cab-secondary" href="https://t.me/Lily_Smart_Fitness" target="_blank" rel="noopener">Следить в&nbsp;Telegram-канале</a>
+        </div>
       </div>
     </section>
 
-    <!-- Что внутри -->
-    <section class="pg-section lead-inside" aria-labelledby="inside-title">
+    <!-- Что внутри: список видео из каталога; секция видна, только если урок есть -->
+    <section class="pg-section lead-inside" aria-labelledby="inside-title" data-lead-ready hidden>
       <h2 class="pg-h2" id="inside-title">Что внутри</h2>
-      <ul class="cab-videos" data-free="videos">
-        <li class="cab-video">
-          <span class="cab-video-body">
-            <span class="cab-video-title">Диастаз: 3 причины</span>
-            <span class="cab-video-meta">1 мин</span>
-            <span class="lead-video-desc">Почему живот не уходит после родов и что с этим делать.</span>
-          </span>
-        </li>
-      </ul>
+      <ul class="cab-videos" data-free="videos"></ul>
 
       <h3 class="cab-section-title" data-lead-guest>Как получить</h3>
       <p class="pg-text lead-how" data-lead-guest>Оставь email и&nbsp;введи код из&nbsp;письма. Урок откроется в&nbsp;кабинете, смотреть можно с&nbsp;телефона или компьютера.</p>
@@ -143,6 +142,6 @@
     </nav>
   </footer>
 
-  <script src="/js/lead.js?v=4"></script>
+  <script src="/js/lead.js?v=5"></script>
 </body>
 </html>

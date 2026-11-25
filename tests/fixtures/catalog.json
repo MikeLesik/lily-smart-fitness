@@ -1,0 +1,222 @@
+{
+  "_note": "Фикстура для тестов: каталог с видео (как до 25.11.2026). UID выдуманные, в Stream их нет. Рантайм берёт content/catalog.json, тесты подменяют его этим файлом (tests/setup-catalog.ts).",
+  "categories": [
+    {
+      "slug": "yagodicy",
+      "title": {
+        "ru": "Сильные ягодицы",
+        "en": "Strong glutes"
+      },
+      "subtitle": {
+        "ru": "Полная тренировка под музыку",
+        "en": "Full workout with music"
+      },
+      "cover": "/assets/images/programs/yagodicy.jpg",
+      "free": false,
+      "published": true,
+      "price": {
+        "amount": 3900,
+        "currency": "eur"
+      },
+      "description": {
+        "ru": "Полная тренировка на ягодицы под музыку с Лилей Лесик: 22 минуты дома с гантелями и ступенькой. Разовая оплата, доступ навсегда, превью бесплатно.",
+        "en": "A full glute workout to music with Lily Lesik: 22 minutes at home with dumbbells and a step. One-time payment, lifetime access, free preview."
+      },
+      "previewPoster": "/assets/images/programs/yagodicy-preview.jpg",
+      "equipment": {
+        "ru": "гантели и устойчивая ступенька",
+        "en": "dumbbells and a sturdy step"
+      },
+      "forWhom": {
+        "ru": [
+          "Хочешь подтянуть и укрепить ягодицы дома, без зала",
+          "Удобнее заниматься по готовому видео, чем придумывать тренировку самой",
+          "Есть 20–25 минут и пара гантелей",
+          "Нравится заниматься под музыку, в одном темпе с тренером"
+        ],
+        "en": [
+          "You want firmer, stronger glutes at home, no gym needed",
+          "You would rather follow a ready-made video than plan a workout yourself",
+          "You have 20–25 minutes and a pair of dumbbells",
+          "You like training to music, in step with your coach"
+        ]
+      },
+      "faq": [
+        {
+          "q": {
+            "ru": "Подойдёт, если я давно не занималась?",
+            "en": "Is it for me if I have not trained in a while?"
+          },
+          "a": {
+            "ru": "Да, если нет противопоказаний. Возьми гантели полегче и ставь видео на паузу, когда нужно отдохнуть.",
+            "en": "Yes, unless you have contraindications. Take lighter dumbbells and pause the video whenever you need a rest."
+          }
+        }
+      ],
+      "videos": [
+        {
+          "id": "yagodicy-preview",
+          "title": {
+            "ru": "Первые полторы минуты",
+            "en": "The first 90 seconds"
+          },
+          "description": {
+            "ru": "Посмотри, как устроена тренировка, до покупки.",
+            "en": "See how the workout goes before you buy."
+          },
+          "durationSec": 90,
+          "preview": true,
+          "provider": "stream",
+          "providerVideoId": "0876cddda7c251d3288b63c84932b890"
+        },
+        {
+          "id": "yagodicy-01",
+          "title": {
+            "ru": "Тренировка на ягодицы",
+            "en": "Glute workout"
+          },
+          "description": {
+            "ru": "Разминка, основная часть и заминка под музыку.",
+            "en": "Warm-up, main part and cool-down, all to music."
+          },
+          "durationSec": 1346,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": "6420d57579ee25d4453dfaac9a6deaff"
+        }
+      ]
+    },
+    {
+      "slug": "zaryadka",
+      "title": {
+        "ru": "Утренняя зарядка",
+        "en": "Morning routine"
+      },
+      "subtitle": {
+        "ru": "Лимфа и диафрагма, мягкое пробуждение",
+        "en": "Lymph and diaphragm, a gentle wake-up"
+      },
+      "cover": "/assets/images/programs/zaryadka.jpg",
+      "free": false,
+      "published": true,
+      "price": {
+        "amount": 2500,
+        "currency": "eur"
+      },
+      "description": {
+        "ru": "Утренняя зарядка с Лилей Лесик: 11 минут на коврике для лимфы и диафрагмы, мягкое пробуждение тела. Разовая оплата, доступ навсегда, превью бесплатно.",
+        "en": "A morning routine with Lily Lesik: 11 minutes on a mat for lymph flow and the diaphragm, a gentle wake-up for the body. One-time payment, lifetime access, free preview."
+      },
+      "previewPoster": "/assets/images/programs/zaryadka-preview.jpg",
+      "equipment": {
+        "ru": "коврик",
+        "en": "a mat"
+      },
+      "forWhom": {
+        "ru": [
+          "Утром тело тяжёлое, лицо отекает, и хочется проснуться мягко",
+          "Нужна короткая практика, которая впишется в любое утро",
+          "Хочешь дышать свободнее и снять напряжение в теле",
+          "Только начинаешь заниматься или возвращаешься после перерыва"
+        ],
+        "en": [
+          "Your body feels heavy and puffy in the morning, and you want a gentle wake-up",
+          "You need a short practice that fits into any morning",
+          "You want to breathe more freely and release tension",
+          "You are just starting out or coming back after a break"
+        ]
+      },
+      "faq": [
+        {
+          "q": {
+            "ru": "Когда лучше делать зарядку?",
+            "en": "When is the best time to do it?"
+          },
+          "a": {
+            "ru": "Утром, до завтрака. Хватит 11 минут и места на коврике.",
+            "en": "In the morning, before breakfast. All you need is 11 minutes and room for a mat."
+          }
+        }
+      ],
+      "videos": [
+        {
+          "id": "zaryadka-preview",
+          "title": {
+            "ru": "Первая минута",
+            "en": "The first minute"
+          },
+          "description": {
+            "ru": "Начало зарядки, чтобы понять темп.",
+            "en": "The start of the routine to get the pace."
+          },
+          "durationSec": 60,
+          "preview": true,
+          "provider": "stream",
+          "providerVideoId": "15444c7b276ff87f15ec90f5b5837f10"
+        },
+        {
+          "id": "zaryadka-01",
+          "title": {
+            "ru": "Зарядка: лимфа и диафрагма",
+            "en": "Routine: lymph and diaphragm"
+          },
+          "description": {
+            "ru": "Мягкое пробуждение тела. Делай утром до завтрака.",
+            "en": "A gentle wake-up for the body. Do it in the morning before breakfast."
+          },
+          "durationSec": 663,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": "b420152c40ce54a722ca6bd2409384a0"
+        }
+      ]
+    },
+    {
+      "slug": "free",
+      "title": {
+        "ru": "Бесплатный урок",
+        "en": "Free lesson"
+      },
+      "subtitle": {
+        "ru": "Почему живот не уходит после родов",
+        "en": "Why the belly stays after giving birth"
+      },
+      "cover": "/assets/images/programs/free.jpg",
+      "free": true,
+      "published": true,
+      "price": null,
+      "videos": [
+        {
+          "id": "free-01",
+          "title": {
+            "ru": "Диастаз: 3 причины",
+            "en": "Diastasis: 3 causes"
+          },
+          "description": {
+            "ru": "Почему живот не уходит после родов и что с этим делать.",
+            "en": "Why the belly stays after giving birth and what to do about it."
+          },
+          "durationSec": 64,
+          "preview": false,
+          "provider": "stream",
+          "providerVideoId": "9c0393d5bf92b056d7e55d8489924568"
+        }
+      ]
+    }
+  ],
+  "bundles": [
+    {
+      "slug": "all",
+      "title": {
+        "ru": "Все программы",
+        "en": "All programs"
+      },
+      "cover": "/assets/images/programs/all.jpg",
+      "categories": "*",
+      "price": {
+        "amount": 4900,
+        "currency": "eur"
+      }
+    }
+  ]
+}

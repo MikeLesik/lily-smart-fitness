@@ -21,7 +21,8 @@ function cleanUtm(raw: unknown): Record<string, string> {
 /**
  * POST { scope, email?, utm?, locale? } → { url } Stripe Checkout.
  * Регистрация до оплаты не нужна: гостю достаточно email. Вошедшая платит со своим email.
- * 400 invalid_scope | invalid_email, 409 already_owned, 429, 502 stripe_error, 503 payments_unavailable.
+ * 400 invalid_scope | invalid_email, 409 coming_soon (видео ещё нет, в Stripe не идём) | already_owned,
+ * 429, 502 stripe_error, 503 payments_unavailable.
  */
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!(await hit(env, `checkout:ip:${clientIp(request)}`, 30, HOUR))) return json({ error: 'rate_limited' }, 429);
@@ -29,6 +30,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const body = await readJson<{ scope: string; email: string; utm: unknown; locale: string }>(request);
   const item = typeof body.scope === 'string' ? findSellable(body.scope) : null;
   if (!item) return json({ error: 'invalid_scope' }, 400);
+  if (item.comingSoon) return json({ error: 'coming_soon' }, 409);
 
   const user = await getSessionUser(env, request);
   const email = user?.email ?? normalizeEmail(body.email);

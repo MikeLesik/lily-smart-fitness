@@ -1,4 +1,4 @@
-import { paidCategories, publishedCategories, type CatalogCategory } from '../catalog';
+import { isComingSoon, paidCategories, publishedCategories, type CatalogCategory } from '../catalog';
 import { esc, picture } from './html';
 import { SITE, STRINGS, fmt, formatPrice, loc, plural, type Lang } from './i18n';
 import { pageUrl, renderDocument } from './layout';
@@ -14,7 +14,13 @@ function card(cat: CatalogCategory, lang: Lang, index: number): string {
   const title = loc(cat.title, lang);
   const price = formatPrice(cat.price, lang);
   const href = `${t.prefix}/programs/${cat.slug}/`;
-  const meta = countMeta(cat, lang);
+  const soon = isComingSoon(cat);
+  // «Скоро»: на месте «Купить» спокойная надпись, в мете только цена
+  const meta = soon ? '' : `<span>${esc(countMeta(cat, lang))}</span>`;
+  const primary = soon
+    ? `<p class="prg-soon">${esc(t.soon)}</p>`
+    : `<a class="btn-primary" href="${href}#buy" data-buy="${esc(cat.slug)}" data-buy-title="${esc(title)}" data-buy-price="${esc(price)}">` +
+      `${esc(t.buyShort)}<span class="visually-hidden"> «${esc(title)}», ${esc(price)}</span></a>`;
   return (
     `<li class="prg-card">` +
     `<a class="prg-card-cover" href="${href}" tabindex="-1" aria-hidden="true">` +
@@ -29,10 +35,9 @@ function card(cat: CatalogCategory, lang: Lang, index: number): string {
     `</a>` +
     `<h2 class="prg-card-title"><a href="${href}">${esc(title)}</a></h2>` +
     (cat.subtitle ? `<p class="prg-card-sub">${esc(loc(cat.subtitle, lang))}</p>` : '') +
-    `<p class="prg-card-meta"><span class="prg-card-price">${esc(price)}</span><span>${esc(meta)}</span></p>` +
+    `<p class="prg-card-meta"><span class="prg-card-price">${esc(price)}</span>${meta}</p>` +
     `<div class="prg-card-actions">` +
-    `<a class="btn-primary" href="${href}#buy" data-buy="${esc(cat.slug)}" data-buy-title="${esc(title)}" data-buy-price="${esc(price)}">` +
-    `${esc(t.buyShort)}<span class="visually-hidden"> «${esc(title)}», ${esc(price)}</span></a>` +
+    primary +
     `<a class="cab-secondary" href="${href}">${esc(t.more)}<span class="visually-hidden">: ${esc(title)}</span></a>` +
     `</div>` +
     `</li>`
@@ -73,13 +78,16 @@ export function renderProgramsIndex(lang: Lang): string {
       `<p class="prg-price"><span class="prg-price-value">${esc(deal.price)}</span>` +
       (deal.sum ? `<span class="prg-price-note">${esc(fmt(t.bundleInstead, { sum: deal.sum }))}</span>` : '') +
       `</p>` +
+      // «Скоро»: надпись под ценой вместо кнопки «Купить»
+      (deal.soon ? `<p class="prg-soon prg-soon--start">${esc(t.soon)}</p>` : '') +
       `</div>` +
-      `<div class="prg-actions">${buyButton(deal.bundle.slug, title, deal.price, fmt(t.buy, { price: deal.price }))}</div>` +
+      (deal.soon ? '' : `<div class="prg-actions">${buyButton(deal.bundle.slug, title, deal.price, fmt(t.buy, { price: deal.price }))}</div>`) +
       `</div>` +
       `</section>`;
   }
 
-  if (free) {
+  // Бесплатного урока пока нет (нет видео): не зовём «посмотреть урок»
+  if (free && !isComingSoon(free)) {
     const sub = loc(free.subtitle, lang);
     body +=
       `<section class="prg-section prg-free" aria-labelledby="prg-free-title">` +

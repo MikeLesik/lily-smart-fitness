@@ -1,5 +1,5 @@
 {
-  "_note": "Тестовый каталог этапа 3: категории, тексты и цены условные, видео из загрузок Михаила. Заменить реальными перед запуском. providerVideoId (UID в Cloudflare Stream) никогда не отдаётся в браузер.",
+  "_note": "Каталог: категории, тексты и цены (условные, заменить реальными перед запуском). Видео сняты 25.11.2026: категория без видео показывается как «Скоро», купить нельзя. Чтобы открыть продажу, впиши видео в videos. providerVideoId (UID в Cloudflare Stream) никогда не отдаётся в браузер.",
   "categories": [
     {
       "slug": "yagodicy",
@@ -53,38 +53,7 @@
           }
         }
       ],
-      "videos": [
-        {
-          "id": "yagodicy-preview",
-          "title": {
-            "ru": "Первые полторы минуты",
-            "en": "The first 90 seconds"
-          },
-          "description": {
-            "ru": "Посмотри, как устроена тренировка, до покупки.",
-            "en": "See how the workout goes before you buy."
-          },
-          "durationSec": 90,
-          "preview": true,
-          "provider": "stream",
-          "providerVideoId": "e6f2ea6f5ad94ae9c190c9c51e71e1e0"
-        },
-        {
-          "id": "yagodicy-01",
-          "title": {
-            "ru": "Тренировка на ягодицы",
-            "en": "Glute workout"
-          },
-          "description": {
-            "ru": "Разминка, основная часть и заминка под музыку.",
-            "en": "Warm-up, main part and cool-down, all to music."
-          },
-          "durationSec": 1346,
-          "preview": false,
-          "provider": "stream",
-          "providerVideoId": "c2ed9ddb097d221330856052e4fd0b18"
-        }
-      ]
+      "videos": []
     },
     {
       "slug": "zaryadka",
@@ -138,38 +107,7 @@
           }
         }
       ],
-      "videos": [
-        {
-          "id": "zaryadka-preview",
-          "title": {
-            "ru": "Первая минута",
-            "en": "The first minute"
-          },
-          "description": {
-            "ru": "Начало зарядки, чтобы понять темп.",
-            "en": "The start of the routine to get the pace."
-          },
-          "durationSec": 60,
-          "preview": true,
-          "provider": "stream",
-          "providerVideoId": "9abbd1de9d85f23812ca632cad794d5d"
-        },
-        {
-          "id": "zaryadka-01",
-          "title": {
-            "ru": "Зарядка: лимфа и диафрагма",
-            "en": "Routine: lymph and diaphragm"
-          },
-          "description": {
-            "ru": "Мягкое пробуждение тела. Делай утром до завтрака.",
-            "en": "A gentle wake-up for the body. Do it in the morning before breakfast."
-          },
-          "durationSec": 663,
-          "preview": false,
-          "provider": "stream",
-          "providerVideoId": "918478107679b7f319146eeca2ad6c67"
-        }
-      ]
+      "videos": []
     },
     {
       "slug": "free",
@@ -185,23 +123,7 @@
       "free": true,
       "published": true,
       "price": null,
-      "videos": [
-        {
-          "id": "free-01",
-          "title": {
-            "ru": "Диастаз: 3 причины",
-            "en": "Diastasis: 3 causes"
-          },
-          "description": {
-            "ru": "Почему живот не уходит после родов и что с этим делать.",
-            "en": "Why the belly stays after giving birth and what to do about it."
-          },
-          "durationSec": 64,
-          "preview": false,
-          "provider": "stream",
-          "providerVideoId": "8cee8bcdfcdbdfc156ee726a7e8bb897"
-        }
-      ]
+      "videos": []
     }
   ],
   "bundles": [

@@ -1,4 +1,12 @@
-import { catalog, paidCategories, type CatalogBundle, type CatalogCategory, type CatalogVideo } from '../catalog';
+import {
+  bundleCategories,
+  catalog,
+  isBundleComingSoon,
+  isComingSoon,
+  type CatalogBundle,
+  type CatalogCategory,
+  type CatalogVideo,
+} from '../catalog';
 import { ICON_LOCK, ICON_PLAY, esc, picture } from './html';
 import {
   SITE,
@@ -26,9 +34,10 @@ export function previewVideo(cat: CatalogCategory): CatalogVideo | null {
   return cat.videos.find((v) => v.preview) ?? null;
 }
 
-/** «1 тренировка · 22 мин» по основным видео (превью не считается). */
+/** «1 тренировка · 22 мин» по основным видео (превью не считается). Видео ещё нет: «Скоро». */
 export function countMeta(cat: CatalogCategory, lang: Lang): string {
   const t = STRINGS[lang];
+  if (isComingSoon(cat)) return t.soon;
   const mains = mainVideos(cat);
   const total = mains.reduce((s, v) => s + v.durationSec, 0);
   return `${mains.length} ${plural(mains.length, t.workoutForms, lang)}${SEP}${duration(total, lang)}`;
@@ -52,15 +61,18 @@ export function buyButton(
   );
 }
 
-/** Набор «все программы», если в нём больше одной платной программы и он дешевле суммы. */
-export function bundleDeal(lang: Lang): { bundle: CatalogBundle; count: number; price: string; sum: string | null } | null {
+/** Набор «все программы», если в нём больше одной платной программы и он дешевле суммы. soon: видео нет ни в одной. */
+export function bundleDeal(
+  lang: Lang,
+): { bundle: CatalogBundle; count: number; price: string; sum: string | null; soon: boolean } | null {
   const bundle = catalog.bundles.find((b) => b.slug === 'all') ?? catalog.bundles[0];
   if (!bundle) return null;
-  const cats = paidCategories().filter((c) => bundle.categories === '*' || bundle.categories.includes(c.slug));
+  const cats = bundleCategories(bundle);
   if (cats.length < 2) return null;
   const sum = cats.reduce((s, c) => (c.price && c.price.currency === bundle.price.currency ? s + c.price.amount : s), 0);
   return {
     bundle,
+    soon: isBundleComingSoon(bundle),
     count: cats.length,
     price: formatPrice(bundle.price, lang),
     sum: sum > bundle.price.amount ? formatPrice({ amount: sum, currency: bundle.price.currency }, lang) : null,
@@ -71,6 +83,13 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
   const t = STRINGS[lang];
   const title = loc(cat.title, lang);
   const price = formatPrice(cat.price, lang);
+  // «Скоро»: цена остаётся, кнопок покупки и превью нет (мета уже говорит «Скоро»)
+  const actions = isComingSoon(cat)
+    ? ''
+    : `<div class="prg-actions" data-buy-main>` +
+      buyButton(cat.slug, title, price, fmt(t.buy, { price })) +
+      (preview ? `<a class="cab-secondary" href="#preview" data-preview-play>${esc(t.watchPreview)}</a>` : '') +
+      `</div>`;
   return (
     `<section class="prg-hero" aria-labelledby="prg-title">` +
     `<div class="prg-hero-head">` +
@@ -89,10 +108,7 @@ function heroSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | n
     `<div class="prg-hero-offer">` +
     `<p class="prg-meta">${esc(countMeta(cat, lang) + SEP + t.forever)}</p>` +
     `<p class="prg-price"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(t.oneTime)}</span></p>` +
-    `<div class="prg-actions" data-buy-main>` +
-    buyButton(cat.slug, title, price, fmt(t.buy, { price })) +
-    (preview ? `<a class="cab-secondary" href="#preview" data-preview-play>${esc(t.watchPreview)}</a>` : '') +
-    `</div>` +
+    actions +
     `</div>` +
     `</section>`
   );
@@ -143,6 +159,17 @@ function forWhomSection(cat: CatalogCategory, lang: Lang): string {
 
 function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo | null): string {
   const t = STRINGS[lang];
+  const equipment = loc(cat.equipment, lang);
+  const equipmentNote = equipment ? `<p class="prg-note">${esc(fmt(t.equipment, { list: equipment }))}</p>` : '';
+  if (isComingSoon(cat)) {
+    return (
+      `<section class="prg-section prg-inside" aria-labelledby="prg-inside-title">` +
+      `<h2 class="prg-h2" id="prg-inside-title">${esc(t.insideTitle)}</h2>` +
+      `<p class="prg-meta prg-inside-soon">${esc(t.soonInside)}</p>` +
+      equipmentNote +
+      `</section>`
+    );
+  }
   const rows: string[] = [];
   if (preview) {
     rows.push(
@@ -163,13 +190,12 @@ function insideSection(cat: CatalogCategory, lang: Lang, preview: CatalogVideo |
         `</div></li>`,
     );
   }
-  const equipment = loc(cat.equipment, lang);
   return (
     `<section class="prg-section prg-inside" aria-labelledby="prg-inside-title">` +
     `<h2 class="prg-h2" id="prg-inside-title">${esc(t.insideTitle)}</h2>` +
     `<p class="prg-meta">${esc(countMeta(cat, lang))}</p>` +
     `<ul class="prg-items">${rows.join('')}</ul>` +
-    (equipment ? `<p class="prg-note">${esc(fmt(t.equipment, { list: equipment }))}</p>` : '') +
+    equipmentNote +
     `</section>`
   );
 }
@@ -197,6 +223,24 @@ function aboutSection(lang: Lang): string {
   );
 }
 
+/** «Скоро» вместо блока покупки: цена, «Программа скоро появится» и вопрос Лиле в Telegram. */
+function soonSection(cat: CatalogCategory, lang: Lang): string {
+  const t = STRINGS[lang];
+  const title = loc(cat.title, lang);
+  const price = formatPrice(cat.price, lang);
+  return (
+    `<section class="prg-section prg-buy prg-buy--soon" id="buy" aria-labelledby="prg-buy-title">` +
+    `<div class="prg-buy-box">` +
+    `<h2 class="prg-h2" id="prg-buy-title">${esc(t.soonTitle)}</h2>` +
+    `<p class="prg-price prg-price--big"><span class="prg-price-value">${esc(price)}</span><span class="prg-price-note">${esc(fmt(t.buyFor, { title }))}</span></p>` +
+    `<div class="prg-actions">` +
+    `<a class="cab-secondary" href="${esc(telegramLink(fmt(t.telegramQuestion, { title })))}" target="_blank" rel="noopener" data-soon-write>${esc(t.soonWrite)}</a>` +
+    `</div>` +
+    `</div>` +
+    `</section>`
+  );
+}
+
 function buySection(cat: CatalogCategory, lang: Lang): string {
   const t = STRINGS[lang];
   const title = loc(cat.title, lang);
@@ -215,7 +259,7 @@ function buySection(cat: CatalogCategory, lang: Lang): string {
     `<div class="prg-actions" data-buy-main>${buyButton(cat.slug, title, price, fmt(t.buy, { price }))}${russia}</div>` +
     `<p class="prg-pay-note">${esc(t.russiaPayNote)}</p>` +
     `<p class="prg-note">${esc(t.promoNote)}</p>` +
-    (deal && deal.sum
+    (deal && deal.sum && !deal.soon
       ? `<p class="prg-bundle-offer">${buyButton(deal.bundle.slug, bundleTitle, deal.price, fmt(t.bundleOffer, { price: deal.price, sum: deal.sum }), 'cab-link')}</p>`
       : '') +
     `</div>` +
@@ -264,7 +308,9 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
   const title = loc(cat.title, lang);
   const path = `/programs/${cat.slug}/`;
   const url = pageUrl(lang, path);
-  const preview = previewVideo(cat);
+  const soon = isComingSoon(cat);
+  // «Скоро»: превью не показываем, даже если оно есть, покупки и липкой полосы нет
+  const preview = soon ? null : previewVideo(cat);
   const cover = coverOf(cat);
   const description =
     loc(cat.description, lang) ||
@@ -280,9 +326,9 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
     insideSection(cat, lang, preview) +
     `</div>` +
     aboutSection(lang) +
-    buySection(cat, lang) +
+    (soon ? soonSection(cat, lang) : buySection(cat, lang)) +
     faqSection(cat, lang) +
-    (cat.free || !cat.price ? '' : stickyBuy(cat, lang));
+    (soon || cat.free || !cat.price ? '' : stickyBuy(cat, lang));
 
   return renderDocument({
     lang,
@@ -303,17 +349,22 @@ export function renderProgramPage(cat: CatalogCategory, lang: Lang): string {
       image,
       url,
       brand: { '@type': 'Brand', name: 'Lily' },
-      offers: {
-        '@type': 'Offer',
-        url,
-        price: schemaPrice(price),
-        priceCurrency: price.currency.toUpperCase(),
-        availability: 'https://schema.org/InStock',
-      },
+      // «Скоро»: купить нельзя, поэтому без Offer (PreOrder обещал бы заказ, которого нет)
+      ...(soon
+        ? {}
+        : {
+            offers: {
+              '@type': 'Offer',
+              url,
+              price: schemaPrice(price),
+              priceCurrency: price.currency.toUpperCase(),
+              availability: 'https://schema.org/InStock',
+            },
+          }),
     },
     current: 'program',
     body,
-    withPlayer: true,
+    withPlayer: !soon,
     telegramText: fmt(t.telegramQuestion, { title }),
   });
 }

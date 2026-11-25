@@ -8,8 +8,8 @@ export const ASSET_VERSIONS = {
   components: 8,
   cabinet: 8,
   buyCss: 3,
-  programsCss: 4,
-  buyJs: 4,
+  programsCss: 5,
+  buyJs: 5,
   programJs: 3,
   analyticsJs: 1,
 };

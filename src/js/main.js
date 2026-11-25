@@ -264,19 +264,28 @@
      10. Программы: карточки из /api/catalog
      -----------------------------------------
      Контейнер: <div class="programs-list" data-programs data-locale="ru|en">.
-     Бесплатная категория здесь не продаётся (у неё свой блок).
+     Бесплатная категория здесь не продаётся (у неё свой блок #free).
      «Купить» с data-buy открывает покупку (js/buy.js).
+     comingSoon из каталога (видео ещё нет): вместо «Купить» тихая надпись «Скоро»,
+     в #free вместо «Получить урок» ссылка на Telegram-канал.
      Цена «от» в первом экране и липкой кнопке: [data-min-price].
   */
+  var CHANNEL = 'https://t.me/Lily_Smart_Fitness';
   var T = {
     ru: {
       buy: 'Купить',
+      soon: 'Скоро',
+      freeSoon: 'Урок скоро появится.',
+      freeChannel: 'Следить в Telegram-канале',
       bundleMeta: function (n) { return n + ' ' + plural(n, ['программа', 'программы', 'программ']) + ' и все новые'; },
       bundleSubtitle: function (sum) { return 'Одна оплата вместо ' + sum + ', доступ навсегда'; },
       meta: function (n, min) { return n + ' ' + plural(n, ['тренировка', 'тренировки', 'тренировок']) + ' · ' + min + ' мин'; }
     },
     en: {
       buy: 'Buy',
+      soon: 'Coming soon',
+      freeSoon: 'The lesson is coming soon.',
+      freeChannel: 'Follow on Telegram',
       bundleMeta: function (n) { return n + ' ' + (n === 1 ? 'program' : 'programs') + ' and all new ones'; },
       bundleSubtitle: function (sum) { return 'One payment instead of ' + sum + ', lifetime access'; },
       meta: function (n, min) { return n + ' ' + (n === 1 ? 'workout' : 'workouts') + ' · ' + min + ' min'; }
@@ -329,33 +338,55 @@
     } else {
       var mains = (item.videos || []).filter(function (v) { return !v.preview; });
       var seconds = mains.reduce(function (s, v) { return s + (v.durationSec || 0); }, 0);
-      meta = T.meta(mains.length, Math.max(1, Math.round(seconds / 60)));
+      // «Скоро»: строки «0 тренировок» нет, «Скоро» стоит внизу на месте кнопки
+      meta = item.comingSoon ? '' : T.meta(mains.length, Math.max(1, Math.round(seconds / 60)));
       subtitle = L(item.subtitle);
     }
+
+    var action = item.comingSoon
+      ? '<span class="program-card-soon">' + escapeHtml(T.soon) + '</span>'
+      : '<a class="btn-primary program-card-buy" href="' + escapeHtml(href) + '"' +
+          ' data-buy="' + escapeHtml(item.slug) + '"' +
+          ' data-buy-title="' + escapeHtml(title) + '"' +
+          ' data-buy-price="' + escapeHtml(price) + '"' +
+          ' data-analytics="course_buy_click" data-analytics-slug="' + escapeHtml(item.slug) + '"' +
+          ' aria-label="' + escapeHtml(T.buy + ': ' + title + ', ' + price) + '">' +
+          T.buy +
+        '</a>';
 
     return '' +
       '<article class="program-card">' +
         coverHtml(item.cover) +
         '<div class="program-card-body">' +
-          '<p class="program-card-meta">' + escapeHtml(meta) + '</p>' +
+          (meta ? '<p class="program-card-meta">' + escapeHtml(meta) + '</p>' : '') +
           '<h3 class="program-card-title"><a class="program-card-link" href="' + escapeHtml(href) + '">' + escapeHtml(title) + '</a></h3>' +
           (subtitle ? '<p class="program-card-subtitle">' + escapeHtml(subtitle) + '</p>' : '') +
           '<div class="program-card-footer">' +
             '<span class="program-card-price">' + escapeHtml(price) + '</span>' +
-            '<a class="btn-primary program-card-buy" href="' + escapeHtml(href) + '"' +
-              ' data-buy="' + escapeHtml(item.slug) + '"' +
-              ' data-buy-title="' + escapeHtml(title) + '"' +
-              ' data-buy-price="' + escapeHtml(price) + '"' +
-              ' data-analytics="course_buy_click" data-analytics-slug="' + escapeHtml(item.slug) + '"' +
-              ' aria-label="' + escapeHtml(T.buy + ': ' + title + ', ' + price) + '">' +
-              T.buy +
-            '</a>' +
+            action +
           '</div>' +
         '</div>' +
       '</article>';
   }
 
+  /** #free: урока ещё нет (comingSoon) → вместо «Оставь email…» и кнопки строка «скоро» и ссылка на канал. */
+  function renderFreeSoon(cat) {
+    var free = (cat.categories || []).filter(function (c) { return c.free; })[0];
+    if (!free || !free.comingSoon) return;
+    document.querySelectorAll('[data-free-offer]').forEach(function (el) { el.textContent = T.freeSoon; });
+    document.querySelectorAll('.free-cta').forEach(function (btn) {
+      var link = document.createElement('a');
+      link.className = 'text-link free-channel';
+      link.href = CHANNEL;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = T.freeChannel;
+      btn.replaceWith(link);
+    });
+  }
+
   function renderCatalog(cat) {
+    renderFreeSoon(cat);
     var paid = (cat.categories || []).filter(function (c) { return !c.free && c.price; });
     if (!paid.length) return;
 
@@ -388,7 +419,7 @@
     peekUpdaters.forEach(function (fn) { fn(); });
   }
 
-  if (document.querySelector('[data-programs], [data-min-price]') && window.fetch) {
+  if (document.querySelector('[data-programs], [data-min-price], .free-cta') && window.fetch) {
     fetch('/api/catalog', { headers: { Accept: 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (cat) { if (cat) renderCatalog(cat); })

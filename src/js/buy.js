@@ -29,6 +29,7 @@
         payments_unavailable: 'Оплата временно недоступна. Напиши Лиле в Telegram: @LilyLesik.',
         stripe_error: 'Не получилось открыть оплату. Попробуй ещё раз через минуту.',
         invalid_scope: 'Эта программа сейчас не продаётся.',
+        coming_soon: 'Программа скоро появится.',
         network: 'Нет связи. Проверь интернет и попробуй ещё раз.'
       }
     },
@@ -50,6 +51,7 @@
         payments_unavailable: 'Payment is temporarily unavailable. Message Lily on Telegram: @LilyLesik.',
         stripe_error: 'Could not open the payment page. Please try again in a minute.',
         invalid_scope: 'This program is not on sale right now.',
+        coming_soon: 'This program is coming soon.',
         network: 'No connection. Check your internet and try again.'
       }
     }
@@ -96,7 +98,7 @@
   }
 
   var catalogPromise = null;
-  /** Название и цена по scope из /api/catalog (если кнопка их не передала). */
+  /** Название, цена и «скоро» (comingSoon: видео ещё нет) по scope из /api/catalog. */
   function getInfo(scope) {
     if (!catalogPromise) {
       catalogPromise = fetch('/api/catalog').then(function (r) { return r.json(); }).catch(function () { return null; });
@@ -104,7 +106,7 @@
     return catalogPromise.then(function (cat) {
       if (!cat) return {};
       var item = (cat.categories || []).concat(cat.bundles || []).find(function (c) { return c.slug === scope; });
-      return item ? { title: item.title[lang] || item.title.ru, price: formatPrice(item.price) } : {};
+      return item ? { title: item.title[lang] || item.title.ru, price: formatPrice(item.price), comingSoon: !!item.comingSoon } : {};
     });
   }
 
@@ -157,6 +159,12 @@
 
   function showError(code) {
     var el = q('.buy-error');
+    // «Скоро»: оплатить нечего, поле email и кнопку оплаты прячем, остаётся строка и «Закрыть»
+    var soon = code === 'coming_soon';
+    q('[data-buy-email]').hidden = soon || current.loggedIn;
+    q('.buy-text').hidden = soon || current.loggedIn;
+    q('.buy-submit').style.display = soon ? 'none' : ''; // у .btn-primary свой display, hidden не сработает
+    q('.buy-note').hidden = soon;
     if (!code) { el.hidden = true; el.textContent = ''; return; }
     el.textContent = T.errors[code] || T.errors.stripe_error;
     if (code === 'already_owned') {
@@ -180,8 +188,6 @@
     current = { scope: scope, info: info || {}, loggedIn: !!(opts && opts.loggedIn) };
     q('.buy-title').textContent = current.info.title ? fmt(T.title, { title: current.info.title }) : T.titleShort;
     q('.buy-text').textContent = T.text;
-    q('.buy-text').hidden = current.loggedIn;
-    q('[data-buy-email]').hidden = current.loggedIn;
     q('.buy-note').textContent = T.note;
     showError(opts && opts.error);
     setBusy(false);
@@ -190,7 +196,7 @@
     } else {
       dialog.setAttribute('open', '');
     }
-    if (!current.loggedIn) q('#buy-email').focus();
+    if (!q('[data-buy-email]').hidden) q('#buy-email').focus();
   }
 
   function close() {
@@ -219,12 +225,16 @@
     });
   }
 
-  /** Покупка: вошедшая сразу в Stripe, гость через окно с email. */
+  /** Покупка: вошедшая сразу в Stripe, гость через окно с email. «Скоро»: окно сразу с этой строкой, без email. */
   function start(scope, info) {
-    var infoReady = info && info.title ? Promise.resolve(info) : getInfo(scope);
-    Promise.all([getMe(), infoReady]).then(function (r) {
+    Promise.all([getMe(), getInfo(scope)]).then(function (r) {
       var me = r[0];
-      var data = r[1] || {};
+      var fromCatalog = r[1] || {};
+      var data = info && info.title ? info : fromCatalog;
+      if (fromCatalog.comingSoon) {
+        open(scope, data, { loggedIn: !!(me && me.user), error: 'coming_soon' });
+        return;
+      }
       if (me && me.user) {
         checkout(scope).then(function (res) {
           if (res.ok && res.data.url) {

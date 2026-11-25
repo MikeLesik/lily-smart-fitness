@@ -73,7 +73,9 @@
       paid: 'Оплата прошла. «{title}» уже открыта, письмо со входом отправили на почту.',
       paidAll: 'Оплата прошла. Все программы открыты, письмо со входом отправили на почту.',
       orders: 'Покупки',
-      receipt: 'Чек'
+      receipt: 'Чек',
+      soon: 'Скоро',
+      soonVideos: 'Видео появятся скоро.'
     },
     en: {
       dateLocale: 'en-GB',
@@ -136,7 +138,9 @@
       paid: 'Payment received. “{title}” is already open, and we have emailed you a sign-in link.',
       paidAll: 'Payment received. All programs are open, and we have emailed you a sign-in link.',
       orders: 'Purchases',
-      receipt: 'Receipt'
+      receipt: 'Receipt',
+      soon: 'Coming soon',
+      soonVideos: 'The videos are coming soon.'
     }
   };
 
@@ -284,6 +288,11 @@
     return cat.videos.filter(function (v) { return !v.preview; });
   }
 
+  /** «Скоро»: в категории ещё нет видео (признак comingSoon из /api/catalog). Купить нельзя. */
+  function isSoon(cat) {
+    return !!cat.comingSoon || !mainVideos(cat).length;
+  }
+
   function firstPreview(cat) {
     return cat.videos.find(function (v) { return v.preview; }) || null;
   }
@@ -339,8 +348,9 @@
     return mains.find(function (v) { return !isDone(v); }) || mains[0] || null;
   }
 
-  /** «1 тренировка · 22 мин» (только основные видео). */
+  /** «1 тренировка · 22 мин» (только основные видео). Видео нет: «Скоро». */
   function countMeta(cat) {
+    if (isSoon(cat)) return t.soon;
     var mains = mainVideos(cat);
     var n = mains.length;
     return n + '\u00a0' + plural(n, t.workoutForms) + SEP + duration(totalSec(mains));
@@ -434,7 +444,7 @@
 
   function programRow(cat) {
     var open = hasCategory(cat);
-    var meta = open ? progressMeta(cat) : countMeta(cat) + (firstPreview(cat) ? SEP + t.previewFree : '');
+    var meta = isSoon(cat) ? t.soon : open ? progressMeta(cat) : countMeta(cat) + (firstPreview(cat) ? SEP + t.previewFree : '');
     var end = open
       ? '<span class="cab-row-arrow" aria-hidden="true">→</span>'
       : '<span class="cab-row-price">' + esc(price(cat.price)) + '</span>';
@@ -478,7 +488,7 @@
     if (locked.length) {
       html += '<h2 class="cab-section-title">' + esc(t.moreSection) + '</h2>' +
         '<ul class="cab-rows">' + locked.map(programRow).join('') +
-        (bundle && !hasAll && lockedPaid > 1 ? bundleRow(bundle) : '') +
+        (bundle && !bundle.comingSoon && !hasAll && lockedPaid > 1 ? bundleRow(bundle) : '') +
         '</ul>';
     }
     app.innerHTML = html;
@@ -514,13 +524,20 @@
     if (!cat) return renderPrograms();
     var open = hasCategory(cat);
     var mains = mainVideos(cat);
+    var soon = isSoon(cat);
 
     var html = back('#/', t.back) +
       '<div class="cab-head">' +
         '<h1 class="cab-title">' + esc(L(cat.title)) + '</h1>' +
         (cat.subtitle ? '<p class="cab-sub">' + esc(L(cat.subtitle)) + '</p>' : '') +
-        '<p class="cab-meta">' + esc(countMeta(cat)) + '</p>' +
+        (soon ? '' : '<p class="cab-meta">' + esc(countMeta(cat)) + '</p>') +
       '</div>' + paidNotice();
+
+    // «Скоро»: видео ещё нет, ни покупки, ни превью, ни пустого списка
+    if (soon) {
+      app.innerHTML = html + '<p class="cab-text">' + esc(t.soonVideos) + '</p>';
+      return;
+    }
 
     if (open) {
       var v = resumeVideo(cat);
@@ -743,7 +760,8 @@
       var until = e.expiresAt ? fmt(t.until, { date: date(e.expiresAt) }) : t.forever;
       return '<li><span class="cab-list-value">' + esc(name) + '</span><span class="cab-list-note">' + esc(until) + '</span></li>';
     });
-    var free = state.catalog.categories.find(function (c) { return c.free; });
+    // Бесплатного урока пока нет (нет видео): не зовём к нему
+    var free = state.catalog.categories.find(function (c) { return c.free && !isSoon(c); });
 
     var purchases = items.length
       ? '<ul class="cab-list">' + items.join('') + '</ul>'
