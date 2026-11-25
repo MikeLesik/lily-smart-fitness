@@ -13,7 +13,7 @@
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
 - wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
 - Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). Заданы все в обеих средах; в Production Stripe пока тестовый (ключ песочницы, вебхук на https://lily.coach/api/stripe/webhook), до запуска заменить на боевые.
-- Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`; боевая база: `npx wrangler d1 migrations apply lily-coach --env production --remote` (0001–0003 применены 24.11).
+- Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`; боевая база: `npx wrangler d1 migrations apply lily-coach --env production --remote` (0001–0003 применены 24.11; 0004 в боевой базе пока нет: применить до выкладки кода с правилом одного устройства).
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
 ## Стек
@@ -38,9 +38,9 @@ wrangler.toml            Pages: привязки D1 и переменные по
 package.json             wrangler, vitest, typescript (только для разработки)
 .dev.vars.example        локальные секреты; скопировать в .dev.vars
 content/catalog.json     категории, видео, цены (источник правды; UID видео в браузер не уходят)
-migrations/              схема D1 (0001_auth: users, login_codes, sessions, entitlements, rate_limits; 0002_progress; 0003_orders: orders, stripe_events)
+migrations/              схема D1 (0001_auth: users, login_codes, sessions, entitlements, rate_limits; 0002_progress; 0003_orders: orders, stripe_events; 0004_playback_holders)
 functions/api/           маршруты: _middleware.ts (Origin, no-store, JSON 500), auth/*, me.ts, catalog.ts, leads.ts,
-                         videos/[id]/playback.ts, progress.ts, checkout/index.ts, checkout/complete.ts,
+                         videos/[id]/playback.ts, videos/[id]/heartbeat.ts, progress.ts, checkout/index.ts, checkout/complete.ts,
                          stripe/webhook.ts, [[path]].ts (JSON 404)
 functions/programs/, functions/en/programs/   /programs/ и /programs/<slug>/: HTML с сервера из catalog.json
 functions/sitemap.xml.ts sitemap из каталога
@@ -48,6 +48,7 @@ functions/api/admin/     users, grant, revoke, export (CSV): только для
 functions/api/events.ts  события браузера → PostHog (без cookie и без скрипта PostHog)
 server/                  env, http, crypto, db, auth (коды), session (cookie), email (Resend), ratelimit, turnstile,
                          catalog, access (правило доступа), video-provider/ (интерфейс + stream.ts),
+                         playback-lock (одно устройство на аккаунт),
                          stripe (API, цены, подпись вебхука), orders (заказы, права, возвраты),
                          login-flow (общий путь «прислать код» для входа и лида),
                          pages/ (шаблоны страниц программ: layout, program, programs-index, i18n, html),
@@ -133,6 +134,8 @@ src/
 - Наполнить программу (например, `postpartum`, 7 тренировок): для каждого видео `postpartum-01…07` вписать `providerVideoId`, `durationSec` (секунды), при желании `title` и `description` (ru/en) и `equipment` (ru/en, строчными: «коврик и полотенце»; пустое = строки «Что понадобится» нет). Видео без `providerVideoId` или `durationSec` не готово: в `/api/catalog` `ready: false`, playback 404. Программа «Скоро», пока не готово хотя бы одно основное видео; когда готовы все, продажа открывается сама.
 - `accessDays` у категории: срок доступа в днях (`postpartum`: 30). Право получает `entitlements.expires_at = выдача + accessDays` (вебхук, `/api/checkout/complete`, админка). Истёкшее право не даёт смотреть и не мешает купить снова; в кабинете «Доступ до …», после срока «Доступ закончился …» и «Купить снова». Без поля доступ бессрочный. Набор продаётся, только если он не `published: false` и опубликованы минимум две платные программы.
 - Водяной знак: на платном видео (не превью, не бесплатный урок) кабинет кладёт поверх плеера email зрителя (прозрачность 0.4, переезжает раз в 15–25 с). У такого iframe нет `allowfullscreen`; своя кнопка «На весь экран» разворачивает контейнер со знаком (Fullscreen API; на iPhone кнопки нет).
+- Одно устройство: платное видео аккаунт смотрит на одном устройстве одновременно (устройство = сессия входа). Выдача ссылки на платное видео записывает сессию в `playback_holders` (последний открывший смотрит). Кабинет раз в 30 с зовёт `POST /api/videos/<id>/heartbeat`; ответ `active: false` убирает плеер и показывает «Смотреть здесь». Уже выданную ссылку Stream сервер не отзывает, это ограничение для обычной зрительницы.
+- Защита от записи экрана: решение Михаила 25.11.2026 остаться на Cloudflare Stream без DRM (водяной знак, срок доступа, одно устройство). Kinescope с DRM отложен, детали в `docs/PLAN-POSTPARTUM.md`.
 - Токен подписываем сами ключом подписи Stream (RS256, 2 часа): `STREAM_SIGNING_KEY_ID` и `STREAM_CUSTOMER_CODE` в `wrangler.toml`, `STREAM_SIGNING_JWK` секретом.
 - Доступ решает только сервер (`server/access.ts`): превью всем; бесплатная категория после входа; право на категорию или `all`. Права выдаются вставкой в `entitlements` (этап 6 даст админку).
 - «Скоро» (правило в `server/catalog.ts`, флагов в JSON нет): категория без основных видео (превью не в счёт) показывается с ценой, но без «Купить» и превью, checkout отвечает 409 `coming_soon`; набор `all` скоро, если видео нет ни в одной платной категории; бесплатный урок без видео: на /free/ вместо формы ссылка на канал, `/api/leads` 409. Чтобы вернуть продажу, достаточно вписать готовые видео в каталог. Тесты идут на фикстуре `tests/fixtures/catalog.json` (в ней `postpartum` с готовыми видео и сроком 30 дней).

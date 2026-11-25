@@ -39,15 +39,22 @@ export async function createSession(env: Env, userId: string): Promise<string> {
   return cookie(token, SESSION_TTL_SEC);
 }
 
-export async function getSessionUser(env: Env, request: Request): Promise<User | null> {
+/** Пользователь и хеш его сессии: по хешу различаем устройства одного аккаунта. */
+export async function getSession(env: Env, request: Request): Promise<{ user: User; sessionHash: string } | null> {
   const token = readToken(request);
   if (!token) return null;
-  return env.DB.prepare(
+  const sessionHash = await sha256Hex(token);
+  const user = await env.DB.prepare(
     `SELECT u.id, u.email, u.locale, u.created_at FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.id_hash = ? AND s.expires_at > ?`,
   )
-    .bind(await sha256Hex(token), nowSec())
+    .bind(sessionHash, nowSec())
     .first<User>();
+  return user ? { user, sessionHash } : null;
+}
+
+export async function getSessionUser(env: Env, request: Request): Promise<User | null> {
+  return (await getSession(env, request))?.user ?? null;
 }
 
 export async function destroySession(env: Env, request: Request): Promise<void> {

@@ -51,6 +51,8 @@
       lockedLabel: 'Закрыто',
       doneLabel: 'Просмотрено',
       unavailable: 'Видео временно недоступно. Попробуй позже.',
+      elsewhere: 'Ты открыла видео на другом устройстве. Смотреть можно только на одном устройстве одновременно.',
+      watchHere: 'Смотреть здесь',
       networkTitle: 'Нет связи с сервером',
       network: 'Проверь интернет и обнови страницу.',
       networkVideo: 'Нет связи с сервером. Проверь интернет и обнови страницу.',
@@ -125,6 +127,8 @@
       lockedLabel: 'Locked',
       doneLabel: 'Watched',
       unavailable: 'This video is temporarily unavailable. Please try again later.',
+      elsewhere: 'You opened a video on another device. You can watch on one device at a time.',
+      watchHere: 'Watch here',
       networkTitle: 'No connection to the server',
       network: 'Check your internet connection and reload the page.',
       networkVideo: 'No connection to the server. Check your internet connection and reload the page.',
@@ -732,7 +736,7 @@
     return meta;
   }
 
-  /** Видео без плеера: закрыто (знаем заранее или сервер ответил 403) или недоступно. */
+  /** Видео без плеера: закрыто (знаем заранее или сервер ответил 403), открыто на другом устройстве или недоступно. */
   function renderVideoBlocked(v, cat, kind) {
     document.body.classList.remove('cab-wide');
     var preview = firstPreview(cat);
@@ -745,6 +749,9 @@
       var text = fmt(t.lockedVideo, { title: L(cat.title) }) + (preview ? ' ' + previewSentence(preview.durationSec) : '');
       box = '<section class="cab-locked"><p class="cab-text">' + esc(text) + '</p>' +
         '<div class="cab-actions">' + buyButton(cat.slug, L(cat.title), cat.price) + (preview ? previewButton(preview) : '') + '</div></section>';
+    } else if (kind === 'elsewhere') {
+      box = '<section class="cab-panel"><p class="cab-text">' + esc(t.elsewhere) + '</p>' +
+        '<div class="cab-actions"><button type="button" class="btn-primary" data-action="reload">' + esc(t.watchHere) + '</button></div></section>';
     } else {
       box = '<section class="cab-panel"><p class="cab-text">' + esc(kind === 'unavailable' ? t.unavailable : t.networkVideo) + '</p>' +
         '<div class="cab-actions"><button type="button" class="cab-secondary" data-action="reload">' + esc(t.reload) + '</button></div></section>';
@@ -839,6 +846,28 @@
     } catch (e) { /* ignore */ }
   }
 
+  /* ---------- одно устройство на аккаунт ---------- */
+
+  var HEARTBEAT_MS = 30000;
+
+  /**
+   * Платное видео смотрят на одном устройстве аккаунта. Раз в 30 секунд спрашиваем сервер,
+   * не открыли ли видео на другом; если открыли, onTaken убирает плеер. Сбой сети не в счёт.
+   */
+  function startDeviceGuard(videoId, onTaken) {
+    var timer = setInterval(function () {
+      api('/api/videos/' + encodeURIComponent(videoId) + '/heartbeat', {}).then(function (res) {
+        if (!timer) return;
+        if (res.status === 401) return toLogin();
+        if (res.ok && res.data.active === false) onTaken();
+      });
+    }, HEARTBEAT_MS);
+    return function stop() {
+      clearInterval(timer);
+      timer = null;
+    };
+  }
+
   function renderVideo(id) {
     var found = findVideo(id);
     // Видео ещё не загружено (ready: false): как будто его нет, сервер ответит 404
@@ -899,8 +928,19 @@
           if (after) after.innerHTML = afterLink(v, cat);
         })
         : null;
+      var stopGuard = paid && state.user
+        ? startDeviceGuard(v.id, function () {
+          if (player) {
+            player.cleanup();
+            player = null;
+          }
+          renderVideoBlocked(v, cat, 'elsewhere');
+          focusHeading();
+        })
+        : null;
       player = {
         cleanup: function () {
+          if (stopGuard) stopGuard();
           if (stopProgress) stopProgress();
           if (stopMark) stopMark();
           if (fullscreenElement() === box) exitFullscreen();
