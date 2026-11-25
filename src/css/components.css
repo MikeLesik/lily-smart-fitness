@@ -550,17 +550,14 @@
 }
 
 /* ===========================================
-   2. ТЕБЕ СЮДА, ЕСЛИ и 4. КАК ПРОХОДИТ ТРЕНИРОВКА:
-   списки с тонкими линиями, без номеров
+   2. ТЕБЕ СЮДА, ЕСЛИ: список с тонкими линиями, без номеров
    =========================================== */
 
-.how-step,
 .line-list li {
   padding: 1rem 0;
   border-top: 1px solid var(--border);
 }
 
-.how-step:last-child,
 .line-list li:last-child {
   border-bottom: 1px solid var(--border);
 }
@@ -570,21 +567,6 @@
   line-height: 1.4;
 }
 
-.how-title {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 500;
-  line-height: 1.2;
-  margin-bottom: 0.25rem;
-}
-
-.how-text {
-  font-size: var(--text-sm);
-  line-height: 1.4;
-  color: var(--text-muted);
-}
-
-.how-more,
 .line-list-link {
   margin-top: 0.75rem;
 }

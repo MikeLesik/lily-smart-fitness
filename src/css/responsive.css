@@ -101,13 +101,8 @@
     min-width: 15rem;
   }
 
-  .how-step,
   .line-list li {
     padding: var(--space-md) 0;
-  }
-
-  .how-text {
-    font-size: var(--text-base);
   }
 
   .services-intro {
