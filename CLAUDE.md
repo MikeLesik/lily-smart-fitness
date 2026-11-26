@@ -12,7 +12,7 @@
 - Пуш в любую другую ветку собирает предпросмотр `https://<ветка>.lily-smart-fitness.pages.dev` (например, https://cabinet.lily-smart-fitness.pages.dev). Все проверки идут там.
 - Активный аккаунт `gh` на этом Mac не владелец репозитория. Пушить так: `GH_TOKEN=$(gh auth token --user MikeLesik) git push`.
 - wrangler стоит в devDependencies: `npx wrangler ...` после `npm install`. Он вошёл в аккаунт Cloudflare Михаила, права на зону только чтение.
-- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). Заданы все в обеих средах; в Production Stripe пока тестовый (ключ песочницы, вебхук на https://lily.coach/api/stripe/webhook), до запуска заменить на боевые.
+- Секреты (`AUTH_SECRET`, `RESEND_API_KEY`, `TURNSTILE_SECRET_KEY`, `STREAM_SIGNING_JWK`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `ADMIN_EMAILS`): `npx wrangler pages secret put <KEY> --project-name lily-smart-fitness --env preview` (или `production`). Заданы все в обеих средах. Секрет Pages вступает в силу только со следующей выкладкой. Production Stripe: с 26.11.2026 боевой вебхук restoreLab на https://lily.coach/api/stripe/webhook и его секрет в `STRIPE_WEBHOOK_SECRET`; `STRIPE_SECRET_KEY` пока из песочницы, боевой ограниченный ключ создаёт и записывает сам Михаил (в чат ключ не присылать).
 - Миграции D1: `npm run db:migrate:local`, `npm run db:migrate:preview`; боевая база: `npx wrangler d1 migrations apply lily-coach --env production --remote` (0001–0003 применены 24.11, 0004 применена 25.11).
 - Несуществующие адреса отдают `src/404.html` (для `/en/...` отдаётся `src/en/404.html`) с кодом 404. Пока этих файлов не было, Pages отдавал главную с кодом 200.
 
@@ -150,7 +150,8 @@ src/
 - Цена живёт только в `content/catalog.json`. При первой оплате сервер сам заводит в Stripe товар `lily_<scope>` и цену с `lookup_key = lily_<scope>_<amount>_<currency>`; новая цена в каталоге = новая цена в Stripe. Руками в Stripe ничего не заводить.
 - Права выдаются только из вебхука, из `/api/checkout/complete` после проверки сессии в Stripe или вручную. Полный возврат закрывает доступ, частичный нет.
 - Чек: свой, в кабинете (`#/receipt/<id>`, кнопка печати и сохранения в PDF), рисуется из `/api/me` (id заказа, номер из первых 8 знаков id, название программы, сумма, дата). Это подтверждение оплаты, не налоговый документ. Ссылку на чек Stripe покупательнице не показываем: там реквизиты общего аккаунта Restore Lab; `receipt_url` остаётся в базе и в CSV админки.
-- Тестовый режим: песочница restoreLab, ключ `lily-coach-preview` (ограниченный). Вебхук предпросмотра: `https://cabinet.lily-smart-fitness.pages.dev/api/stripe/webhook`.
+- Боевой ключ: ограниченный (restricted), права: Checkout Sessions, Products и Prices на запись, PaymentIntents и Charges на чтение. На выписке покупательницы платёж виден как `RESTORELAB* LILY COACH` (префикс общего аккаунта).
+- Тестовый режим (предпросмотр и локально): песочница restoreLab, ключ `lily-coach-preview` (ограниченный). Вебхук предпросмотра: `https://cabinet.lily-smart-fitness.pages.dev/api/stripe/webhook`.
 - Локально: в одном терминале `npm run dev`, в другом `stripe listen --forward-to http://localhost:8788/api/stripe/webhook --events checkout.session.completed,checkout.session.async_payment_succeeded,charge.refunded`; секрет из `stripe listen --print-secret` в `.dev.vars`. Тестовая карта 4242 4242 4242 4242.
 
 ## Аналитика и админка
