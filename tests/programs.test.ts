@@ -136,8 +136,9 @@ describe('GET /programs/<slug>/', () => {
   it('блок «О Лиле» с фото и ссылкой на главную, между «Что внутри» и покупкой', async () => {
     const ru = await text(page(programRu, first.slug, `/programs/${first.slug}/`));
     expect(ru).toContain('>О Лиле</h2>');
-    expect(ru).toContain('/assets/images/lily-about-480.jpg');
-    expect(ru).toContain('/assets/images/lily-about-480.webp');
+    // Версия в адресе: фото заменили под тем же именем, браузер держит старое 4 часа
+    expect(ru).toContain('/assets/images/lily-about-480.jpg?v=2');
+    expect(ru).toContain('/assets/images/lily-about-480.webp?v=2');
     expect(ru).toContain('href="/#about"');
     expect(ru.indexOf('prg-inside')).toBeLessThan(ru.indexOf('prg-about'));
     expect(ru.indexOf('prg-about')).toBeLessThan(ru.indexOf('id="buy"'));

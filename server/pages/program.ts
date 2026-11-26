@@ -350,7 +350,7 @@ function aboutSection(lang: Lang): string {
     `<section class="prg-section prg-about" aria-labelledby="prg-about-title">` +
     `<div class="prg-about-box">` +
     picture({
-      src: '/assets/images/lily-about-480.jpg',
+      src: '/assets/images/lily-about-480.jpg?v=2',
       alt: t.aboutAlt,
       width: 480,
       height: 600,

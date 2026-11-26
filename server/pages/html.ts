@@ -23,9 +23,10 @@ export function jsonLd(data: unknown): string {
     .replace(/\u2029/g, '\\u2029');
 }
 
-/** .jpg → .webp рядом (обложки лежат парами). */
+/** .jpg → .webp рядом (обложки лежат парами). Версия в адресе (?v=2) переходит и на webp. */
 export function webpOf(src: string): string | null {
-  return /\.jpe?g$/i.test(src) ? src.replace(/\.jpe?g$/i, '.webp') : null;
+  const re = /\.jpe?g(\?[^#]*)?$/i;
+  return re.test(src) ? src.replace(re, '.webp$1') : null;
 }
 
 export interface PictureOptions {
