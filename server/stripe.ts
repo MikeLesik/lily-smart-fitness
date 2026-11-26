@@ -172,6 +172,8 @@ export async function createCheckoutSession(env: Env, input: CheckoutInput): Pro
       statement_descriptor_suffix: 'LILY COACH',
     },
     allow_promotion_codes: true,
+    // Только евро: без пересчёта в валюту покупательницы. Перекрывает настройку Adaptive Pricing общего аккаунта.
+    adaptive_pricing: { enabled: false },
     locale: input.locale,
     success_url: `${input.origin}/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${input.origin}${prefix}/checkout/cancel/?scope=${encodeURIComponent(input.item.scope)}`,

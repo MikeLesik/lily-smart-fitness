@@ -205,6 +205,8 @@ describe('POST /api/checkout', () => {
     expect(s.get('payment_intent_data[metadata][brand]')).toBe('lily');
     expect(s.get('payment_intent_data[statement_descriptor_suffix]')).toBe('LILY COACH');
     expect(s.get('allow_promotion_codes')).toBe('true');
+    // Только евро: без пересчёта в валюту покупательницы (Adaptive Pricing общего аккаунта).
+    expect(s.get('adaptive_pricing[enabled]')).toBe('false');
     expect(s.get('success_url')).toBe('https://cabinet.lily-smart-fitness.pages.dev/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}');
     expect(s.get('cancel_url')).toContain('/checkout/cancel/');
     expect(s.get('branding_settings[display_name]')).toBe('Lily');
