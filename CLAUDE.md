@@ -86,6 +86,8 @@ src/
     analytics.js         на всех страницах: window.track(event, props) → /api/events; UTM первого касания
     login.js, account.js тексты в словаре I18N ru/en, язык по <html lang>
   assets/images/         фавиконки, og-image.jpg (1200×630); foto.psd в .gitignore
+                         иконки сайта с 26.11.2026: тёмный знак на кремовом квадрате (apple-touch-icon 180, favicon-192, favicon-32/16 со скруглением),
+                         в ссылках ?v=2 для сброса кеша; favicon.png (знак на прозрачном фоне) остаётся логотипом в шапке
   assets/images/programs/  обложки программ 4:5 (<slug>.jpg и .webp, 480×600) и обложки тренировок 9:16 (<slug>/NN.jpg 1080×1920 и NN-480.jpg)
   assets/videos/hero.mp4
   content/site-content.json   старая выгрузка текстов, страницами не используется
