@@ -116,7 +116,7 @@ html {
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   background: var(--blush);
 }
 
@@ -241,7 +241,7 @@ html {
   aspect-ratio: 9 / 16;
   margin: 0 auto;
   background: var(--warm-black);
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
@@ -458,7 +458,7 @@ a.prg-item:hover .prg-item-title {
   aspect-ratio: 9 / 16;
   object-fit: cover;
   background: var(--blush);
-  border-radius: 2px;
+  border-radius: var(--radius-md);
 }
 
 .prg-ep-title {
@@ -597,7 +597,7 @@ a.prg-item:hover .prg-item-title {
 .prg-about-photo {
   display: block;
   aspect-ratio: 4 / 5;
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--blush);
 }

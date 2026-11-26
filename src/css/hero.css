@@ -286,7 +286,7 @@
     grid-area: media;
     width: 16rem;
     aspect-ratio: 9 / 16;
-    border-radius: 2px;
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.45);
   }

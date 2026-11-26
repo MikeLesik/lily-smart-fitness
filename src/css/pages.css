@@ -104,7 +104,7 @@
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   background: var(--blush);
 }
 
@@ -472,7 +472,7 @@
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   background: var(--blush);
 }
 

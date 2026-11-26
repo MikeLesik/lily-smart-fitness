@@ -449,7 +449,7 @@ html {
   height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   background: var(--blush);
 }
 
@@ -653,7 +653,7 @@ a.cab-video:hover .cab-video-title {
   aspect-ratio: 9 / 16;
   object-fit: cover;
   background: var(--blush);
-  border-radius: 2px;
+  border-radius: var(--radius-md);
 }
 
 .cab-video--cover .cab-video-state {
@@ -698,7 +698,7 @@ a.cab-video:hover .cab-video-title {
   aspect-ratio: 9 / 16;
   margin: 0.5rem auto var(--space-md);
   background: var(--warm-black);
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 

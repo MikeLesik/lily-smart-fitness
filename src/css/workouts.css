@@ -24,7 +24,7 @@
   flex-direction: column;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   transition: box-shadow var(--transition-base), border-color var(--transition-base);
 }
